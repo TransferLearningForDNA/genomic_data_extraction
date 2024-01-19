@@ -1,6 +1,7 @@
+""" Using NCBI Datasets API v2 alpha to download species genome data packages."""
+
 import os
 import subprocess
-
 
 # Retrieve the API key from the environment variable
 ncbi_api_key = os.getenv('NCBI_API_KEY')
@@ -10,7 +11,9 @@ if ncbi_api_key is None:
 species = "osterococcus_tauri"
 taxid = "70448"
 
-# Construct the command
+# Construct the NCBI Datasets command to download
+# the reference genome (fasta) and corresponding annotation (gff3)
+# of a given species, indexed using its taxonomy ID
 command = ["./datasets", "download", "genome", "taxon", taxid, "--reference", "--include", "genome,gff3",
            "--filename", species+"_ncbi_dataset.zip", "--api-key", str(ncbi_api_key)]
 
