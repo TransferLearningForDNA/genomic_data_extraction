@@ -1,27 +1,27 @@
 import os
-from pprint import pprint
-import ncbi.datasets.openapi
-from ncbi.datasets.openapi.api import genome_api
+import subprocess
+
 
 # Retrieve the API key from the environment variable
 ncbi_api_key = os.getenv('NCBI_API_KEY')
 if ncbi_api_key is None:
     raise EnvironmentError("NCBI API KEY not found. Please set the environment variable.")
 
+species = "osterococcus_tauri"
+taxid = "70448"
 
-configuration = ncbi.datasets.openapi.Configuration()
-configuration.api_key['ApiKeyAuthHeader'] = ncbi_api_key
+# Construct the command
+command = ["./datasets", "download", "genome", "taxon", taxid, "--reference", "--include", "genome,gff3",
+           "--filename", species+"_ncbi_dataset.zip", "--api-key", str(ncbi_api_key)]
 
-with ncbi.datasets.openapi.ApiClient(configuration) as api_client:
-    api_instance = genome_api.GenomeApi(api_client)
+# Execute the command
+result = subprocess.run(command, capture_output=True, text=True)
 
-    help(api_instance.download_assembly_package)
+# Check if the command was executed successfully
+if result.returncode == 0:
+    print("Command executed successfully.")
+    print(result.stdout)
+else:
+    print("Error in executing command:")
+    print(result.stderr)
 
-    # taxon_id = 130081  # Replace with the desired taxon ID
-    # include_data_types = ["genome", "gff3"]  # Specify data types to include
-    #
-    # try:
-    #     response = api_instance.download_assembly_package(taxon_id, include_data_types=include_data_types)
-    #     # Process the response, which contains the downloaded data
-    # except ncbi.datasets.openapi.ApiException as e:
-    #     print(f"Exception when calling GenomeApi: {e}\n")
