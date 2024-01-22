@@ -3,8 +3,9 @@
 import os
 import subprocess
 
+
 # Retrieve the API key from the environment variable
-ncbi_api_key = os.getenv('NCBI_API_KEY')
+ncbi_api_key = os.environ.get("NCBI_API_KEY")
 if ncbi_api_key is None:
     raise EnvironmentError("NCBI API KEY not found. Please set the environment variable.")
 
@@ -27,4 +28,3 @@ if result.returncode == 0:
 else:
     print("Error in executing command:")
     print(result.stderr)
-
