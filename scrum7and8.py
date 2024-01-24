@@ -1,7 +1,6 @@
 # implementation of simple skeleton code to merge the datasets by the gene ID column: use a “dummy species” to write the code
 # dummy data is used so that some sort of skeleton code is ready with the basic layout to add in processed data later on
 # NOTE: code has to be modified after S3 bucket is implemented and processed code is received.
-
 # ticket 2 code:
 #for each species, retrieve the DNA and RNA datasets from S3
 #code to merge the datasets by the gene ID column: use a “dummy species” to write the code
