@@ -5,9 +5,9 @@ import re
 import sys
 import os
 
+
 def read_gene_ids_from_file(file_path):
-    """
-    Reads gene IDs from a file, skipping the first line.
+    """ Reads gene IDs from a file, skipping the first line.
 
     Args:
         file_path (str): The path to the file containing gene IDs.
@@ -19,7 +19,7 @@ def read_gene_ids_from_file(file_path):
         with open(file_path, 'r') as file:
             # Skip the first line
             next(file)
-            
+
             # Read gene IDs from the remaining lines
             gene_ids = [line.strip() for line in file]
 
@@ -35,8 +35,7 @@ def read_gene_ids_from_file(file_path):
 
 
 def get_cds(transcript_id):
-    """
-    Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
+    """ Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
@@ -63,9 +62,9 @@ def get_cds(transcript_id):
 
     return cds_sequence
 
+
 def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_length=500):
-    """
-    Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
+    """ Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
@@ -76,17 +75,18 @@ def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_leng
         tuple: A tuple containing the promoter and terminator sequences as strings.
     """
     # Use Ensembl REST API to retrieve cDNA sequence with specified 5' and 3' expansions
-    sequence = ensembl_rest.sequence_id(id=transcript_id, type="cdna", expand_5prime=promoter_length, expand_3prime=terminator_length)["seq"]
-    
+    sequence = ensembl_rest.sequence_id(id=transcript_id, type="cdna", expand_5prime=promoter_length,
+                                        expand_3prime=terminator_length)["seq"]
+
     # Extract promoter and terminator sequences from the cDNA sequence
     promoter_sequence = sequence[:promoter_length]
     terminator_sequence = sequence[-terminator_length:]
-    
+
     return promoter_sequence, terminator_sequence
 
+
 def extract_utr_information(data):
-    """
-    Extracts information about 5' and 3' UTRs (Untranslated Regions) from the provided data.
+    """ Extracts information about 5' and 3' UTRs (Untranslated Regions) from the provided data.
 
     Args:
         data (dict): A dictionary containing information about UTRs.
@@ -96,7 +96,7 @@ def extract_utr_information(data):
     """
     # Retrieve UTR data from the input dictionary
     utr_data = data.get('UTR', [])
-    
+
     # Initialize lists to store 5' UTR and 3' UTR information
     utr5_list = []
     utr3_list = []
@@ -123,8 +123,7 @@ def extract_utr_information(data):
 
 
 def get_utr_sequence(chromosome, strand, start, end, species):
-    """
-    Retrieves the nucleotide sequence of a UTR (Untranslated Region) from the Ensembl database.
+    """ Retrieves the nucleotide sequence of a UTR (Untranslated Region) from the Ensembl database.
 
     Args:
         chromosome (str): Chromosome name or identifier.
@@ -142,9 +141,9 @@ def get_utr_sequence(chromosome, strand, start, end, species):
 
     return utr_sequence
 
+
 def get_full_utr_sequence(list_utr_coordinates, chromosome, strand, species):
-    """
-    Retrieves the concatenated nucleotide sequence of multiple UTRs from the Ensembl database.
+    """ Retrieves the concatenated nucleotide sequence of multiple UTRs from the Ensembl database.
 
     Args:
         list_utr_coordinates (list): A list of tuples representing UTR start and end coordinates.
@@ -166,8 +165,7 @@ def get_full_utr_sequence(list_utr_coordinates, chromosome, strand, species):
 
 
 def get_species_name(file_path):
-    """
-    Extracts the species name from a file path.
+    """ Extracts the species name from a file path.
 
     Args:
         file_path (str): The path to the file containing the species information.
@@ -177,10 +175,10 @@ def get_species_name(file_path):
     """
     # Extract the filename from the path
     filename = os.path.basename(file_path)
-    
+
     # Remove the extension
     filename_without_extension = filename.rsplit('.', 1)[0]
-    
+
     # Split the filename by underscore and get the last two parts
     species = "_".join(filename_without_extension.split("_")[:2])
 
@@ -188,8 +186,7 @@ def get_species_name(file_path):
 
 
 def get_data_as_csv(file_paths, output_directory):
-    """
-    Retrieves data for gene IDs from Ensembl, processes it, and saves it as CSV files.
+    """ Retrieves data for gene IDs from Ensembl, processes it, and saves it as CSV files.
 
     Args:
         file_paths (list): List of file paths containing gene IDs.
@@ -223,22 +220,25 @@ def get_data_as_csv(file_paths, output_directory):
         for gene_id in gene_ids:
             print(f"Extracting data for gene ID : {gene_id}")
             gene_data = ensembl_rest.lookup(species=species, id=gene_id)
-            
+
             # Get transcript ID
             transcript_id = gene_data["canonical_transcript"].split(".")[0]
 
             # Retrieve promoter, CDS, and terminator sequences
             cds_sequence = get_cds(transcript_id)
             promoter_sequence, terminator_sequence = get_promoter_terminator(transcript_id)
-            
+
             # Retrieve UTR sequences
-            transcript_data = ensembl_rest.lookup(id=transcript_id, params={'expand':True,'utr':True})
+            transcript_data = ensembl_rest.lookup(id=transcript_id, params={'expand': True, 'utr': True})
             utr5_coord_list, utr3_coord_list, chromosome, strand = extract_utr_information(transcript_data)
-            utr5_sequence = get_full_utr_sequence(utr5_coord_list, chromosome, strand, species=get_species_name(file_path))
-            utr3_sequence = get_full_utr_sequence(utr3_coord_list, chromosome, strand, species=get_species_name(file_path))
+            utr5_sequence = get_full_utr_sequence(utr5_coord_list, chromosome, strand,
+                                                  species=get_species_name(file_path))
+            utr3_sequence = get_full_utr_sequence(utr3_coord_list, chromosome, strand,
+                                                  species=get_species_name(file_path))
 
             # Write the row to the CSV file
-            csv_writer.writerow([gene_id, transcript_id, promoter_sequence, utr5_sequence, cds_sequence, utr3_sequence, terminator_sequence])
+            csv_writer.writerow([gene_id, transcript_id, promoter_sequence, utr5_sequence, cds_sequence, utr3_sequence,
+                                 terminator_sequence])
 
         # Close the CSV file
         csv_file.close()

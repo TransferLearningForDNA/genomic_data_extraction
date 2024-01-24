@@ -5,6 +5,7 @@ from dna import ensembl_api
 
 
 def query_dna_sequences_from_ensembl():
+    # TODO find how to download gene lists directly via the API
     # Specify the folder containing gene lists
     folder = "dna/gene_lists/"
     # Specify the list of file paths for gene lists
@@ -63,8 +64,8 @@ def merge_datasets():
 
 def run_pipeline():
     extract_dna_data()
-    extract_rna_data()
-    merge_datasets()
+    # extract_rna_data()
+    # merge_datasets()
 
 
 if __name__ == "__main__":
