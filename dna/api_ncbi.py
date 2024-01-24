@@ -16,7 +16,7 @@ taxid = "70448"
 # the reference genome (fasta) and corresponding annotation (gff3)
 # of a given species, indexed using its taxonomy ID
 command = ["./datasets", "download", "genome", "taxon", taxid, "--reference", "--include", "genome,gff3",
-           "--filename", species+"_ncbi_dataset.zip", "--api-key", str(ncbi_api_key)]
+           "--filename", species+".zip", "--api-key", str(ncbi_api_key)]
 
 # Execute the command
 result = subprocess.run(command, capture_output=True, text=True)
