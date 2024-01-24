@@ -164,7 +164,6 @@ def get_full_utr_sequence(list_utr_coordinates, chromosome, strand, species):
 
     return concatenated_sequence
 
-import os
 
 def get_species_name(file_path):
     """
@@ -187,9 +186,6 @@ def get_species_name(file_path):
 
     return species
 
-
-import os
-import csv
 
 def get_data_as_csv(file_paths, output_directory):
     """
