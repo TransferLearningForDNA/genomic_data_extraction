@@ -35,7 +35,8 @@ def read_gene_ids_from_file(file_path):
 
 
 def get_cds(transcript_id):
-    """ Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
+    """
+    Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
@@ -64,7 +65,8 @@ def get_cds(transcript_id):
 
 
 def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_length=500):
-    """ Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
+    """
+    Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
@@ -74,14 +76,27 @@ def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_leng
     Returns:
         tuple: A tuple containing the promoter and terminator sequences as strings.
     """
-    # Use Ensembl REST API to retrieve cDNA sequence with specified 5' and 3' expansions
-    sequence = ensembl_rest.sequence_id(id=transcript_id, type="cdna", expand_5prime=promoter_length,
-                                        expand_3prime=terminator_length)["seq"]
+    # Construct the REST API URL for retrieving genomic sequence with specified 5' and 3' expansions
+    address = f"https://rest.ensembl.org/sequence/id/{transcript_id}?type=genomic;expand_5prime=1000;expand_3prime=500"
 
-    # Extract promoter and terminator sequences from the cDNA sequence
+    # Make a GET request to the Ensembl REST API
+    r = requests.get(address, headers={"Content-Type": "text/x-fasta"})
+
+    # Ensure that there are no issues with the sequence request
+    if not r.ok:
+        r.raise_for_status()
+        sys.exit()
+    
+    # Remove unwanted characters to produce only the nucleotide sequence and format into a single string
+    raw_output = r.text
+    pattern = re.compile('(?:^|\n)[ATGC]+')
+    matches = pattern.findall(raw_output)
+    sequence = ''.join(matches).replace('\n', '')
+
+    # Extract the promoter and terminator sequence from the entire sequence
     promoter_sequence = sequence[:promoter_length]
     terminator_sequence = sequence[-terminator_length:]
-
+    
     return promoter_sequence, terminator_sequence
 
 
