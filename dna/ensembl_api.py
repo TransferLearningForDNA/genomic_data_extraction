@@ -5,9 +5,10 @@ import re
 import sys
 import os
 import time
+from typing import Optional
 
 
-def read_gene_ids_from_file(file_path):
+def read_gene_ids_from_file(file_path: str) -> list[str]:
     """ Reads gene IDs from a file, skipping the first line.
 
     Args:
@@ -35,7 +36,7 @@ def read_gene_ids_from_file(file_path):
         return []
 
 
-def get_cds(transcript_id):
+def get_cds(transcript_id: str) -> str:
     """
     Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
 
@@ -71,7 +72,7 @@ def get_cds(transcript_id):
 
     
     
-def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_length=500):
+def get_promoter_terminator(transcript_id: str, promoter_length=1000 , terminator_length=500) -> tuple[str, str]:
     """
     Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
 
@@ -110,7 +111,7 @@ def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_leng
         print(f"Error with the promoter-terminator request for {transcript_id}: {e}")
         return '', ''
 
-def extract_utr_information(data):
+def extract_utr_information(data: dict) -> tuple[list[tuple[int, int]], list[tuple[int, int]], Optional[str], Optional[int]]:
     """ Extracts information about 5' and 3' UTRs (Untranslated Regions) from the provided data.
 
     Args:
@@ -147,7 +148,7 @@ def extract_utr_information(data):
     return utr5_list, utr3_list, chromosome, strand
 
 
-def get_utr_sequence(chromosome, strand, start, end, species):
+def get_utr_sequence(chromosome: str, strand: int, start: int, end: int, species: str) -> str:
     """ Retrieves the nucleotide sequence of a UTR (Untranslated Region) from the Ensembl database.
 
     Args:
@@ -155,7 +156,7 @@ def get_utr_sequence(chromosome, strand, start, end, species):
         strand (int): Strand information (1 for forward strand, -1 for reverse strand).
         start (int): Start position of the UTR on the chromosome.
         end (int): End position of the UTR on the chromosome.
-        species (str, optional): Species for which the UTR sequence is requested.
+        species (str): Species for which the UTR sequence is requested.
 
     Returns:
         str: The nucleotide sequence of the specified UTR.
@@ -173,7 +174,7 @@ def get_utr_sequence(chromosome, strand, start, end, species):
     return utr_sequence
 
 
-def get_full_utr_sequence(list_utr_coordinates, chromosome, strand, species):
+def get_full_utr_sequence(list_utr_coordinates: list[tuple[int, int]], chromosome: str, strand: int, species: str) -> str:
     """ Retrieves the concatenated nucleotide sequence of multiple UTRs from the Ensembl database.
 
     Args:
@@ -195,7 +196,7 @@ def get_full_utr_sequence(list_utr_coordinates, chromosome, strand, species):
     return concatenated_sequence
 
 
-def get_species_name(file_path):
+def get_species_name(file_path: str) -> str:
     """ Extracts the species name from a file path.
 
     Args:
@@ -215,7 +216,7 @@ def get_species_name(file_path):
 
     return species
 
-def request_with_retry(transcript_id):
+def request_with_retry(transcript_id: str) -> dict:
     """ Retries the request for a transcript ID
     
     Args:
@@ -238,7 +239,7 @@ def request_with_retry(transcript_id):
                 print(f"Error with the request for {transcript_id}: {e}")
                 return {}
    
-def get_data_as_csv(file_paths, output_directory):
+def get_data_as_csv(file_paths: list[str], output_directory: str):
     """ Retrieves data for gene IDs from Ensembl, processes it, and saves it as CSV files.
 
     Args:
