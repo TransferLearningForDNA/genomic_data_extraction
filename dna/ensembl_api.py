@@ -4,6 +4,7 @@ import csv
 import re
 import sys
 import os
+import time
 
 
 def read_gene_ids_from_file(file_path):
@@ -43,27 +44,33 @@ def get_cds(transcript_id):
 
     Returns:
         str: The nucleotide sequence of the coding sequence (CDS).
+             Returns an empty string in case of an error.
     """
     # Construct the REST API URL for retrieving CDS
     address = f"https://rest.ensembl.org/sequence/id/{transcript_id}?multiple_sequences=1;type=cds"
 
-    # Make a GET request to the Ensembl REST API
-    r = requests.get(address, headers={"Content-Type": "text/x-fasta"})
+    try:
+        # Make a GET request to the Ensembl REST API
+        r = requests.get(address, headers={"Content-Type": "text/x-fasta"})
 
-    # Ensure that there are no issues with the sequence request
-    if not r.ok:
+        # Ensure that there are no issues with the sequence request
         r.raise_for_status()
-        sys.exit()
 
-    # Extract only the nucleotide sequence and format into a single string
-    raw_output = r.text
-    pattern = re.compile('(?:^|\n)[ATGC]+')
-    matches = pattern.findall(raw_output)
-    cds_sequence = ''.join(matches).replace('\n', '')
+        # Extract only the nucleotide sequence and format into a single string
+        raw_output = r.text
+        pattern = re.compile('(?:^|\n)[ATGC]+')
+        matches = pattern.findall(raw_output)
+        cds_sequence = ''.join(matches).replace('\n', '')
 
-    return cds_sequence
+        return cds_sequence
 
+    except requests.exceptions.RequestException as e:
+        # If there's an error with the request, print the error and return an empty string
+        print(f"Error with the request for {transcript_id}: {e}")
+        return ''
 
+    
+    
 def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_length=500):
     """
     Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
@@ -79,26 +86,29 @@ def get_promoter_terminator(transcript_id, promoter_length=1000, terminator_leng
     # Construct the REST API URL for retrieving genomic sequence with specified 5' and 3' expansions
     address = f"https://rest.ensembl.org/sequence/id/{transcript_id}?type=genomic;expand_5prime=1000;expand_3prime=500"
 
-    # Make a GET request to the Ensembl REST API
-    r = requests.get(address, headers={"Content-Type": "text/x-fasta"})
+    try:
+        # Make a GET request to the Ensembl REST API
+        r = requests.get(address, headers={"Content-Type": "text/x-fasta"})
 
-    # Ensure that there are no issues with the sequence request
-    if not r.ok:
+        # Ensure that there are no issues with the sequence request
         r.raise_for_status()
-        sys.exit()
-    
-    # Remove unwanted characters to produce only the nucleotide sequence and format into a single string
-    raw_output = r.text
-    pattern = re.compile('(?:^|\n)[ATGC]+')
-    matches = pattern.findall(raw_output)
-    sequence = ''.join(matches).replace('\n', '')
+        
+        # Remove unwanted characters to produce only the nucleotide sequence and format into a single string
+        raw_output = r.text
+        pattern = re.compile('(?:^|\n)[ATGC]+')
+        matches = pattern.findall(raw_output)
+        sequence = ''.join(matches).replace('\n', '')
 
-    # Extract the promoter and terminator sequence from the entire sequence
-    promoter_sequence = sequence[:promoter_length]
-    terminator_sequence = sequence[-terminator_length:]
-    
-    return promoter_sequence, terminator_sequence
+        # Extract the promoter and terminator sequence from the entire sequence
+        promoter_sequence = sequence[:promoter_length]
+        terminator_sequence = sequence[-terminator_length:]
+        
+        return promoter_sequence, terminator_sequence
 
+    except requests.exceptions.RequestException as e:
+        # If there's an error with the request, print the error and return an empty string
+        print(f"Error with the promoter-terminator request for {transcript_id}: {e}")
+        return '', ''
 
 def extract_utr_information(data):
     """ Extracts information about 5' and 3' UTRs (Untranslated Regions) from the provided data.
@@ -152,8 +162,14 @@ def get_utr_sequence(chromosome, strand, start, end, species):
     """
     # Use Ensembl REST API to retrieve UTR sequence for the specified region
     region = f"{chromosome}:{start}..{end}:{strand}"
-    utr_sequence = ensembl_rest.sequence_region(region=region, species=species)["seq"]
-
+    try:
+        utr_sequence = ensembl_rest.sequence_region(region=region, species=species)["seq"]
+    except ensembl_rest.core.restclient.HTTPError as e:
+        if e.response.status_code == 429:  # Check for rate limit exceeded error
+            print("Rate limit exceeded. Waiting before retrying...")
+            time.sleep(1)
+            utr_sequence = get_utr_sequence(chromosome, strand, start, end, species)
+            
     return utr_sequence
 
 
@@ -199,7 +215,29 @@ def get_species_name(file_path):
 
     return species
 
+def request_with_retry(transcript_id):
+    """ Retries the request for a transcript ID
+    
+    Args:
+        transcript_id (str): Ensembl transcript ID for the target gene.
 
+    Returns:
+        dict: A dictionary containing information about the transcript.
+    
+    """
+    while True:
+        try:
+            transcript_data = ensembl_rest.lookup(id=transcript_id, params={'expand': True, 'utr': True})
+            return transcript_data
+        except ensembl_rest.core.restclient.HTTPError as e:
+            if e.response.status_code == 429:  # Check for rate limit exceeded error
+                print("Rate limit exceeded. Waiting before retrying...")
+                time.sleep(1)
+                continue
+            else:
+                print(f"Error with the request for {transcript_id}: {e}")
+                return {}
+   
 def get_data_as_csv(file_paths, output_directory):
     """ Retrieves data for gene IDs from Ensembl, processes it, and saves it as CSV files.
 
@@ -233,18 +271,32 @@ def get_data_as_csv(file_paths, output_directory):
 
         # Loop through each gene ID and retrieve the data
         for gene_id in gene_ids:
+            time.sleep(2)
             print(f"Extracting data for gene ID : {gene_id}")
-            gene_data = ensembl_rest.lookup(species=species, id=gene_id)
+            
+            try:
+                gene_data = ensembl_rest.lookup(species=species, id=gene_id)
+
+            except ensembl_rest.core.restclient.HTTPError as e:
+                if e.response.status_code == 429:  # Check for rate limit exceeded error
+                    print("Rate limit exceeded. Waiting before retrying...")
+                    time.sleep(1)
+                    gene_data = ensembl_rest.lookup(species=species, id=gene_id)
 
             # Get transcript ID
             transcript_id = gene_data["canonical_transcript"].split(".")[0]
 
             # Retrieve promoter, CDS, and terminator sequences
             cds_sequence = get_cds(transcript_id)
+            if cds_sequence == '':
+                continue
             promoter_sequence, terminator_sequence = get_promoter_terminator(transcript_id)
 
             # Retrieve UTR sequences
-            transcript_data = ensembl_rest.lookup(id=transcript_id, params={'expand': True, 'utr': True})
+            transcript_data = request_with_retry(transcript_id)
+            if transcript_data == {}:
+                continue
+
             utr5_coord_list, utr3_coord_list, chromosome, strand = extract_utr_information(transcript_data)
             utr5_sequence = get_full_utr_sequence(utr5_coord_list, chromosome, strand,
                                                   species=get_species_name(file_path))
@@ -259,3 +311,15 @@ def get_data_as_csv(file_paths, output_directory):
         csv_file.close()
 
         print(f"Data extraction for {species} is now complete.")
+
+
+if __name__ == "__main__":
+    
+    folder = "gene_lists/"
+    # Specify the list of file paths for gene lists
+    file_paths = ["homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt", "chlamydomonas_reinhardtii_genes.txt", "galdieria_sulphuraria_genes.txt", "cyanidioschyzon_merolae_genes.txt"]
+
+    # Prepend the folder path to each file path
+    file_paths = [folder + path for path in file_paths]
+    
+    get_data_as_csv(file_paths, "csv_files")
