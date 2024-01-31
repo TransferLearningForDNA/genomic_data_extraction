@@ -1,0 +1,44 @@
+""" DNA sequence extraction test-suite."""
+
+import pytest # Import pytest for automated testing
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import csv
+import ensembl_api # Import the Ensembl API module
+
+
+def test_read_gene_ids_from_file():
+    filepath = "homo_sapiens_test.txt"
+    gene_ids_true = ["ENSG00000000003", "ENSG00000000005"]
+    gene_ids = ensembl_api.read_gene_ids_from_file(filepath)
+    assert gene_ids == gene_ids_true
+
+def test_get_species_name():
+    filepath = "homo_sapiens_test.txt"
+    species_name = ensembl_api.get_species_name(filepath)
+    species_name_true = "homo_sapiens"
+    assert species_name == species_name_true
+
+def test_extract_homo_sapiens_dna_components():
+    # Extract ground truth DNA sequence components from csv file
+    filepath_true = "test_homo_sapiens_dna.csv"
+    with open(filepath_true) as file:
+        reader = csv.DictReader(file)
+        dna_extracted_true = [gene for gene in reader]
+    
+    # Extract DNA sequence components from csv file using ensembl_api
+    gene_ids_filepaths = ["homo_sapiens_test.txt"]
+    output_filepath = "csv_files"
+    ensembl_api.get_data_as_csv(gene_ids_filepaths, output_filepath)
+    filepath_test = output_filepath + "/" + "ensembl_data_homo_sapiens.csv"
+    with open(filepath_test) as file:
+        reader = csv.DictReader(file)
+        dna_extracted_test = [gene for gene in reader]
+
+    for (dna_true, dna_test) in zip(dna_extracted_true, dna_extracted_test):
+        assert dna_true["promoter"]==dna_test["promoter"]
+        assert dna_true["utr5"]==dna_test["utr5"]
+        assert dna_true["cds"]==dna_test["cds"]
+        assert dna_true["utr3"]==dna_test["utr3"]
+        assert dna_true["terminator"]==dna_test["terminator"]
