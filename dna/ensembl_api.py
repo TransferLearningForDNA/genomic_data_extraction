@@ -6,8 +6,7 @@ import sys
 import os
 
 
-# adding comment to check automated testing
-# to remove later
+
 def read_gene_ids_from_file(file_path):
     """ Reads gene IDs from a file, skipping the first line.
 
