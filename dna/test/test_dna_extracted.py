@@ -3,13 +3,16 @@
 import pytest # Import pytest for automated testing
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import csv
-import ensembl_api # Import the Ensembl API module
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import ensembl_api
+# import ensembl_api # Import the Ensembl API module
 
 
 def test_read_gene_ids_from_file():
     filepath = "homo_sapiens_test.txt"
+    # join current directory
+    filepath = os.path.join(os.path.dirname(__file__), filepath)
     gene_ids_true = ["ENSG00000000003", "ENSG00000000005"]
     gene_ids = ensembl_api.read_gene_ids_from_file(filepath)
     assert gene_ids == gene_ids_true
@@ -23,12 +26,14 @@ def test_get_species_name():
 def test_extract_homo_sapiens_dna_components():
     # Extract ground truth DNA sequence components from csv file
     filepath_true = "test_homo_sapiens_dna.csv"
+    filepath_true = os.path.join(os.path.dirname(__file__), filepath_true)
     with open(filepath_true) as file:
         reader = csv.DictReader(file)
         dna_extracted_true = [gene for gene in reader]
     
     # Extract DNA sequence components from csv file using ensembl_api
     gene_ids_filepaths = ["homo_sapiens_test.txt"]
+    gene_ids_filepaths = [os.path.join(os.path.dirname(__file__), filepath) for filepath in gene_ids_filepaths]
     output_filepath = "csv_files"
     ensembl_api.get_data_as_csv(gene_ids_filepaths, output_filepath)
     filepath_test = output_filepath + "/" + "ensembl_data_homo_sapiens.csv"
