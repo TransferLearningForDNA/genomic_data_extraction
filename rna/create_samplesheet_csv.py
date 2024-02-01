@@ -1,7 +1,8 @@
 import os
 import csv
 
-import onedrivesdk
+# DEPECRATED LIBRARY: investigating another approach for the API
+import onedrivesdk 
 from onedrivesdk.helpers import GetAuthCodeServer
 from onedrivesdk.helpers.resource_discovery import ResourceDiscoveryRequest
 
