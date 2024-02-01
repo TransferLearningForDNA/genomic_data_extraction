@@ -1,26 +1,60 @@
 import os
 import csv
 
+import onedrivesdk
+from onedrivesdk.helpers import GetAuthCodeServer
+from onedrivesdk.helpers.resource_discovery import ResourceDiscoveryRequest
+
 # TODO: specify the path to the folder containing the sample fastq files
-# folder_path = '/path/to/your/folder'  # if saved in a local directory
-folder_path = ''  # if saved in Google Drive OR Imperial OneDrive (#TODO)
 
+# if saved in a local directory
+# folder_path = '/path/to/your/folder'
 
-# list all the files in the folder path with a fastq extension (sanity check)
-file_extension = '.fastq'
-files = [file for file in os.listdir(folder_path) if file.endswith(file_extension)]
+# if saved in (Imperial) OneDrive (#TODO)
+redirect_uri = 'http://localhost:8080'
+client_id = '8b4be9a3-e32e-4b8d-8889-463dde0b0b41'
+client_secret = '1b85dc9e-1d32-4510-a926-de09ed46cd96' 
+discovery_uri = 'https://graph.microsoft.com/v1.0/me'
+auth_server_url = 'https://login.microsoftonline.com/common/oauth2/authorize'
+auth_token_url = 'https://login.microsoftonline.com/common/oauth2/token'
 
-# QUESTION 2
-# option 1: preprocess all samples across all our species (one csv file)
-# OR
-# option 2: preprocess samples within each species separately (multiple csv files)
-# comment: is it fine/appropriate to preprocess (all samples of) every species in one go in the pipeline (i.e., option 1)
-# BELOW: CODE LOGIC FOR OPTION 1
+http = onedrivesdk.HttpProvider()
+auth = onedrivesdk.AuthProvider(http,
+                                client_id,
+                                auth_server_url=auth_server_url,
+                                auth_token_url=auth_token_url)
+auth_url = auth.get_auth_url(redirect_uri)
+code = GetAuthCodeServer.get_auth_code(auth_url, redirect_uri)
+auth.authenticate(code, redirect_uri, client_secret, resource=discovery_uri)
+# If you have access to more than one service, you'll need to decide
+# which ServiceInfo to use instead of just using the first one, as below.
+service_info = ResourceDiscoveryRequest().get_service_info(auth.access_token)[0]
+auth.redeem_refresh_token(service_info.service_resource_id)
+client = onedrivesdk.OneDriveClient(service_info.service_resource_id + '/_api/v2.0/', auth, http)
+
+# Specify the folder ID (replace 'folder_id' with the actual folder ID)
+folder_id = 'folder_id'  # TODO: edit this to point to our shared folder with the files (you can find it in the URL on Onedrive)
+
+# List files in the specified folder
+items_in_folder = client.item(drive='me', id=folder_id).children.get()
+# for item in items_in_folder:
+#     print(f"File: {item.name}, Size: {item.size} bytes")
+
+# list all the files in the folder path
+file_paths = []
+# Iterate over the files in the specified folder
+for item in items_in_folder:
+    file_paths.append(os.path.join(folder_path, item.name))
+# if the files are locally stored
+#files = [file for file in os.listdir(folder_path) if file.endswith(file_extension)]
+
+# preprocess all samples across all our species (one csv file)
+# TODO: update this to be one csv file PER species
 
 # iterate over the fastq files to populate the dict containing the fastq filepath(s)
 # of each sample (across all species we are considering/saved in the folder)
 sample_fastq_files_path_dict = dict()
-for sample_fastq_file in files:
+for sample_fastq_file in file_paths:
 
     # get the absolute file path
     file_path = os.path.join(folder_path, sample_fastq_file)
