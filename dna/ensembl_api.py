@@ -6,6 +6,7 @@ import sys
 import os
 
 
+
 def read_gene_ids_from_file(file_path):
     """ Reads gene IDs from a file, skipping the first line.
 
@@ -145,7 +146,7 @@ def get_utr_sequence(chromosome, strand, start, end, species):
         strand (int): Strand information (1 for forward strand, -1 for reverse strand).
         start (int): Start position of the UTR on the chromosome.
         end (int): End position of the UTR on the chromosome.
-        species (str, optional): Species for which the UTR sequence is requested.
+        species (str): Species for which the UTR sequence is requested.
 
     Returns:
         str: The nucleotide sequence of the specified UTR.
