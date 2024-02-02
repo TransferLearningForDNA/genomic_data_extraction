@@ -8,7 +8,9 @@ import time
 from typing import Optional
 
 
+
 def read_gene_ids_from_file(file_path: str) -> list[str]:
+
     """ Reads gene IDs from a file, skipping the first line.
 
     Args:
