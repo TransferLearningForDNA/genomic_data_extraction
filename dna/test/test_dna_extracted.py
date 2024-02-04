@@ -76,8 +76,8 @@ def test_check_extracted_components():
                 dna_extracted_true = [gene for gene in reader]
 
         except FileNotFoundError:
-            print(f"The file for {species} could not be found. 
-                  Check that a ground truth file and an ensembl data file exist for {species}")
+            print(f"The file for {species} could not be found. "
+                f"Check that a ground truth file and an ensembl data file exist for {species}")
         else:
             for (dna_true, dna_test) in zip(dna_extracted_true, dna_extracted_test):
                 assert (
