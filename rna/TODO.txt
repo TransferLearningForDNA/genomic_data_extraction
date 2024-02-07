@@ -1,0 +1,1 @@
+    Documentation: Add comments and documentation to explain the purpose of the script, how to set it up, and how to run it. (Entrez.email; species data input)
