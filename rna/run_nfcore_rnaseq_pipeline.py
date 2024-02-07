@@ -1,7 +1,9 @@
 import subprocess
 
+# Run the pipeline given a samplesheet csv file (one species at a time)
+
 # define the variables for the parameters
-sample_sheet_path = 'samplesheet.csv'  # better as an input requested from user? (input())
+sample_sheet_path = 'TODO.csv'  # better as an input requested from user? (input())
 assert sample_sheet_path.endswith('csv')  # check file format
 
 path_to_outputs = 'TODO'
