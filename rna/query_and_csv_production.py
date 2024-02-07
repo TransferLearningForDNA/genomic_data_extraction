@@ -8,12 +8,14 @@ from pysradb.search import SraSearch
 from pysradb.sradb import SRAdb
 
 # Configuration your NCBI API email here
-Entrez.email = "your-email@example.com"
+Entrez.email = "email@example.com"
 
 
 # Step 1: Query NCBI SRA Database -> outputs species metadata
 def query_sra(species, taxonomy_id):
-    # First, search with 'RNA-Seq' strategy
+    """This function queries the SRA database for a given species and taxonomy ID input in the main call (bottom of the page), and returns a DataFrame of the metadata results."""
+
+    # First, search for 'RNA-Seq' strategy
     try:
         sra_search_rna_seq = SraSearch(organism=species, layout="paired", strategy=['RNA-Seq'], return_max=50)
         sra_search_rna_seq.search()
@@ -42,6 +44,8 @@ def query_sra(species, taxonomy_id):
     
 # Step 2: Function to query by Species Dictionary, and return experiment accession numbers
 def query_and_get_srx_accession_ids(species_data):
+    """This function calls the SRA query function above, and creates a dictionary of corresponding SRX IDs for each species name. This dictionary is then returned."""
+
     # Dictionary to store species names and their SRX IDs
     species_srx_map = {}
 
@@ -62,6 +66,8 @@ def query_and_get_srx_accession_ids(species_data):
 
 # Step 3: Viewing the returned metadata (optional)
 def view_srx_metadata(species_srx_map):
+    """This function takes the species_srx_map dictionary (from function above) and populated a dictionary with DataFrames containing the metadata for each species. This is optional but can be useful to view the metadata."""
+
     db = SRAweb()
 
     all_species_metadata = {}
@@ -73,13 +79,15 @@ def view_srx_metadata(species_srx_map):
         df = db.sra_metadata(list_ids)
 
         all_species_metadata[species] = df
-        print(list(all_species_metadata[species].columns))
+    print(list(all_species_metadata[0].columns))
 
     return all_species_metadata
 
 
 # Step 4: Storing only the needed data - SRX and SRR IDs - in a csv
 def SRX_to_SRR_csv(species_srx_map, output_file):
+    """This function takes the species_srx_map dictionary and saves the species, taxonomy_id, srx_id and corresponding srr_ids to a CSV file. This is the file that will be used to download the data, and can also be used for handling logic in later stages of the processing and testing."""
+
     db = SRAweb()
     data_rows = [] 
 
@@ -91,7 +99,7 @@ def SRX_to_SRR_csv(species_srx_map, output_file):
             srr_ids = df['run_accession'].unique()
 
             if not df.empty and 'organism_taxid' in df.columns:
-                taxonomy_id = df.iloc[0]['organism_taxids']
+                taxonomy_id = df.iloc[0]['organism_taxid']
             else:
                 taxonomy_id = None  # Use None or an appropriate placeholder if taxonomy ID is not available
 
@@ -113,17 +121,19 @@ def SRX_to_SRR_csv(species_srx_map, output_file):
     print(f"Data saved to {output_file}")
 
 # Specify our species of interest here
-# NOTE: There is a discrepancy here for 'Cyanidioschyzon merolae', many entries are strain 10D - Taxonomy ID: 280699. 
-# These get filtered out in this process. Not sure what we should decide to do / how to handle?
-
 if __name__ == "__main__":
+
     species_data = {
     'Chlamydomonas reinhardtii': 3055,
-    'Ostreococcus tauri': 70448,
+    # Removed: 'Ostreococcus tauri': 70448,
+    'Galdieria sulphuraria': 130081,
     'Cyanidioschyzon merolae': 45157,
     'Homo sapiens': 9606,
     'Saccharomyces cerevisiae': 4932
     }
+
+    # NOTE: There is a discrepancy here for 'Cyanidioschyzon merolae', many entries are strain 10D - Taxonomy ID: 280699. 
+    # These get filtered out in this process. Not sure what we should decide to do / how to handle?
     
     species_srx_map = query_and_get_srx_accession_ids(species_data)
     

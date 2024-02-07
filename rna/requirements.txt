@@ -3,7 +3,7 @@ pyarrow==4.0.0
 biopython==1.78
 pysradb==0.11.0
 
-# NOTE: The fasterq-dump command-line tool, part of the NCBI SRA Toolkit, also needs to be installed on your system or available in your system's PATH. brew install sra-toolkit. Note I did this in a local venv using the followign steps:
+# NOTE: The fasterq-dump command-line tool, part of the NCBI SRA Toolkit, also needs to be installed on your system or available in your system's PATH. brew install sra-toolkit. Note I did this in a local venv (recommend using a venv) using the followign steps:
 
 # Download the SRA Toolkit:
 # 1. run on terminal: curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
