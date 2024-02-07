@@ -41,6 +41,20 @@ def download_file_from_onedrive(onedrive_file_id, local_path_to_save):
     except GraphError as e:
         logging.error(f"Graph API Error: {e}")
 
+def download_files_from_onedrive(file_ids, local_directory_path):
+    """
+    Downloads multiple files from OneDrive based on their IDs and saves them to a local directory.
+
+    Parameters:
+    - file_ids (list): A list of unique identifiers of the files in OneDrive.
+    - local_directory_path (str): The local file system directory where files will be saved.
+    """
+    for file_id in file_ids:
+        local_path_to_save = os.path.join(local_directory_path, f"{file_id}.file_extension")  # Adjust file extension as necessary
+        logging.info(f"Downloading file with ID {file_id}...")
+        download_file_from_onedrive(file_id, local_path_to_save)
+
+
 def upload_file_to_onedrive(onedrive_folder_id, local_file_path):
     """
     Uploads a local file to OneDrive.
@@ -63,14 +77,29 @@ def upload_file_to_onedrive(onedrive_folder_id, local_file_path):
     except GraphError as e:
         logging.error(f"Graph API Error: {e}")
 
-def main():
-    local_download_path = 'path_where_to_store_downloaded_file'
-    onedrive_file_id = 'onedrive_file_id_to_download'
-    local_upload_path = 'path_to_local_file_for_upload'
-    onedrive_folder_id = 'onedrive_folder_id_for_upload'
+def upload_files_to_onedrive(onedrive_folder_id, local_directory_path):
+    """
+    Uploads all files from a local directory to a specified folder in OneDrive.
 
-    download_file_from_onedrive(onedrive_file_id, local_download_path)
-    upload_file_to_onedrive(onedrive_folder_id, local_upload_path)
+    Parameters:
+    - onedrive_folder_id (str): The unique identifier of the folder in OneDrive.
+    - local_directory_path (str): The path to the local directory containing files to be uploaded.
+    """
+    for file_name in os.listdir(local_directory_path):
+        local_file_path = os.path.join(local_directory_path, file_name)
+        if os.path.isfile(local_file_path):
+            logging.info(f"Uploading {file_name}...")
+            upload_file_to_onedrive(onedrive_folder_id, local_file_path)
+
+
+def main():
+    local_directory_for_upload = 'path_to_local_directory_for_upload'
+    onedrive_folder_id_for_upload = 'onedrive_folder_id_for_upload'
+    upload_files_to_onedrive(onedrive_folder_id_for_upload, local_directory_for_upload)
+
+    local_directory_for_download = 'path_where_to_store_downloaded_files'
+    file_ids_to_download = ['onedrive_file_id_1', 'onedrive_file_id_2']  # List of file IDs to download
+    download_files_from_onedrive(file_ids_to_download, local_directory_for_download)
 
 if __name__ == "__main__":
     main()
