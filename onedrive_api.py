@@ -2,11 +2,12 @@ import os
 import logging
 from azure.identity import InteractiveBrowserCredential
 from msgraph.core import GraphClient
-from msgraph.core.exceptions import GraphError
+#from msgraph.core.exceptions import GraphError
 
 # Use environment variables for sensitive information
-CLIENT_ID = os.getenv('8b4be9a3-e32e-4b8d-8889-463dde0b0b41')
-TENANT_ID = os.getenv('2b897507-ee8c-4575-830b-4f8267c3d307' )
+CLIENT_ID = '8b4be9a3-e32e-4b8d-8889-463dde0b0b41'
+TENANT_ID = '2b897507-ee8c-4575-830b-4f8267c3d307'
+CLIENT_SECRET = '1b85dc9e-1d32-4510-a926-de09ed46cd96'
 SCOPE = ['Files.ReadWrite.All']  # This might need to be adjusted based on the actual requirements
 
 # Setup logging
@@ -28,18 +29,28 @@ def read_file_as_bytes(file_path):
 def download_file_from_onedrive(onedrive_file_id, local_path_to_save):
     """
     Downloads a file from OneDrive to a local path.
-    """
-    try:
-        endpoint = f'/me/drive/items/{onedrive_file_id}/content'
-        response = client.get(endpoint)
-        if response.status_code == 200:
-            with open(local_path_to_save, 'wb') as local_file:
-                local_file.write(response.content)
-            logging.info(f"File downloaded successfully to {local_path_to_save}")
-        else:
-            logging.error(f"Failed to download file. HTTP Error: {response.status_code}")
-    except GraphError as e:
-        logging.error(f"Graph API Error: {e}")
+    # """
+    # try:
+    #     endpoint = f'/me/drive/items/{onedrive_file_id}/content'
+    #     response = client.get(endpoint)
+    #     if response.status_code == 200:
+    #         with open(local_path_to_save, 'wb') as local_file:
+    #             local_file.write(response.content)
+    #         logging.info(f"File downloaded successfully to {local_path_to_save}")
+    #     else:
+    #         logging.error(f"Failed to download file. HTTP Error: {response.status_code}")
+    # except GraphError as e:
+    #     logging.error(f"Graph API Error: {e}")
+
+    endpoint = f'/me/drive/items/{onedrive_file_id}/content'
+    response = client.get(endpoint)
+    if response.status_code == 200:
+        with open(local_path_to_save, 'wb') as local_file:
+            local_file.write(response.content)
+        logging.info(f"File downloaded successfully to {local_path_to_save}")
+    else:
+        logging.error(f"Failed to download file. HTTP Error: {response.status_code}")
+
 
 def download_files_from_onedrive(file_ids, local_directory_path):
     """
@@ -68,14 +79,20 @@ def upload_file_to_onedrive(onedrive_folder_id, local_file_path):
     file_name = os.path.basename(local_file_path)
     endpoint = f'/me/drive/items/{onedrive_folder_id}:/{file_name}:/content'
 
-    try:
-        response = client.put(endpoint, content=file_content)
-        if response.status_code == 201:
-            logging.info(f"File uploaded successfully: {file_name}")
-        else:
-            logging.error(f"Failed to upload file. HTTP Error: {response.status_code}")
-    except GraphError as e:
-        logging.error(f"Graph API Error: {e}")
+    # try:
+    #     response = client.put(endpoint, content=file_content)
+    #     if response.status_code == 201:
+    #         logging.info(f"File uploaded successfully: {file_name}")
+    #     else:
+    #         logging.error(f"Failed to upload file. HTTP Error: {response.status_code}")
+    # except GraphError as e:
+    #     logging.error(f"Graph API Error: {e}")
+
+    response = client.put(endpoint, data=file_content)
+    if response.status_code == 201:
+        logging.info(f"File uploaded successfully: {file_name}")
+    else:
+        logging.error(f"Failed to upload file. HTTP Error: {response.status_code}")
 
 def upload_files_to_onedrive(onedrive_folder_id, local_directory_path):
     """
@@ -93,13 +110,13 @@ def upload_files_to_onedrive(onedrive_folder_id, local_directory_path):
 
 
 def main():
-    local_directory_for_upload = 'path_to_local_directory_for_upload'
-    onedrive_folder_id_for_upload = 'onedrive_folder_id_for_upload'
+    local_directory_for_upload = 'your_local_dir_with_files_to_upload_to_onedrive'
+    onedrive_folder_id_for_upload = '0x01200074BF53252FD43242936F4421A798FF15'  # our shared folder
     upload_files_to_onedrive(onedrive_folder_id_for_upload, local_directory_for_upload)
 
-    local_directory_for_download = 'path_where_to_store_downloaded_files'
-    file_ids_to_download = ['onedrive_file_id_1', 'onedrive_file_id_2']  # List of file IDs to download
-    download_files_from_onedrive(file_ids_to_download, local_directory_for_download)
+    # local_directory_for_download = 'path_where_to_store_downloaded_files'
+    # file_ids_to_download = ['onedrive_file_id_1', 'onedrive_file_id_2']  # List of file IDs to download
+    # download_files_from_onedrive(file_ids_to_download, local_directory_for_download)
 
 if __name__ == "__main__":
     main()
