@@ -1,2 +1,4 @@
 ensembl_rest
-msgraph-sdk
+msgraph-core==0.2.2
+azure-identity==1.15.0
+azure-core==1.29.7
