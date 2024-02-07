@@ -5,8 +5,8 @@ from msgraph.core import GraphClient
 from msgraph.core.exceptions import GraphError
 
 # Use environment variables for sensitive information
-CLIENT_ID = os.getenv('AZURE_CLIENT_ID')
-TENANT_ID = os.getenv('AZURE_TENANT_ID')
+CLIENT_ID = os.getenv('8b4be9a3-e32e-4b8d-8889-463dde0b0b41')
+TENANT_ID = os.getenv('2b897507-ee8c-4575-830b-4f8267c3d307' )
 SCOPE = ['Files.ReadWrite.All']  # This might need to be adjusted based on the actual requirements
 
 # Setup logging
