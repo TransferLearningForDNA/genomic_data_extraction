@@ -17,6 +17,8 @@ Files:
 
             SRX_to_SRR_csv(species_srx_map, output_file): Saves the species names, taxonomy IDs, SRX IDs, and corresponding SRR IDs to a CSV file.
 
+             You must manually enter your Entrez.email and species data input.
+
 Usage:
 
     Querying SRA Database:
