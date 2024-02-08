@@ -1,0 +1,18 @@
+pandas==1.2.3
+pyarrow==4.0.0
+biopython==1.78
+pysradb==0.11.0
+
+# NOTE: The fasterq-dump command-line tool, part of the NCBI SRA Toolkit, also needs to be installed on your system or available in your system's PATH. brew install sra-toolkit. Note I did this in a local venv (recommend using a venv) using the followign steps:
+
+# Download the SRA Toolkit:
+# 1. run on terminal: curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
+
+#2. tar -vxzf sratoolkit.current-mac64.tar.gz
+#3. export PATH=$PATH:$PWD/the_name_of_your_extracted_directory/bin
+    # e.g. mine was : "sratoolkit.3.0.10-mac-x86_64"
+
+#4. Then to avoid having to set the PATH every time, you can add the export line to your shell's profile script:
+    # echo 'export PATH=$PATH:/Users/meghoward/Documents/Imperial MSc/Term_2/Phycoworks/genomic_data_extraction/rna/sratoolkit.3.0.10-mac-x86_64/bin' >> ~/.zshrc
+
+# 5. Activate venv whenever I want to run the code: my venv - 'source notebook_to_py/bin/activate'
