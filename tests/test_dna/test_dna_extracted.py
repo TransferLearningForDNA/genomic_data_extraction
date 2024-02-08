@@ -6,7 +6,7 @@ import os
 import csv
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dna')))
-from dna import ensembl_api
+import ensembl_api
 
 
 # import ensembl_api # Import the Ensembl API module
@@ -92,3 +92,5 @@ def test_check_extracted_components():
                         and dna_true["utr3"] == dna_test["utr3"]
                         and dna_true["terminator"] == dna_test["terminator"]
                 )
+
+test_check_extracted_components()
