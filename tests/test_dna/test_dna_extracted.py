@@ -1,10 +1,10 @@
-""" DNA sequence extraction test-suite."""
+""" DNA sequence extraction test_dna-suite."""
 
 import pytest # Import pytest for automated testing
 import sys
 import os
 import csv
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dna')))
 import ensembl_api
 # import ensembl_api # Import the Ensembl API module
 
@@ -17,7 +17,7 @@ def test_read_gene_ids_from_file():
     The function read_gene_ids_from_file() is called using that file and the 
     output of the function is compared with the ground truth gene ids.
     """
-    filepath = os.path.join(os.path.dirname(__file__), 
+    filepath = os.path.join(os.path.dirname(__file__),
                             "gene_lists/homo_sapiens_genes.txt")
     gene_ids_true = ["ENSG00000000003", "ENSG00000000005"]
     gene_ids = ensembl_api.read_gene_ids_from_file(filepath)
@@ -27,7 +27,7 @@ def test_get_species_name():
     """ Tests that species name is read correctly from filename by 
     get_species_name in the ensembl API."""
     
-    filepath = os.path.join(os.path.dirname(__file__), 
+    filepath = os.path.join(os.path.dirname(__file__),
                             "gene_lists/homo_sapiens_genes.txt")
     species_name = ensembl_api.get_species_name(filepath)
     species_name_true = "homo_sapiens"
