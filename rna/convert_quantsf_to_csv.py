@@ -19,7 +19,7 @@ def convert_quant_output_to_csv(input_file_path, output_file_path):
 
         # Loop through each row in the input file and write it to the output file
         for row in tsv_reader:
-            csv_row = list(row[0].split('   '))
+            csv_row = list(row[0].split('    '))
             csv_writer.writerow(csv_row)
 
     # print(f'Converted {input_file_path} to {output_file_path} successfully.')
@@ -27,8 +27,8 @@ def convert_quant_output_to_csv(input_file_path, output_file_path):
 
 if __name__ == "__main__":
     # Path to input quant.sf file
-    quant_file_path = 'quant_test.sf'
+    quant_file_path = 'test/quant_test.sf'
     # Path to output CSV file
-    output_csv_path = 'quant_test.csv'
+    output_csv_path = 'test/quant_test.csv'
     # Convert quantification file from .sf (Salmon output file) to csv
     convert_quant_output_to_csv(quant_file_path, output_csv_path)

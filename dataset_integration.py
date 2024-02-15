@@ -1,30 +1,31 @@
-def merge_datasets():
-    """ Merge DNA and RNA data by gene ID. """
-
-    # TODO Merge DNA and RNA data by gene_id
-
-    # TODO Store final dataset in One Drive
-    pass
+import pandas as pd
 
 
-# def merge_datasets(species_name):
-#     """function to merge DNA and RNA datasets for a given species by gene ID."""
-#     bucket_name = 's3-bucket-name'  # change after s3 bucket is made
-#     dna_file_key = f'datasets/{species_name}_DNA.csv'  # here i am assuming the file is csv
-#     rna_file_key = f'datasets/{species_name}_RNA.csv'
-#
-#     # downloading files from S3
-#     download_s3_file(bucket_name, dna_file_key, 'dna_data.csv')
-#     download_s3_file(bucket_name, rna_file_key, 'rna_data.csv')
-#
-#     # read datasets into pandas DataFrames
-#     dna_df = pd.read_csv('dna_data.csv')
-#     rna_df = pd.read_csv('rna_data.csv')
-#
-#     # merge datasets on gene ID
-#     merged_df = pd.merge(dna_df, rna_df, on='gene_id')
-#     merged_df.to_csv(f'merged_{species_name}_data.csv', index=False)
-#     return merged_df
-#
-#
-# merged_data = merge_datasets('dummy_species')
+def merge_datasets(species_name):
+    """ Merge DNA and RNA data by gene ID.
+
+    Args:
+        species_name (str)
+    """
+    # Specify CSV file paths of the DNA and RNA datasets
+    dna_dataset_path = f"dna/csv_files/ensembl_data_{species_name}.csv"
+    rna_dataset_path = f"rna/quant_csv_files/quant_{species_name}.csv"
+
+    # Read datasets into pandas DataFrames
+    dna_df = pd.read_csv(dna_dataset_path)
+    rna_df = pd.read_csv(rna_dataset_path).drop(columns=['Length', 'EffectiveLength', 'NumReads'])
+
+    # Rename 'Name' column to 'transcript_ID' in RNA quantification dataframe
+    rna_df.rename(columns={'Name': 'transcript_id'}, inplace=True)
+
+    # Merge datasets based on transcript ID
+    merged_df = pd.merge(dna_df, rna_df, on='transcript_id', how='inner')
+
+    # Save merged dataframe to csv
+    merged_df.to_csv(f'merged_csv_files/merged_{species_name}_data.csv', index=False)
+
+    return merged_df
+
+
+if __name__ == "__main__":
+    merge_datasets(species_name='homo_sapiens')
