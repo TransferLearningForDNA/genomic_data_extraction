@@ -34,11 +34,11 @@ def extract_dna_features(folder_path):
                 writer = csv.DictWriter(temp_file, fieldnames=header)
                 writer.writeheader()
 
-                # Iterate over the remaining rows
+                # Compute features for each gene
                 for row in reader:
                     # Add data for new columns (assuming new_columns is a list of values)
-                    codon_frequencies = compute_cds_codon_frequencies(row, codons)
-                    row.update(codon_frequencies)
+                    row.update(compute_cds_codon_frequencies(row, codons))
+                    row.update(compute_lengths(row))
                     
                     # Write the modified row to the temporary file
                     writer.writerow(row)
@@ -72,6 +72,22 @@ def compute_cds_codon_frequencies(row, codons):
         codon_frequencies[codon] /= codon_count
 
     return codon_frequencies
+
+
+def compute_lengths(row):
+    """Compute the length of the cds, utr3 and utr5
+    
+    Args:
+        row (dict): row extracted from the csv file. This contains the
+        following fields: ensembl_gene_id, transcript_id, promoter, utr5, cds,
+        utr3, terminator
+    """
+    lengths = {"cds_length" : len(row.get("cds")),
+               "utr5_length" : len(row.get("utr5")),
+               "utr3_length" : len(row.get("utr3"))}
+
+    return lengths
+
 
 
 # Usage example
