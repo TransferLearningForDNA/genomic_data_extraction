@@ -37,9 +37,16 @@ def extract_dna_features(folder_path):
                 # Compute features for each gene
                 for row in reader:
                     # Add data for new columns (assuming new_columns is a list of values)
-                    row.update(compute_cds_codon_frequencies(row, codons))
-                    row.update(compute_lengths(row))
-                    row.update(compute_gc_content_sequence_components(row))
+                    utr5 = row.get("utr5")
+                    cds = row.get("cds")
+                    utr3 = row.get("utr3")
+
+                    row.update(compute_cds_codon_frequencies(cds=cds, codons=codons))
+                    row.update(compute_lengths(cds=cds, utr5=utr5, utr3=utr3))
+                    row.update(compute_gc_content_sequence_components(utr5=utr5, 
+                                                                      cds=cds, 
+                                                                      utr3=utr3))
+                    row.update(compute_gc_content_wobble_positions(cds))
                     
                     # Write the modified row to the temporary file
                     writer.writerow(row)
@@ -48,13 +55,11 @@ def extract_dna_features(folder_path):
             shutil.move(temp_file.name, file_path)
 
 
-def compute_cds_codon_frequencies(row, codons):
+def compute_cds_codon_frequencies(cds, codons):
     """Compute the frequency of every possible codon in the cds
     
     Args:
-        row (dict): row extracted from the csv file. This contains the
-        following fields: ensembl_gene_id, transcript_id, promoter, utr5, cds,
-        utr3, terminator
+        cds (str): cds sequence
 
         codons (list): list of strings represesenting all 64 possible codons
         e.g. AGA
@@ -62,24 +67,28 @@ def compute_cds_codon_frequencies(row, codons):
     Returns:
         dict: dictionary of codon frequencies for all 64 possible codons
     """
-    
-    cds = row.get("cds")
     cds_length = len(cds)
     codon_count = cds_length // 3
     # Placeholder for codon frequencies
     codon_frequencies = {codon: 0 for codon in codons}
+
+    # Address situation in which the cds provided is too short
+    if codon_count == 0:
+        return codon_frequencies
+    
     # Compute codon frequencies based on the sequence in the row
     for i in range(0, cds_length - 2, 3):
         codon = cds[i:i+3]
         if len(codon) == 3:
             codon_frequencies[codon] += 1
+
     for codon in codon_frequencies:
         codon_frequencies[codon] /= codon_count
 
     return codon_frequencies
 
 
-def compute_lengths(row):
+def compute_lengths(cds, utr5, utr3):
     """Compute the length of the cds, utr3 and utr5
     
     Args:
@@ -90,15 +99,19 @@ def compute_lengths(row):
     Returns:
         dict: dictionary of lengths of cds, utr5 and utr3
     """
-    lengths = {"cds_length" : len(row.get("cds")),
-               "utr5_length" : len(row.get("utr5")),
-               "utr3_length" : len(row.get("utr3"))}
+    lengths = {"cds_length" : len(cds),
+               "utr5_length" : len(utr5),
+               "utr3_length" : len(utr3)}
 
     return lengths
 
 
-def compute_gc_content_sequence_components(row):
+def compute_gc_content_sequence_components(utr5, cds, utr3):
     """Compute the gc content of the cds, utr3 and utr5
+
+    GC content here is defined as (G + C)/(A + T + G + C), where each letter
+    represents the number of times that that nucleotide appears in the 
+    DNA sequence
     
     Args:
         row (dict): row extracted from the csv file. This contains the
@@ -108,21 +121,22 @@ def compute_gc_content_sequence_components(row):
     Returns:
         dict: dictionary of gc content of cds, utr5 and utr3
     """
-    utr5 = row.get("utr5")
-    cds = row.get("cds")
-    utr3 = row.get("utr3")
-
-    utr5_gc = count_gc_nucleotides(utr5)
-    cds_gc = count_gc_nucleotides(cds)
-    utr3_gc = count_gc_nucleotides(utr3)
+    utr5_gc_count = count_gc_nucleotides(utr5)
+    cds_gc_count = count_gc_nucleotides(cds)
+    utr3_gc_count = count_gc_nucleotides(utr3)
 
     utr5_length = len(utr5)
     cds_length = len(cds)
     utr3_length = len(utr3)
 
-    gc_content = {"utr5_gc":utr5_gc/utr5_length,
-                  "cds_gc":cds_gc/cds_length,
-                  "utr3_gc":utr3_gc/utr3_length}
+    utr5_gc = utr5_gc_count/utr5_length if utr5_length != 0 else 0
+    cds_gc = cds_gc_count/cds_length if cds_length != 0 else 0
+    utr3_gc = utr3_gc_count/utr3_length if utr3_length != 0 else 0
+
+
+    gc_content = {"utr5_gc":utr5_gc,
+                  "cds_gc":cds_gc,
+                  "utr3_gc":utr3_gc}
 
     return gc_content
 
@@ -140,6 +154,41 @@ def count_gc_nucleotides(sequence):
     g_content = sequence.count("G")
     c_content = sequence.count("C")
     return g_content + c_content
+
+
+def compute_gc_content_wobble_positions(cds):
+    """Compute the gc content of wobble positions 2 and 3 in the cds
+
+    GC content here is defined as (G + C)/(A + T + G + C), where each letter
+    represents the number of times that that nucleotide appears in a given
+    wobble position
+    
+    Args:
+        row (dict): row extracted from the csv file. This contains the
+        following fields: ensembl_gene_id, transcript_id, promoter, utr5, cds,
+        utr3, terminator
+
+    Returns:
+        dict: dictionary of gc content of wobble positions 2 and 3 in the cds
+    """
+    wobble2_nucleotides = cds[1::3]
+    wobble3_nucleotides = cds[2::3]
+
+    wobble2_gc_count = (wobble2_nucleotides.count("G") + 
+                        wobble2_nucleotides.count("C"))
+    wobble3_gc_count = (wobble3_nucleotides.count("G") + 
+                        wobble3_nucleotides.count("C"))
+    
+    wobble2_gc = wobble2_gc_count / len(wobble2_nucleotides) \
+                                    if len(wobble2_nucleotides) != 0 else 0
+
+    wobble3_gc = wobble3_gc_count / len(wobble3_nucleotides) \
+                                    if len(wobble3_nucleotides) != 0 else 0
+
+    gc_content = {"cds_wobble2_gc":wobble2_gc,
+                  "cds_wobble3_gc":wobble3_gc}
+
+    return gc_content
 
 
 # Usage example
