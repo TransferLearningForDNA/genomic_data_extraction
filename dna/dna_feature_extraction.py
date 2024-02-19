@@ -5,7 +5,6 @@ import shutil
 from itertools import product
 
 def extract_dna_features(folder_path):
-
     # Iterate over files in the directory
     for filename in os.listdir(folder_path):
         if filename.endswith(".csv"):
@@ -22,8 +21,10 @@ def extract_dna_features(folder_path):
                 
                 # Define the fieldnames for the output CSV
                 header = reader.fieldnames
+                if header != ["ensembl_gene_id","transcript_id","promoter","utr5","cds","utr3","terminator"]:
+                    break
                 new_columns = []
-                codons = ["".join(combination) for combination in product("ATGC", repeat=3)]
+                codons = ["".join(combination) for combination in product("ACGT", repeat=3)]
                 new_columns.extend(codons)
                 new_columns.extend(["cds_length", "utr5_length", 
                                    "utr3_length", "utr5_gc", "cds_gc", "utr3_gc", 
@@ -171,6 +172,7 @@ def compute_gc_content_wobble_positions(cds):
     Returns:
         dict: dictionary of gc content of wobble positions 2 and 3 in the cds
     """
+    # Extract the nucleotides in positions 2 and 3 into seprate lists
     wobble2_nucleotides = cds[1::3]
     wobble3_nucleotides = cds[2::3]
 
@@ -179,6 +181,7 @@ def compute_gc_content_wobble_positions(cds):
     wobble3_gc_count = (wobble3_nucleotides.count("G") + 
                         wobble3_nucleotides.count("C"))
     
+    # Compute the GC content
     wobble2_gc = wobble2_gc_count / len(wobble2_nucleotides) \
                                     if len(wobble2_nucleotides) != 0 else 0
 
