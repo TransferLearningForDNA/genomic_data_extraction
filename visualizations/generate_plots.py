@@ -95,7 +95,7 @@ def plot_species_scatter_line_of_best_fit(df: pd.DataFrame, species_col: str = '
     if not os.path.isdir(save_directory):
         os.makedirs(save_directory, exist_ok=True)
 
-    save_path = f"{save_directory}/scatter_plot.png"
+    save_path = f"{save_directory}/scatter_plot_per_species.png"
     plt.savefig(save_path)
 
 
