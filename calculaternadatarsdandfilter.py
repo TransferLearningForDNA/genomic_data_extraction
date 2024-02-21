@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 
 # I created a dummy dataset with 'ensembl_gene_id' as a unique identifier for each gene and some made-up expression levels for these genes across different conditions
-# Need to replace this with actual data when available
+# need to replace this with actual data when available
 
 # Creating a dummy dataset with 10 genes and their expression levels in 5 conditions
 np.random.seed(0)  # For reproducible random data
