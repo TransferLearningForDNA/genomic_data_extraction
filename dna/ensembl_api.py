@@ -320,7 +320,7 @@ if __name__ == "__main__":
     
     folder = "gene_lists/"
     # Specify the list of file paths for gene lists
-    file_paths = ["homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt", "chlamydomonas_reinhardtii_genes.txt", "galdieria_sulphuraria_genes.txt", "cyanidioschyzon_merolae_genes.txt"]
+    file_paths = ["homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt", "chlamydomonas_reinhardtii_genes.txt", "galdieria_sulphuraria.txt", "cyanidioschyzon_merolae.txt"]
 
     # Prepend the folder path to each file path
     file_paths = [folder + path for path in file_paths]
