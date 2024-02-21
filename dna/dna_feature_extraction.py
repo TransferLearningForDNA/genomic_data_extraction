@@ -100,9 +100,9 @@ def compute_lengths(cds, utr5, utr3):
     Returns:
         dict: dictionary of lengths of cds, utr5 and utr3
     """
-    lengths = {"cds_length" : len(cds),
-               "utr5_length" : len(utr5),
-               "utr3_length" : len(utr3)}
+    lengths = {"cds_length" : len(cds) if len(cds) > 0 else "",
+               "utr5_length" : len(utr5) if len(utr5) > 0 else "",
+               "utr3_length" : len(utr3) if len(utr3) > 0 else ""}
 
     return lengths
 
@@ -130,9 +130,9 @@ def compute_gc_content_sequence_components(utr5, cds, utr3):
     cds_length = len(cds)
     utr3_length = len(utr3)
 
-    utr5_gc = utr5_gc_count/utr5_length if utr5_length != 0 else 0
-    cds_gc = cds_gc_count/cds_length if cds_length != 0 else 0
-    utr3_gc = utr3_gc_count/utr3_length if utr3_length != 0 else 0
+    utr5_gc = utr5_gc_count/utr5_length if utr5_length != 0 else ""
+    cds_gc = cds_gc_count/cds_length if cds_length != 0 else ""
+    utr3_gc = utr3_gc_count/utr3_length if utr3_length != 0 else ""
 
 
     gc_content = {"utr5_gc":utr5_gc,
@@ -183,10 +183,10 @@ def compute_gc_content_wobble_positions(cds):
     
     # Compute the GC content
     wobble2_gc = wobble2_gc_count / len(wobble2_nucleotides) \
-                                    if len(wobble2_nucleotides) != 0 else 0
+                                    if len(wobble2_nucleotides) != 0 else ""
 
     wobble3_gc = wobble3_gc_count / len(wobble3_nucleotides) \
-                                    if len(wobble3_nucleotides) != 0 else 0
+                                    if len(wobble3_nucleotides) != 0 else ""
 
     gc_content = {"cds_wobble2_gc":wobble2_gc,
                   "cds_wobble3_gc":wobble3_gc}
