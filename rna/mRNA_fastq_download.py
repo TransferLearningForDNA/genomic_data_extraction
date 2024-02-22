@@ -25,31 +25,35 @@ def download_sra_data(csv_file_path, output_directory, limit=1):
     download_count = 0
 
     for index, row in df.iterrows():
-        if download_count >= limit:
-            print(f"Reached download limit of {limit}.")
-            break 
+        # if download_count >= limit:
+        #     print(f"Reached download limit of {limit}.")
+        #     break 
 
         srr_id = row['srr_id'] 
 
-        try:
-            # Download using the fasterq-dump command for each SRR ID (construct as a list)
-            command = ['fasterq-dump', srr_id, '--outdir', output_directory]
-            subprocess.run(command, check=True)
-            print(f"SRR ID {srr_id} downloaded to {output_directory}")
+        species_name = 'Chlamydomonas reinhardtii'
 
-            download_count += 1
+        if row['species'] == species_name: # and srr_id == 'SRR26129966':
 
-        except Exception as e:
-            print(f"Error downloading SRR ID {srr_id}: {e}")
-            breakpoint()
+            try:
+                # Download using the fasterq-dump command for each SRR ID (construct as a list)
+                command = ['fasterq-dump', srr_id, '--outdir', output_directory]
+                subprocess.run(command, check=True)
+                print(f"SRR ID {srr_id} downloaded to {output_directory}")
+
+                download_count += 1
+
+            except Exception as e:
+                print(f"Error downloading SRR ID {srr_id}: {e}")
+                #breakpoint()
 
 # Main execution
 if __name__ == "__main__":
 
     # Call CSV file path returned by the 'query_and_csv_production' file
-    csv_file_path = 'output_srx_srr.csv'  
+    csv_file_path = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/output_srx_srr.csv'  
 
     # Output dir here
-    output_directory = '/Users/meghoward/Documents/Imperial MSc/Term_2/Phycoworks/genomic_data_extraction/rna/fastq_files'
+    output_directory = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/input_dir/Chlamydomonas_reinhardtii/fasta'
 
     download_sra_data(csv_file_path, output_directory)
