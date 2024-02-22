@@ -1,2 +1,9 @@
-ensembl_rest
-msgraph-sdk
+msgraph-core==0.2.2
+azure-identity==1.15.0
+azure-core==1.29.7
+ensembl_rest==0.3.4
+pytest==8.0.0
+pandas==1.2.3
+pyarrow==4.0.0
+biopython==1.78
+pysradb==0.11.0
