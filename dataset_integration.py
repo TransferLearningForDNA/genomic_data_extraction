@@ -9,14 +9,11 @@ def merge_datasets(species_name):
     """
     # Specify CSV file paths of the DNA and RNA datasets
     dna_dataset_path = f"dna/csv_files/ensembl_data_{species_name}.csv"
-    rna_dataset_path = f"rna/quant_csv_files/quant_{species_name}.csv"
+    rna_dataset_path = f"rna/quant_files/processed/{species_name}.csv"  # median expression matrix
 
     # Read datasets into pandas DataFrames
     dna_df = pd.read_csv(dna_dataset_path)
-    rna_df = pd.read_csv(rna_dataset_path).drop(columns=['Length', 'EffectiveLength', 'NumReads'])
-
-    # Rename 'Name' column to 'transcript_ID' in RNA quantification dataframe
-    rna_df.rename(columns={'Name': 'transcript_id'}, inplace=True)
+    rna_df = pd.read_csv(rna_dataset_path)
 
     # Merge datasets based on transcript ID
     merged_df = pd.merge(dna_df, rna_df, on='transcript_id', how='inner')
