@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def create_expression_matrix(raw_data_path, processed_data_path):
-    """ Create """
+    """ Create the expression matrices for all species."""
 
     # Iterate over species
     for species in os.listdir(raw_data_path):
