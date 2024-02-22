@@ -21,6 +21,8 @@ def merge_datasets(species_name):
     # Save merged dataframe to csv
     merged_df.to_csv(f'merged_csv_files/merged_{species_name}_data.csv', index=False)
 
+    print(f"Successfully merged DNA and RNA data for species {species_name}!")
+
     return merged_df
 
 
