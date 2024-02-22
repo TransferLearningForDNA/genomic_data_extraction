@@ -9,7 +9,7 @@ def merge_datasets(species_name):
     """
     # Specify CSV file paths of the DNA and RNA datasets
     dna_dataset_path = f"dna/csv_files/ensembl_data_{species_name}.csv"
-    rna_dataset_path = f"rna/quant_files/processed/{species_name}.csv"  # median expression matrix
+    rna_dataset_path = f"rna/median_expression_files/rna_expression_{species_name}.csv"  # median expression matrix
 
     # Read datasets into pandas DataFrames
     dna_df = pd.read_csv(dna_dataset_path)
@@ -25,4 +25,4 @@ def merge_datasets(species_name):
 
 
 if __name__ == "__main__":
-    merge_datasets(species_name='homo_sapiens')
+    merge_datasets(species_name='chlamydomonas_reinhardtii')
