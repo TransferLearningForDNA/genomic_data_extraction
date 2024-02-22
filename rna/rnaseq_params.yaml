@@ -1,0 +1,11 @@
+input: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/csv_dir/samplesheet.csv'
+outdir: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/rnaseq_output_dir/Chlamydomonas_reinhardtii'
+fasta: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/input_dir/Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.dna.toplevel.fa.gz'
+gff: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/input_dir/Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.58.gff.gz'
+salmon_index: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/input_dir/Chlamydomonas_reinhardtii/salmon_index'
+transcript_fasta: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/draft_folder_for_rnaseq/input_dir/Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.cdna.all.fa.gz'
+skip_bbsplit: true
+pseudo_aligner: 'salmon'
+skip_alignment: true
+skip_stringtie: true
+skip_bigwig: true
