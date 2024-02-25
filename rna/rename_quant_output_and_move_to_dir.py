@@ -30,13 +30,15 @@ def rename_and_move_files(source_dir, destination_dir):
 
                     print(f"Renamed '{file}' to '{new_file_name}' and moved to '{destination_dir}'")
 
-# source directory containing subdirectories with quant.sf files:
-# this is where the rna-seq pipeline stores the quant files for all samples from 1 species: inside the salmon directory
-source_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/rnaseq_output_dir/Chlamydomonas_reinhardtii/salmon"
 
-# destination directory where the renamed files will be moved:
-# this is where we store all the quant files for 1 species
-destination_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/quant_files/raw/chlamydomonas_reinhardtii/sf_files"
+if __name__ == "__main__":
+    # source directory containing subdirectories with quant.sf files:
+    # this is where the rna-seq pipeline stores the quant files for all samples from 1 species: inside the salmon directory
+    source_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/rnaseq_output_dir/Chlamydomonas_reinhardtii/salmon"
 
-# rename and move files
-rename_and_move_files(source_directory, destination_directory)
+    # destination directory where the renamed files will be moved:
+    # this is where we store all the quant files for 1 species
+    destination_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/quant_files/raw/chlamydomonas_reinhardtii/sf_files"
+
+    # rename and move files
+    rename_and_move_files(source_directory, destination_directory)
