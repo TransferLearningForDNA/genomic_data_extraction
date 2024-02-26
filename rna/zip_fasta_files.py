@@ -6,7 +6,7 @@ def zip_files(directory):
     # list all files in the specified directory
     files = os.listdir(directory)
     
-    for file in files:
+    for file in files[:2]:
         
         # check if file is not already zipped
         if not file.endswith('.gz'):
@@ -32,12 +32,12 @@ def zip_files(directory):
                 # delete the original fasta file
                 os.remove(file_path)
                 
-                print(f"File '{file}' zipped successfully.")
+                print(f"File '{file}' zipped successfully.", flush=True)
 
             else:
-                print(f"Skipping '{file}': it's not a regular file.")
+                print(f"Skipping '{file}': it's not a regular file.", flush=True)
         else:
-            print(f"Skipping '{file}': it's already gzipped.")
+            print(f"Skipping '{file}': it's already gzipped.", flush=True)
 
 
 if __name__ == "__main__":
