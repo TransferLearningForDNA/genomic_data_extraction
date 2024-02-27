@@ -52,17 +52,19 @@ def create_samplesheet_for_one_species(species_name,
 
         sample_filename = os.path.basename(sample_fastq_file_path)  # naming convention = samplename_1.fastq.gz
         sample_name_key = sample_filename.split('_')[0]
+        
+        if sample_name_key != '.DS': # file in macOS
 
-        if sample_name_key in sample_fastq_files_path_dict:
-            sample_fastq_files_path_dict[sample_name_key].append(sample_fastq_file_path)
-            # sort by fastq file number
-            sample_fastq_files_path_dict[sample_name_key] = \
-                sorted(
-                    sample_fastq_files_path_dict[sample_name_key],
-                    key=lambda fastq_filename: fastq_filename[-10]
-                    )
-        else:
-            sample_fastq_files_path_dict[sample_name_key] = [sample_fastq_file_path]
+            if sample_name_key in sample_fastq_files_path_dict:
+                sample_fastq_files_path_dict[sample_name_key].append(sample_fastq_file_path)
+                # sort by fastq file number
+                sample_fastq_files_path_dict[sample_name_key] = \
+                    sorted(
+                        sample_fastq_files_path_dict[sample_name_key],
+                        key=lambda fastq_filename: fastq_filename[-10]
+                        )
+            else:
+                sample_fastq_files_path_dict[sample_name_key] = [sample_fastq_file_path]
 
     # populate the data structure that will hold the rows of the csv file
     strandedness = 'auto'  # using default parameter value for now
