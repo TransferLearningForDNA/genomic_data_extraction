@@ -6,7 +6,7 @@ def zip_files(directory):
     # list all files in the specified directory
     files = os.listdir(directory)
     
-    for file in files[:2]:
+    for file in files:
         
         # check if file is not already zipped
         if not file.endswith('.gz'):
