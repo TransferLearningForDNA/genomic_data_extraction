@@ -20,13 +20,10 @@ def rename_and_move_files(source_dir, destination_dir):
                 # retrieve the quant.sf file of this sample
                 if file == 'quant.sf':
 
-                    # rename the file with the name of the sample directory (SRR ID)
+                    # rename the file with the name of the sample directory (SRR ID) AND move
                     new_file_name = f'quant_{subdir}.sf'
                     new_file_path = os.path.join(destination_dir, new_file_name)
                     os.rename(file_path, new_file_path)
-                    
-                    # move the renamed file to the destination directory
-                    shutil.move(new_file_path, destination_dir)
 
                     print(f"Renamed '{file}' to '{new_file_name}' and moved to '{destination_dir}'")
 
@@ -34,7 +31,7 @@ def rename_and_move_files(source_dir, destination_dir):
 if __name__ == "__main__":
     # source directory containing subdirectories with quant.sf files:
     # this is where the rna-seq pipeline stores the quant files for all samples from 1 species: inside the salmon directory
-    source_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/rnaseq_output_dir/Chlamydomonas_reinhardtii/salmon"
+    source_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/output_dir/Chlamydomonas_reinhardtii/salmon"
 
     # destination directory where the renamed files will be moved:
     # this is where we store all the quant files for 1 species
