@@ -34,6 +34,10 @@ def plot_scatter_line_of_best_fit(df: pd.DataFrame, save_directory: str = os.get
     r_squared = r2_score(predicted_values, fit_fn(real_values))
     plt.text(plt.xlim()[1] - 2, 2, f'$R^2 = {r_squared:.2f}$', fontsize=10, ha='center')
 
+    # Set axis limits to include zero
+    plt.xlim(left=0)
+    plt.ylim(bottom=0)
+
     # Set plot properties
     plt.xlabel('Real Values')
     plt.ylabel('Predicted Values')
@@ -88,6 +92,10 @@ def plot_species_scatter_line_of_best_fit(df: pd.DataFrame, species_col: str = '
         # Show x-axis tick labels in all plots
         ax.tick_params(axis='x', which='both', labelbottom=True)
 
+        # Set axis limits to include zero
+        ax.set_xlim(left=0)
+        ax.set_ylim(bottom=0)
+
     # Adjust layout to prevent overlapping
     plt.tight_layout()
     # plt.show()
@@ -99,13 +107,13 @@ def plot_species_scatter_line_of_best_fit(df: pd.DataFrame, species_col: str = '
     plt.savefig(save_path)
 
 
-def plot_residuals_by_promoter_bin(df: pd.DataFrame, species_col: str = 'Species',
+def plot_promoter_by_residuals_bin(df: pd.DataFrame, species_col: str = 'Species',
                                     amount_promoter_col: str = 'Amount Promoter',
                                     real_values_col: str = 'Real Values',
                                     predicted_values_col: str = 'Predicted Values',
                                     save_directory: str = os.getcwd()) -> None:
     """
-    Plot mean residuals for different promoter bins across species.
+    Plot mean amount of promoter for different residual bins across species.
 
     Args:
         df (pd.DataFrame): DataFrame containing columns 'Species', 'Amount Promoter', 'Real Values',
@@ -125,31 +133,32 @@ def plot_residuals_by_promoter_bin(df: pd.DataFrame, species_col: str = 'Species
     if not os.path.isdir(save_directory):
         os.makedirs(save_directory, exist_ok=True)
 
-
     # Calculate residuals
-    df['Residuals'] = df[real_values_col] - df[predicted_values_col]
+    df['Residuals'] = df['Real Values'] - df['Predicted Values']
 
     # Calculate min and max values of 'Amount Promoter'
-    min_amount = df[amount_promoter_col].min()
-    max_amount = df[amount_promoter_col].max()
+    min_amount = df['Residuals'].min()
+    max_amount = df['Residuals'].max()
 
     # Create a new column 'Promoter Bin' based on 'Amount Promoter'
-    df['Promoter Bin'], _ = pd.cut(df[amount_promoter_col], bins=np.linspace(min_amount, max_amount, 10), include_lowest=True, retbins=True)
+    df['Residual Bin'], _ = pd.cut(df['Residuals'], bins=np.linspace(min_amount, max_amount, 10), include_lowest=True, retbins=True)
 
-    species_list = df[species_col].unique()
 
-    for species_name in species_list:
+    # Create subplots for each species
+    species_list = df['Species'].unique()
+
+    for i, species_name in enumerate(species_list):
         # Filter data for the specific species
-        species_data = df[df[species_col] == species_name]
+        species_data = df[df['Species'] == species_name]
 
         plt.figure(figsize=(6, 4))
-        species_data.groupby('Promoter Bin')['Residuals'].mean().plot(kind='bar', color='skyblue')
+        species_data.groupby('Residual Bin')['Amount Promoter'].mean().plot(kind='bar', color='skyblue')
         plt.title(f'{species_name}')
-        plt.xlabel('Promoter Bin')
-        plt.ylabel('Mean Residuals')
+        plt.xlabel('Residual Bin')
+        plt.ylabel('Mean Amount of promoter')
         plt.xticks(rotation=45, ha='right')
         # plt.show()
-
+    
         save_path = f"{save_directory}/residuals_{species_name}.png"
         plt.savefig(save_path)
 
@@ -283,7 +292,7 @@ if __name__ == "__main__":
     plot_species_scatter_line_of_best_fit(df, save_directory=save_directory)
 
     # Plot mean residuals for different promoter bins across species
-    plot_residuals_by_promoter_bin(df, save_directory=save_directory)
+    plot_promoter_by_residuals_bin(df, save_directory=save_directory)
 
 
 
