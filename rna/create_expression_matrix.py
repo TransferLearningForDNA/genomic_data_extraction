@@ -73,6 +73,10 @@ def create_expression_matrix(raw_data_path, processed_data_path):
             abundance_df = abundance_df.set_index('Name')
             length_df = length_df.set_index('Name')
             counts_df = counts_df.set_index('Name')
+            # Remove duplicates
+            abundance_df = abundance_df[~abundance_df.index.duplicated(keep='first')]
+            length_df = length_df[~length_df.index.duplicated(keep='first')]
+            counts_df = counts_df[~counts_df.index.duplicated(keep='first')]
 
             # Concatenate with the main expression matrix
             # If the index (Name) does not exist in expression_matrix, NaN values will be added for other columns
