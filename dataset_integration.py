@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def merge_datasets(species_name):
-    """ Merge DNA and RNA data by gene ID.
+    """ Merge DNA and RNA data by transcript/gene ID.
 
     Args:
         species_name (str)
