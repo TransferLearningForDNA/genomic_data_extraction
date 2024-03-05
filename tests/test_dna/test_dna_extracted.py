@@ -5,8 +5,8 @@ import sys
 import os
 import csv
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dna')))
-import ensembl_api
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dna')))
+from dna import ensembl_api
 
 
 # import ensembl_api # Import the Ensembl API module

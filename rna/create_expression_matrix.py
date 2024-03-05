@@ -34,8 +34,12 @@ def create_expression_matrix(raw_data_path, processed_data_path):
             # If the index (Name) does not exist in expression_matrix, NaN values will be added for other columns
             expression_matrix = pd.concat([expression_matrix, tpr_df], axis=1, sort=False)
 
-        # Rename 'Name' column to 'transcript_id'
-        expression_matrix.rename(columns={'Name': 'transcript_id'}, inplace=True)
+        # Rename the first column as 'transcript_id'
+        # expression_matrix.columns.values[0] = 'transcript_id'
+        # expression_matrix.reset_index(inplace=True, name='transcript_id')
+
+        # expression_matrix.reset_index(inplace=True)
+        # expression_matrix.rename(columns={'Name': 'transcript_id'}, inplace=True)
         # Save the expression matrix to a CSV file
         expression_matrix_path = os.path.join(processed_data_path, f"{species}.csv")
         expression_matrix.to_csv(expression_matrix_path)
