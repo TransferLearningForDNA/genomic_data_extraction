@@ -1,12 +1,16 @@
 # Import the Ensembl API module
-from dna import ensembl_api
+from dna import ensembl_api, dna_feature_extraction
 
 
-def query_dna_sequences_from_ensembl():
+def query_dna_sequences_from_ensembl(output_folder):
     """ Query and download DNA sequences for specified gene lists from the Ensembl database.
 
     Use pre-defined file paths to locate gene lists and download their respective
     DNA sequences using Ensembl REST API, saving them as CSV files in a specified directory.
+
+    Args:
+        output_folder (str): Path to the output folder where the extracted DNA
+                            sequences will be stored
     """
     # TODO find how to download gene lists directly via the API
     # Specify the folder containing gene lists
@@ -20,7 +24,7 @@ def query_dna_sequences_from_ensembl():
 
     # TODO save CSV files directly to One Drive?
     # Call the function to get data from Ensembl API and save it as CSV files
-    ensembl_api.get_data_as_csv(file_paths, "dna/csv_files")
+    ensembl_api.get_data_as_csv(file_paths, output_folder)
 
 
 def extract_dna_data():
@@ -31,10 +35,10 @@ def extract_dna_data():
     data for further analysis.
     """
     # DNA: Extracting genomic data.
-
+    extracted_dna_storage_folder = "dna/csv_files"
     # Query or compute sequences to gene components
     # (for now using only Ensembl)
-    query_dna_sequences_from_ensembl()
+    query_dna_sequences_from_ensembl(extracted_dna_storage_folder)
 
     # TODO use NCBI datasets to download fasta and gff files to compute DNA sequences
 
@@ -47,3 +51,4 @@ def extract_dna_data():
     # 3x Lengths of cds, utr5, utr3
     # 3x GC content of cds, utr5, utr3
     # 2x GC content of wobble
+    dna_feature_extraction.extract_dna_features(extracted_dna_storage_folder)
