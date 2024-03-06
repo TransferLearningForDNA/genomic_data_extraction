@@ -11,7 +11,6 @@ def calculate_rsd(expression_matrix):
     Returns:
         DataFrame: expression matrix appended with mean, std and RSD columns
     """
-
     # Calculate the mean and standard deviation across the row
     expression_matrix['mean'] = expression_matrix.iloc[:, 1:].mean(axis=1)
     expression_matrix['std_dev'] = expression_matrix.iloc[:, 1:-1].std(axis=1)
@@ -48,6 +47,10 @@ def process_expression_matrix(file_path, output_file_path):
     """ Process expression matrices for each species.
 
     Filter for genes with RSD < 2 and calculate median expression.
+
+    Args:
+        file_path (str): Path to processed expression matrix files.
+        output_file_path (str): Path to store median expression csv files.
     """
     # Iterate over species
     for species in os.listdir(file_path):

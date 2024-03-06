@@ -9,6 +9,7 @@ def run_pipeline():
     """ Run the entire expression prediction data preprocessing pipeline."""
     extract_dna_data()
     # extract_rna_data()
+
     # merge_datasets()
 
 

@@ -36,7 +36,12 @@ def get_length_scaled_tpm_matrix(counts_mat, abundance_mat, length_mat):
 
 
 def create_expression_matrix(raw_data_path, processed_data_path):
-    """ Create the expression matrices for all species."""
+    """ Create the expression matrices for all species.
+
+    Args:
+        raw_data_path (str): Path to the folder containing raw quant files.
+        processed_data_path (str): Path to store the processed expression matrix csv files.
+    """
 
     # Iterate over species
     for species in os.listdir(raw_data_path):

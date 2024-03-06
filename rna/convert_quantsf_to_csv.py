@@ -3,7 +3,11 @@ import os
 
 
 def convert_all_species_files(folder_path):
-    """ Convert quantification files from sf to csv for each species."""
+    """ Convert quantification files from sf to csv for each species.
+
+    Args:
+        folder_path (str) : Path to raw quant files folder.
+    """
 
     # Iterate over items in the directory
     for item in os.listdir(folder_path):
