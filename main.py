@@ -1,7 +1,6 @@
 """ Expression Prediction Data Preprocessing Pipeline."""
-
-from dna_extraction import extract_dna_data
-from rna_extraction import extract_rna_data
+from dna.dna_extraction import extract_dna_data
+from rna.rna_extraction import extract_rna_data
 from dataset_integration import merge_datasets
 
 
