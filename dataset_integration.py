@@ -1,8 +1,8 @@
 import pandas as pd
 import os
-from rna.convert_quantsf_to_csv import convert_all_species_files
-from rna.create_expression_matrix import create_expression_matrix
-from rna.process_expression_matrix import process_expression_matrix
+from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
+from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
+from rna.data_conversion_helper_functions.process_expression_matrix import process_expression_matrix
 
 
 def process_rna_expression_data():
