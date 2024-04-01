@@ -37,7 +37,7 @@ def calculate_median_expression(filtered_expression_matrix):
     # Create a new DataFrame with transcript IDs and their median expressions
     median_expression_df = pd.DataFrame({
         'transcript_id': filtered_expression_matrix['transcript_id'],
-        'median_expression': median_expression
+        'median_exp': median_expression
     })
 
     return median_expression_df
