@@ -319,7 +319,7 @@ def get_data_as_csv(file_paths: list[str], output_directory: str):
 if __name__ == "__main__":
     
     folder = "gene_lists/"
-    # Specify the list of file paths for gene lists
+    # Specify the list of file paths for gene lists 
     file_paths = ["homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt", "chlamydomonas_reinhardtii_genes.txt", "galdieria_sulphuraria.txt", "cyanidioschyzon_merolae.txt"]
 
     # Prepend the folder path to each file path

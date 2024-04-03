@@ -5,7 +5,8 @@ import sys
 import os
 import csv
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dna')))
+# Add the parent directory of `dna` to `sys.path`
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from dna import ensembl_api
 
 
