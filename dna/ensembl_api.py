@@ -326,5 +326,3 @@ if __name__ == "__main__":
     file_paths = [folder + path for path in file_paths]
     
     get_data_as_csv(file_paths, "csv_files")
-
-    # comment to trigger automated testing
