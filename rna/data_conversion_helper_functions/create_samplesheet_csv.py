@@ -1,9 +1,10 @@
 import os
 import csv
 
+
 # Assumptions: we have downloaded the fastq files from Onedrive.
 
-def list_files(directory):
+def list_files(directory: str) -> list[str]:
     """ Lists all the files in a local directory.
 
     Args:
@@ -17,7 +18,6 @@ def list_files(directory):
     # go through all files and subdirectories in the specified directory
     for root, _, files in os.walk(directory):
         for file_name in files:
-
             # get the full path of each file
             file_path = os.path.join(root, file_name)
 
@@ -26,9 +26,10 @@ def list_files(directory):
 
     return file_paths
 
-def create_samplesheet_for_one_species(species_name, 
-                                       local_dir_path_with_fastq_files_for_one_species,
-                                       local_dir_path_to_save_samplesheets):
+
+def create_samplesheet_for_one_species(species_name: str,
+                                       local_dir_path_with_fastq_files_for_one_species: str,
+                                       local_dir_path_to_save_samplesheets: str) -> None:
     """ Creates a samplesheet csv file for a species (input to the nf-core/rna-seq pipeline).
 
     Args:
@@ -42,7 +43,6 @@ def create_samplesheet_for_one_species(species_name,
     Returns:
         None.
     """
-
     # Retrieve the list of file paths
     file_paths = list_files(local_dir_path_with_fastq_files_for_one_species)
 
@@ -52,8 +52,8 @@ def create_samplesheet_for_one_species(species_name,
 
         sample_filename = os.path.basename(sample_fastq_file_path)  # naming convention = samplename_1.fastq.gz
         sample_name_key = sample_filename.split('_')[0]
-        
-        if sample_name_key != '.DS': # file in macOS
+
+        if sample_name_key != '.DS':  # file in macOS
 
             if sample_name_key in sample_fastq_files_path_dict:
                 sample_fastq_files_path_dict[sample_name_key].append(sample_fastq_file_path)
@@ -62,13 +62,13 @@ def create_samplesheet_for_one_species(species_name,
                     sorted(
                         sample_fastq_files_path_dict[sample_name_key],
                         key=lambda fastq_filename: fastq_filename[-10]
-                        )
+                    )
             else:
                 sample_fastq_files_path_dict[sample_name_key] = [sample_fastq_file_path]
 
     # populate the data structure that will hold the rows of the csv file
     strandedness = 'auto'  # using default parameter value for now
-    data = []   # list of sublists (where each sublist is a sample/row in the dataset)
+    data = []  # list of sublists (where each sublist is a sample/row in the dataset)
     for sample_name, fastq_files_paths_list in sample_fastq_files_path_dict.items():
 
         if len(fastq_files_paths_list) == 1:
@@ -92,7 +92,6 @@ def create_samplesheet_for_one_species(species_name,
 
 
 if __name__ == "__main__":
-
     local_dir_path_to_save_samplesheets = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/csv_dir"
     # species_names = ['species1', 'species2', 'species3']
     # for species_name in species_names:
@@ -102,11 +101,9 @@ if __name__ == "__main__":
     #     create_samplesheet_for_one_species(species_name, 
     #                                     local_dir_path_with_fastq_files_for_one_species,
     #                                     local_dir_path_to_save_samplesheets)
-    
+
     species_name = 'Chlamydomonas_reinhardtii'
     local_dir_path_with_fastq_files_for_one_species = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/fasta'
-    create_samplesheet_for_one_species(species_name, 
+    create_samplesheet_for_one_species(species_name,
                                        local_dir_path_with_fastq_files_for_one_species,
                                        local_dir_path_to_save_samplesheets)
-
-

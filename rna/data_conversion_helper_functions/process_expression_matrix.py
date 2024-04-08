@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-def calculate_rsd(expression_matrix):
+def calculate_rsd(expression_matrix: pd.DataFrame) -> pd.DataFrame:
     """ Calculate the RSD values of the expression matrix.
 
     Args:
@@ -21,7 +21,7 @@ def calculate_rsd(expression_matrix):
     return expression_matrix
 
 
-def calculate_median_expression(filtered_expression_matrix):
+def calculate_median_expression(filtered_expression_matrix: pd.DataFrame) -> pd.DataFrame:
     """ Calculate the median expression.
 
     Args:
@@ -43,7 +43,7 @@ def calculate_median_expression(filtered_expression_matrix):
     return median_expression_df
 
 
-def process_expression_matrix(file_path, output_file_path):
+def process_expression_matrix(file_path: str, output_file_path: str) -> None:
     """ Process expression matrices for each species.
 
     Filter for genes with RSD < 2 and calculate median expression.
@@ -55,9 +55,6 @@ def process_expression_matrix(file_path, output_file_path):
     # Iterate over species
     for species in os.listdir(file_path):
         expression_matrix_path = os.path.join(file_path, species)
-
-        # # Initialise an empty DataFrame to store the median expression
-        # median_expression = pd.DataFrame()
 
         # Read the csv file into a DataFrame
         expression_matrix_df = pd.read_csv(expression_matrix_path)

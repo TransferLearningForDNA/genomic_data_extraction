@@ -4,7 +4,7 @@ from rna.rna_extraction import extract_rna_data
 from dataset_integration import merge_datasets, process_rna_expression_data
 
 
-def run_pipeline():
+def run_pipeline() -> None:
     """ Run the entire expression prediction data preprocessing pipeline."""
     extract_dna_data()
     # extract_rna_data()

@@ -8,9 +8,7 @@ import time
 from typing import Optional
 
 
-
 def read_gene_ids_from_file(file_path: str) -> list[str]:
-
     """ Reads gene IDs from a file, skipping the first line.
 
     Args:
@@ -39,8 +37,7 @@ def read_gene_ids_from_file(file_path: str) -> list[str]:
 
 
 def get_cds(transcript_id: str) -> str:
-    """
-    Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
+    """ Retrieves the coding sequence (CDS) for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
@@ -72,11 +69,9 @@ def get_cds(transcript_id: str) -> str:
         print(f"Error with the request for {transcript_id}: {e}")
         return ''
 
-    
-    
-def get_promoter_terminator(transcript_id: str, promoter_length=1000 , terminator_length=500) -> tuple[str, str]:
-    """
-    Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
+
+def get_promoter_terminator(transcript_id: str, promoter_length=1000, terminator_length=500) -> tuple[str, str]:
+    """ Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
@@ -95,7 +90,7 @@ def get_promoter_terminator(transcript_id: str, promoter_length=1000 , terminato
 
         # Ensure that there are no issues with the sequence request
         r.raise_for_status()
-        
+
         # Remove unwanted characters to produce only the nucleotide sequence and format into a single string
         raw_output = r.text
         pattern = re.compile('(?:^|\n)[ATGC]+')
@@ -105,7 +100,7 @@ def get_promoter_terminator(transcript_id: str, promoter_length=1000 , terminato
         # Extract the promoter and terminator sequence from the entire sequence
         promoter_sequence = sequence[:promoter_length]
         terminator_sequence = sequence[-terminator_length:]
-        
+
         return promoter_sequence, terminator_sequence
 
     except requests.exceptions.RequestException as e:
@@ -113,7 +108,9 @@ def get_promoter_terminator(transcript_id: str, promoter_length=1000 , terminato
         print(f"Error with the promoter-terminator request for {transcript_id}: {e}")
         return '', ''
 
-def extract_utr_information(data: dict) -> tuple[list[tuple[int, int]], list[tuple[int, int]], Optional[str], Optional[int]]:
+
+def extract_utr_information(data: dict) -> tuple[
+    list[tuple[int, int]], list[tuple[int, int]], Optional[str], Optional[int]]:
     """ Extracts information about 5' and 3' UTRs (Untranslated Regions) from the provided data.
 
     Args:
@@ -172,11 +169,12 @@ def get_utr_sequence(chromosome: str, strand: int, start: int, end: int, species
             print("Rate limit exceeded. Waiting before retrying...")
             time.sleep(1)
             utr_sequence = get_utr_sequence(chromosome, strand, start, end, species)
-            
+
     return utr_sequence
 
 
-def get_full_utr_sequence(list_utr_coordinates: list[tuple[int, int]], chromosome: str, strand: int, species: str) -> str:
+def get_full_utr_sequence(list_utr_coordinates: list[tuple[int, int]], chromosome: str, strand: int,
+                          species: str) -> str:
     """ Retrieves the concatenated nucleotide sequence of multiple UTRs from the Ensembl database.
 
     Args:
@@ -218,6 +216,7 @@ def get_species_name(file_path: str) -> str:
 
     return species
 
+
 def request_with_retry(transcript_id: str) -> dict:
     """ Retries the request for a transcript ID
     
@@ -226,7 +225,6 @@ def request_with_retry(transcript_id: str) -> dict:
 
     Returns:
         dict: A dictionary containing information about the transcript.
-    
     """
     while True:
         try:
@@ -240,8 +238,9 @@ def request_with_retry(transcript_id: str) -> dict:
             else:
                 print(f"Error with the request for {transcript_id}: {e}")
                 return {}
-   
-def get_data_as_csv(file_paths: list[str], output_directory: str):
+
+
+def get_data_as_csv(file_paths: list[str], output_directory: str) -> None:
     """ Retrieves data for gene IDs from Ensembl, processes it, and saves it as CSV files.
 
     Args:
@@ -276,7 +275,7 @@ def get_data_as_csv(file_paths: list[str], output_directory: str):
         for gene_id in gene_ids:
             time.sleep(2)
             print(f"Extracting data for gene ID : {gene_id}")
-            
+
             try:
                 gene_data = ensembl_rest.lookup(species=species, id=gene_id)
 
@@ -317,12 +316,12 @@ def get_data_as_csv(file_paths: list[str], output_directory: str):
 
 
 if __name__ == "__main__":
-    
     folder = "gene_lists/"
     # Specify the list of file paths for gene lists 
-    file_paths = ["homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt", "chlamydomonas_reinhardtii_genes.txt", "galdieria_sulphuraria.txt", "cyanidioschyzon_merolae.txt"]
+    file_paths = ["homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt", "chlamydomonas_reinhardtii_genes.txt",
+                  "galdieria_sulphuraria.txt", "cyanidioschyzon_merolae.txt"]
 
     # Prepend the folder path to each file path
     file_paths = [folder + path for path in file_paths]
-    
+
     get_data_as_csv(file_paths, "csv_files")

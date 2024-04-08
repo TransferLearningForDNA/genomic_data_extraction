@@ -2,13 +2,12 @@ import csv
 import os
 
 
-def convert_all_species_files(folder_path):
+def convert_all_species_files(folder_path: str) -> None:
     """ Convert quantification files from sf to csv for each species.
 
     Args:
         folder_path (str) : Path to raw quant files folder.
     """
-
     # Iterate over items in the directory
     for item in os.listdir(folder_path):
         item_path = os.path.join(folder_path, item)  # Get the full path of the item
@@ -27,7 +26,7 @@ def convert_all_species_files(folder_path):
                 convert_quant_output_to_csv(sf_files_path, csv_files_path)
 
 
-def convert_quant_output_to_csv(input_path, output_path):
+def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
     """ Convert quantification files, Salmon (nf-core rna-seq) output, to a csv files.
 
     Args:
