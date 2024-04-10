@@ -2,7 +2,8 @@ import os
 import pandas as pd
 
 
-def get_length_scaled_tpm_matrix(counts_mat, abundance_mat, length_mat):
+def get_length_scaled_tpm_matrix(counts_mat: pd.DataFrame, abundance_mat: pd.DataFrame, length_mat: pd.DataFrame) \
+        -> pd.DataFrame:
     """ Generate length scaled TPM matrix.
 
     Args:
@@ -35,7 +36,7 @@ def get_length_scaled_tpm_matrix(counts_mat, abundance_mat, length_mat):
     return length_scaled_tpm_mat
 
 
-def create_expression_matrix(raw_data_path, processed_data_path):
+def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> None:
     """ Create the expression matrices for all species.
 
     Args:
