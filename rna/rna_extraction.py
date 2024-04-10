@@ -1,7 +1,6 @@
-
-from data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
-from data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
-from data_conversion_helper_functions.process_expression_matrix import process_expression_matrix
+from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
+from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
+from rna.data_conversion_helper_functions.process_expression_matrix import process_expression_matrix
 
 
 def process_rna_expression_data() -> None:
@@ -39,3 +38,7 @@ def extract_rna_data():
     # 1x Median expressions of genes with RDS < 2
 
     pass
+
+
+if __name__ == "__main__":
+    process_rna_expression_data()

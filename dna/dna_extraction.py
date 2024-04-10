@@ -1,4 +1,5 @@
 # Import the Ensembl API module
+import os
 from dna import ensembl_api, dna_feature_extraction
 
 
@@ -14,13 +15,19 @@ def query_dna_sequences_from_ensembl(output_folder: str) -> None:
     """
     # Specify the folder containing gene lists
     folder = "dna/gene_lists/"
-    # Specify the list of file paths for gene lists
-    file_paths = ["chlamydomonas_reinhardtii_genes.txt", "cyanidioschyzon_merolae_genes.txt",
-                  "galdieria_sulphuraria_genes.txt", "homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt"]
-    # file_paths = ["homo_sapiens_genes_small.txt"]  # Test with a small dataset
+
+    # Get the list of file paths for gene lists
+    all_files = os.listdir(folder)
+    file_paths = [f for f in all_files if os.path.isfile(os.path.join(folder, f))]
+
+    # file_paths = ["chlamydomonas_reinhardtii_genes.txt", "cyanidioschyzon_merolae_genes.txt",
+    #               "galdieria_sulphuraria_genes.txt", "homo_sapiens_genes.txt", "saccharomyces_cerevisiae_genes.txt"]
+    # file_paths = ["homo_sapiens_genes_small.txt"]  # Test with a small dataset (example)
 
     # Prepend the folder path to each file path
     file_paths = [folder + path for path in file_paths]
+
+    print(file_paths)
 
     # Call the function to get data from Ensembl API and save it as CSV files
     ensembl_api.get_data_as_csv(file_paths, output_folder)

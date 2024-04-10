@@ -52,7 +52,7 @@ def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> No
         if not os.path.isdir(raw_csv_data_path):
             continue
         elif not os.listdir(raw_csv_data_path):
-            print(f"The directory {raw_csv_data_path} is empty.")
+            # print(f"The directory {raw_csv_data_path} is empty.")
             continue
 
         # Initialise empty DataFrames for the abundance, length and counts matrices
@@ -97,7 +97,7 @@ def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> No
         expression_matrix_path = os.path.join(processed_data_path, f"{species}.csv")
         length_scaled_tpm_mat.to_csv(expression_matrix_path)
 
-        print(f"Expression matrix for {species} created successfully.")
+        print(f"\nExpression matrix for {species} created successfully.")
 
 
 if __name__ == "__main__":

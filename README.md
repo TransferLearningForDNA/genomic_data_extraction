@@ -4,8 +4,6 @@
 This repository contains a pipeline for collecting, processing, and storing DNA and mRNA expression
 profile data of given species from publicly available genetic databases.
 
-## Features
-
 ### 1. Data Acquisition:
 
 - Extract DNA data from Ensembl genomic database. Includes nucleotide sequences of gene components
@@ -111,12 +109,65 @@ conda install -c conda-forge -c bioconda salmon=1.3.0
   
 ## Usage
 
-ATTENTION: Pipeline run in separate steps. Plan sufficient storage (large files, especially fastq files)! Might have to run in batches.
-TAILORED USE: specific species guidelines
+[//]: # (Instructions on how to use the pipeline &#40;starting from the *outputs* of the RNA sequencing workflow&#41;, including commands and expected inputs/outputs.)
 
-Instructions on how to use the pipeline (starting from the *outputs* of the RNA sequencing workflow), including commands and expected inputs/outputs.
+[//]: # (ATTENTION: Pipeline run in separate steps. Plan sufficient storage &#40;large files, especially fastq files&#41;! Might have to run in batches.)
 
-TBC
+[//]: # (Recommended to back up data somewhere. Download of DNA and mRNA data, and the preprocessing of fastq files can take a long time!)
+
+[//]: # (nfcore/rnaseq RAM usage ?! Advice to parallelize run on HPC, powerful machines &#40;not everything possible&#41;.)
+
+**ATTENTION**: The pipeline operates in discrete steps and handles large datasets, notably fastq files, which may require significant storage. Consider the following recommendations to ensure smooth operation:
+
+- **Storage Planning**: Anticipate the need for substantial storage capacity. You may need to execute the pipeline in batches to manage space efficiently.
+
+- **Data Backup**: Regularly back up your data to a secure location, especially before initiating large downloads or preprocessing tasks.
+
+- **Time Expectations**: Downloading DNA and mRNA data, along with preprocessing of fastq files, can be time-consuming. Plan accordingly.
+
+- **Performance Optimization**: For optimal performance, particularly given the nf-core/rnaseq pipeline's RAM demands, we advise running the pipeline on High-Performance Computing (HPC) systems or powerful machines. Parallelizing tasks where possible will significantly reduce runtimes.
+
+[//]: # (TAILORED USE: specific species guidelines)
+
+### Genomic data
+
+#### 1. Get gene lists from Ensembl BioMart
+
+- Go to Ensembl BioMart page and download the gene ID lists of desired species as TSV/.txt files (select species, select attribute Gene Stable ID and click 'Results').
+https://www.ensembl.org/biomart/martview
+- Store the files in the repository `dna/gene_lists/` folder. 
+
+#### 2. Extract and process DNA data _(all species)_
+
+Query genomic sequences from the Ensembl database and extract DNA components including:
+- DNA sequences: promoter, utr5, cds, utr3 and terminator
+- Codon frequencies in the CDS (coding sequence)
+- Sequence lenghts: cds_length, utr5_length, utr3_length
+- GC content: utr5_gc, cds_gc, utr3_gc, cds_wobble2_gc, cds_wobble3_gc
+
+_Note:_ You might want to test this first with a small dataset e.g. `dna/gene_lists/homo_sapiens_genes_small.txt`.
+
+- After you have added the desired files to `dna/gene_lists/` run the following command in the terminal.
+```bash
+python3.10 main.py extract_dna_data
+```
+
+- The obtained CSV files will be saved under `dna/csv_files` and named `ensembl_data_<species_name>.csv`.
+
+
+### Expression data
+
+#### 1. Download mRNA data from NCBI SRA _(per species)_
+
+#### 2. Run nf-core/rnaseq pipeline to obtain gene expression matrix _(per species)_
+
+#### 3. Process expression data _(all species)_
+
+### Final dataset
+
+#### 1. Merge processed genomic and transcriptomic data
+
+
 
 ## Directory Structure
 Description of the repository's organization, explaining what each file and folder contains.
