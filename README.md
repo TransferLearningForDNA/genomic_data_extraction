@@ -16,56 +16,104 @@ profile data of given species from publicly available genetic databases.
 
 - Calculate required codon frequency, GC content, and sequence length features for genomic data.
 - Calculate Relative Standard Deviation (RSD) and median expression, and filter genes with RSD < 2.
-- Merge genomic and transcriptomic data tables by gene ID.
+- Merge genomic and transcriptomic data tables by transcript ID.
 
-### 3. Data Preparation for Machine Learning:
+[//]: # (### 3. Data Preparation for Machine Learning:)
 
-- Discount irrelevant genes (low expression).
-- Pad remaining promoters and terminators to standardise length.
-- Pad all UTRs to the same length to ensure consistency.
-- Drop genes with incomplete regulatory sequences.
-- Combine all sequences (with equal length) into a unified dataset.
-- One-Hot Encode (OHE) and stack sequence data for machine learning model compatibility.
+[//]: # ()
+[//]: # (- Discount irrelevant genes &#40;low expression&#41;.)
 
-## Table of Contents
+[//]: # (- Pad remaining promoters and terminators to standardise length.)
 
-## Prerequisites
-List of software, libraries, and tools required (e.g., Python, AWS CLI, etc.).
+[//]: # (- Pad all UTRs to the same length to ensure consistency.)
+
+[//]: # (- Drop genes with incomplete regulatory sequences.)
+
+[//]: # (- Combine all sequences &#40;with equal length&#41; into a unified dataset.)
+
+[//]: # (- One-Hot Encode &#40;OHE&#41; and stack sequence data for machine learning model compatibility.)
+
+
+[//]: # (## Table of Contents)
 
 ## Installation
-Step-by-step guide on setting up the environment and installing dependencies.
 
-### NCBI SRA Toolkit (for the rnaseq workflow)
+### Prerequisites
+Before you begin the setup process, ensure you have the following prerequisites installed on your system:
+1. This repository runs on **python version 3.10**. Ensure you have this installed.
+2. The nf-core/rnaseq pipeline requires **Conda**. If you do not have Conda installed, we recommend installing **Miniconda**.
 
-The fasterq-dump command-line tool, part of the NCBI SRA Toolkit, also needs to be installed on your system or available in your system's PATH. brew install sra-toolkit. Note I did this in a local venv (recommend using a venv) using the followign steps:
+### Software Dependencies
 
-Download the SRA Toolkit:
-1. `run on terminal: curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz`
+**NOTE**: This repository requires two virtual environments for setup: a general `venv` for overall software dependencies, and a `conda` environment specific to the nf-core/rnaseq pipeline.
+You can create the conda environment later, just before you run the nf-core/rnaseq pipeline. Refer back to these instructions at that time.
 
-2. `tar -vxzf sratoolkit.current-mac64.tar.gz`
-3. `export PATH=$PATH:$PWD/the_name_of_your_extracted_directory/bin`
-e.g. mine was : `"sratoolkit.3.0.10-mac-x86_64"`
+### _1. venv_
+Create a virtual environment `venv` with **python version 3.10**.
 
-4. Then to avoid having to set the PATH every time, you can add the export line to your shell's profile script (example path given below, change it to your path):
-`echo 'export PATH=$PATH:/Users/meghoward/Documents/Imperial MSc/Term_2/Phycoworks/genomic_data_extraction/rna/sratoolkit.3.0.10-mac-x86_64/bin' >> ~/.zshrc`
+Activate the venv:
+```bash
+source <venv_name>/bin/activate
+```
 
-5. Activate venv whenever I want to run the code: my venv - `source notebook_to_py/bin/activate`
+Install the required depencencies:
+```bash
+pip install -r requirements.txt
+```
 
-### Dependencies (for the rnaseq workflow)
+### NCBI SRA Toolkit
+The NCBI SRA Toolkit is required for the download and extraction of the mRNA data from NCBI SRA (fasterq-dump command-line tool).
 
-1. First, create a conda virtual environment: `conda create --name <name_of_your_env>`. This environment will be stored inside, e.g., one of the directories for the miniconda distribution where your `conda` is from. We recommend using conda because most packages that the RNA sequencing worklow from nextflow uses can be easily installed using the bioconda channel of conda.
+Please follow the instructions below (run on terminal):
+1. Download and extract the SRA Toolkit: 
+```bash
+curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
+tar -vxzf sratoolkit.tar.gz
+```
+2. Temporary setup: Replace '<name_of_your_extracted_directory>' with the actual directory name (e.g., 'sratoolkit.3.0.10-mac-x86_64')
+```angular2html
+export PATH=$PATH:$PWD/<name_of_your_extracted_directory>/bin
+```
+3. For a permanent setup, add the PATH to your shell's profile script.
+Replace '/<path_to_your_extracted_directory>/bin' with the full path and adjust the file name (.zshrc or .bash_profile) as necessary
+```bash
+echo 'export PATH=$PATH:/<path_to_your_extracted_directory>/bin' >> ~/.zshrc
+```
 
-2. Activate your new environment: `conda activate`
+### _2. conda_
+### nf-core/rnaseq pipeline
 
-3. Install the following packages, after ensuring your virtual environment is activated:
+The nf-core/rnaseq pipeline is used to extract gene expression levels from mRNA sequencing data.
+We recommend using Conda with the bioconda channel for easy installation of the packages required by the Nextflow RNA sequencing workflow.
 
-   - `conda install trim-galore`: you may need to `conda upgrade trim-galore` to get rid of an issue that has do with an obsolete `—cores` flag that is no longer used in newer versions of trim-galore
-   - `conda install gffread`
-   - `conda install fq`
-   - `conda install -c conda-forge -c bioconda salmon=1.3.0`: specify the version for salmon, otherwise `conda install salmon` installs an obsolete version that does not integrate well with the other dependencies
+Run the following commands in your terminal:
 
+1. Create a conda virtual environment. This will create a new virtual environment stored within your Miniconda directory structure.
 
+```bash
+conda create --name <name_of_your_env>
+```
+
+2. Activate the conda environment and install the following packages:
+
+```bash
+# Ensure your conda environment is activated before installing packages.
+# Note: 
+# - You may need to upgrade trim-galore with `conda upgrade trim-galore` if you encounter an issue with an obsolete `—cores` flag.
+# - Ensure you specify version 1.3.0 for salmon to avoid compatibility issues with other dependencies.
+conda activate
+conda install trim-galore
+conda install gffread
+conda install fq
+conda install -c conda-forge -c bioconda salmon=1.3.0
+```
+
+  
 ## Usage
+
+ATTENTION: Pipeline run in separate steps. Plan sufficient storage (large files, especially fastq files)! Might have to run in batches.
+TAILORED USE: specific species guidelines
+
 Instructions on how to use the pipeline (starting from the *outputs* of the RNA sequencing workflow), including commands and expected inputs/outputs.
 
 TBC
