@@ -157,7 +157,25 @@ python3.10 main.py extract_dna_data
 
 ### Expression data
 
-#### 1. Download mRNA data from NCBI SRA _(per species)_
+#### 1. Download mRNA data from NCBI SRA _(all species, per species recommended)_
+
+- Ensure a file named `species_ids.csv` is located in the main repository directory.
+Please edit the example file provided in the repository with the desired species names and taxonomy IDs.
+The csv file should contain columns `name` and `tax_id`.
+
+- The following command uses NCBI SRA API to download fastq files for given species to the specified output_directory.
+<output_directory>: Specifies the path to the directory where the RNA-seq data will be saved.
+Ensure this directory exists and is writable. Please provide the full path to avoid errors.
+
+```bash
+python main.py download_rna_data <output_directory>
+```
+
+**Important Notes**:
+- Ensure the NCBI SRA Toolkit is correctly installed (see Installation instructions).
+- The species_ids.csv file must be correctly formatted and located in your main repository directory.
+- Ensure the output directory has sufficient storage space for the downloaded data.
+As fastq files can be large, it's advisable to download the files per species or in batches to manage disk space effectively and streamline the processing.
 
 #### 2. Run nf-core/rnaseq pipeline to obtain gene expression matrix _(per species)_
 

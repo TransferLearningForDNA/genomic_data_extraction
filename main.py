@@ -1,30 +1,36 @@
 """ Expression Prediction Data Preprocessing Pipeline."""
 import argparse
 from dna.dna_extraction import extract_dna_data
-from rna.rna_extraction import extract_rna_data, process_rna_expression_data
-from dataset_integration import merge_datasets
+from rna.rna_extraction import download_rna_data, process_rna_expression_data
+from dataset_integration import import_species_data, merge_datasets
 
 
 def run_pipeline() -> None:
     """ Run the entire expression prediction data preprocessing pipeline."""
-    parser = argparse.ArgumentParser(description="Expression Prediction Data Preprocessing Pipeline.")
+    parser = argparse.ArgumentParser(description='Expression Prediction Data Preprocessing Pipeline.')
     subparsers = parser.add_subparsers(dest='command', help='sub-command help')
 
     # Adding sub-commands
     parser_extract_dna = subparsers.add_parser('extract_dna_data',
                                                help='Query genomic sequences from Ensembl and extract DNA features.')
-    # parser_extract_rna = subparsers.add_parser('extract_rna_data', help='Extract RNA data')
+    parser_download_rna = subparsers.add_parser('download_rna_data',
+                                                help='Download fastq files containing mRNA expression data from NCBI SRA.')
+    parser_download_rna.add_argument('output_directory', type=str,
+                                     help='Please provide the full output file path (Warning: Large files!)')
     # parser_process_expression = subparsers.add_parser('process_expression_data', help='Process expression data')
-
-    # You can add specific arguments to each sub-command if needed
-    # For example, parser_extract_dna.add_argument(...)
 
     args = parser.parse_args()
 
+    # Load species data from csv (dict species names:tax IDs)
+    species = import_species_data('species_ids.csv')
+
     if args.command == 'extract_dna_data':
         extract_dna_data()
-    elif args.command == 'extract_rna_data':
-        extract_rna_data()
+    elif args.command == 'download_rna_data':
+        if not args.output_directory:
+            print("Please provide the full output file path (Warning: large files!)")
+            return
+        download_rna_data(species_data=species, output_directory=args.output_directory)
     elif args.command == 'process_expression_data':
         process_rna_expression_data()
     # else:
