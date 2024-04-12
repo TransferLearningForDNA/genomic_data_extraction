@@ -93,5 +93,3 @@ def test_check_extracted_components():
                         and dna_true["utr3"] == dna_test["utr3"]
                         and dna_true["terminator"] == dna_test["terminator"]
                 )
-
-test_check_extracted_components()
