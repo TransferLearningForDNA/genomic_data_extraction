@@ -40,10 +40,10 @@ def merge_datasets(species_name: str) -> DataFrame | None:
 
     # Check if both files exist
     if not os.path.exists(dna_dataset_path):
-        print(f"Error: DNA dataset not found at {dna_dataset_path}.")
+        print(f"Warning: DNA dataset not found at {dna_dataset_path}.")
         return None
     if not os.path.exists(rna_dataset_path):
-        print(f"Error: RNA dataset not found at {rna_dataset_path}.")
+        print(f"Warning: RNA dataset not found at {rna_dataset_path}.")
         return None
 
     # Read datasets into pandas DataFrames
@@ -62,9 +62,9 @@ def merge_datasets(species_name: str) -> DataFrame | None:
 
 
 if __name__ == "__main__":
-    species_data = import_species_data(csv_file_path="species_ids.csv")
-    print(species_data)
+    # species_data = import_species_data(csv_file_path="species_ids.csv")
+    # print(species_data)
 
     # merge_datasets(species_name='chlamydomonas_reinhardtii')
     # merge_datasets(species_name='cyanidioschyzon_merolae')
-    # merge_datasets(species_name='galdieria_sulphuraria')
+    merge_datasets(species_name='homo_sapiens')
