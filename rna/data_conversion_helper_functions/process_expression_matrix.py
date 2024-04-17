@@ -51,6 +51,9 @@ def process_expression_matrix(file_path: str, output_file_path: str) -> None:
     Args:
         file_path (str): Path to processed expression matrix files.
         output_file_path (str): Path to store median expression csv files.
+
+    Returns:
+        None: This function does not return a value but outputs files to the specified directory.
     """
     # Iterate over species
     for species in os.listdir(file_path):

@@ -7,6 +7,9 @@ def convert_all_species_files(folder_path: str) -> None:
 
     Args:
         folder_path (str) : Path to raw quant files folder.
+
+    Returns:
+        None: This function does not return a value but outputs files to the specified directory.
     """
     # Iterate over items in the directory
     for item in os.listdir(folder_path):
@@ -27,11 +30,14 @@ def convert_all_species_files(folder_path: str) -> None:
 
 
 def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
-    """ Convert quantification files, Salmon (nf-core rna-seq) output, to a csv files.
+    """ Convert quantification files, Salmon (nf-core rna-seq) output, to csv files.
 
     Args:
         input_path (str): quant_DRR513083.sf files folder path (tsv: tab-separated values)
         output_path (str): folder path to store the csv version of the quant files
+
+    Returns:
+        None: This function does not return a value but outputs files to the specified directory.
     """
     # Iterate over files in the directory
     for filename in os.listdir(input_path):

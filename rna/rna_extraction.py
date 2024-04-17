@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
 from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
 from rna.data_conversion_helper_functions.process_expression_matrix import process_expression_matrix
@@ -24,12 +24,14 @@ def process_rna_expression_data() -> None:
     process_expression_matrix(processed_data_path, median_expression_path)
 
 
-def download_rna_data(species_data: Dict[str, int], output_directory: str) -> None:
+def download_rna_data(species_data: Dict[str, int], output_directory: str,
+                      file_number_limit: Optional[int] = 10) -> None:
     """ Download fastq files containing RNA-seq data from NCBI SRA API
 
     Args:
         species_data (Dict[str, int]): A dictionary with species names as keys and tax IDs as values.
         output_directory (str): Full directory path where the downloaded files will be stored.
+        file_number_limit (int): Maximum number of files to download (defaults to 10).
     """
 
     print(f"Downloading RNA data to {output_directory}. \nSpecies: {species_data}")
@@ -43,24 +45,12 @@ def download_rna_data(species_data: Dict[str, int], output_directory: str) -> No
 
     # Use NCBI SRA API to download fastq files containing RNA-seq data
     csv_file_path = '/rna/output_srx_srr.csv'
-    download_sra_data(csv_file_path, output_directory, limit=50)
+    download_sra_data(csv_file_path, output_directory, limit=file_number_limit)
 
     # (Optional) View the returned metadata
     # all_species_metadata = view_srx_metadata(species_srx_map)
     # print(all_species_metadata['Homo sapiens'].head(5))
 
 
-
-    # # RNA-seq processing workflow (nf-core/rnaseq)
-    # # Extract gene expression matrix (TPM)
-    #
-    #
-    # # TODO Calculate RSD and median expression
-    # # 1x Gene ID
-    # # 1x Median expressions of genes with RDS < 2
-    #
-    # pass
-
-
-# if __name__ == "__main__":
-    # process_rna_expression_data()
+if __name__ == "__main__":
+    process_rna_expression_data()

@@ -5,17 +5,17 @@ import re
 import sys
 import os
 import time
-from typing import Optional
+from typing import Optional, List, Tuple, Dict
 
 
-def read_gene_ids_from_file(file_path: str) -> list[str]:
+def read_gene_ids_from_file(file_path: str) -> List[str]:
     """ Reads gene IDs from a file, skipping the first line.
 
     Args:
         file_path (str): The path to the file containing gene IDs.
 
     Returns:
-        list: A list of gene IDs read from the file.
+        List[str]: A list of gene IDs read from the file.
     """
     try:
         with open(file_path, 'r') as file:
@@ -70,16 +70,16 @@ def get_cds(transcript_id: str) -> str:
         return ''
 
 
-def get_promoter_terminator(transcript_id: str, promoter_length=1000, terminator_length=500) -> tuple[str, str]:
+def get_promoter_terminator(transcript_id: str, promoter_length: Optional[int] = 1000, terminator_length: Optional[int] = 500) -> Tuple[str, str]:
     """ Retrieves the promoter and terminator sequences for a given Ensembl transcript ID.
 
     Args:
         transcript_id (str): Ensembl transcript ID for the target gene.
-        promoter_length (int, optional): Length of the promoter sequence (default is 1000).
-        terminator_length (int, optional): Length of the terminator sequence (default is 500).
+        promoter_length (Optional[int]): Length of the promoter sequence (default is 1000).
+        terminator_length (Optional[int]): Length of the terminator sequence (default is 500).
 
     Returns:
-        tuple: A tuple containing the promoter and terminator sequences as strings.
+        Tuple[str, str]: A tuple containing the promoter and terminator sequences as strings.
     """
     # Construct the REST API URL for retrieving genomic sequence with specified 5' and 3' expansions
     address = f"https://rest.ensembl.org/sequence/id/{transcript_id}?type=genomic;expand_5prime=1000;expand_3prime=500"
@@ -109,8 +109,7 @@ def get_promoter_terminator(transcript_id: str, promoter_length=1000, terminator
         return '', ''
 
 
-def extract_utr_information(data: dict) -> tuple[
-    list[tuple[int, int]], list[tuple[int, int]], Optional[str], Optional[int]]:
+def extract_utr_information(data: dict) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]], Optional[str], Optional[int]]:
     """ Extracts information about 5' and 3' UTRs (Untranslated Regions) from the provided data.
 
     Args:
@@ -173,12 +172,12 @@ def get_utr_sequence(chromosome: str, strand: int, start: int, end: int, species
     return utr_sequence
 
 
-def get_full_utr_sequence(list_utr_coordinates: list[tuple[int, int]], chromosome: str, strand: int,
+def get_full_utr_sequence(list_utr_coordinates: List[Tuple[int, int]], chromosome: str, strand: int,
                           species: str) -> str:
     """ Retrieves the concatenated nucleotide sequence of multiple UTRs from the Ensembl database.
 
     Args:
-        list_utr_coordinates (list): A list of tuples representing UTR start and end coordinates.
+        list_utr_coordinates (List[Tuple[int, int]]): A list of tuples representing UTR start and end coordinates.
         chromosome (str): Chromosome name or identifier.
         strand (int): Strand information (1 for forward strand, -1 for reverse strand).
 
@@ -217,7 +216,7 @@ def get_species_name(file_path: str) -> str:
     return species
 
 
-def request_with_retry(transcript_id: str) -> dict:
+def request_with_retry(transcript_id: str) -> Dict:
     """ Retries the request for a transcript ID
     
     Args:
@@ -240,15 +239,15 @@ def request_with_retry(transcript_id: str) -> dict:
                 return {}
 
 
-def get_data_as_csv(file_paths: list[str], output_directory: str) -> None:
+def get_data_as_csv(file_paths: List[str], output_directory: str) -> None:
     """ Retrieves data for gene IDs from Ensembl, processes it, and saves it as CSV files.
 
     Args:
-        file_paths (list): List of file paths containing gene IDs.
+        file_paths (List[str]): List of file paths containing gene IDs.
         output_directory (str): Directory where CSV files will be saved.
 
     Returns:
-        None
+        None: This function does not return a value but outputs files to the specified directory.
     """
     # Create the directory if it doesn't exist
     os.makedirs(output_directory, exist_ok=True)

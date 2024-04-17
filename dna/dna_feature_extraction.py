@@ -3,6 +3,7 @@ import csv
 import tempfile
 import shutil
 from itertools import product
+from typing import List, Dict
 
 
 def extract_dna_features(folder_path: str) -> None:
@@ -14,6 +15,9 @@ def extract_dna_features(folder_path: str) -> None:
 
     Args:
         folder_path (str): The path to the folder containing genomic data CSV files.
+
+    Returns:
+        None: This function does not return a value but modifies the files in the specified directory.
     """
     # Iterate over files in the directory
     for filename in os.listdir(folder_path):
@@ -66,17 +70,17 @@ def extract_dna_features(folder_path: str) -> None:
             shutil.move(temp_file.name, file_path)
 
 
-def compute_cds_codon_frequencies(cds: str, codons: list[str]) -> dict[str, float]:
+def compute_cds_codon_frequencies(cds: str, codons: List[str]) -> Dict[str, float]:
     """ Compute the frequency of every possible codon in the cds.
     
     Args:
         cds (str): cds sequence
 
-        codons (list[str]): list of strings representing all 64 possible codons
+        codons (List[str]): list of strings representing all 64 possible codons
         e.g. "AGA"
 
     Returns:
-        dict[str, float]: dictionary of codon frequencies for all 64 possible codons,
+        Dict[str, float]: dictionary of codon frequencies for all 64 possible codons,
         with codons as keys and their frequencies as values.
     """
     cds_length = len(cds)
@@ -100,7 +104,7 @@ def compute_cds_codon_frequencies(cds: str, codons: list[str]) -> dict[str, floa
     return codon_frequencies
 
 
-def compute_lengths(cds: str, utr5: str, utr3: str) -> dict[str, int]:
+def compute_lengths(cds: str, utr5: str, utr3: str) -> Dict[str, int]:
     """ Compute the length of the cds, utr3 and utr5 DNA sequences.
     
     Args:
@@ -109,7 +113,7 @@ def compute_lengths(cds: str, utr5: str, utr3: str) -> dict[str, int]:
         utr3 (str): 3' UTR DNA sequence.
 
     Returns:
-        dict[str, int]: A dictionary with keys 'cds', 'utr5', and 'utr3', and integer values
+        Dict[str, int]: A dictionary with keys 'cds', 'utr5', and 'utr3', and integer values
                         representing the lengths of these sequences.
     """
     lengths = {"cds_length": len(cds) if len(cds) > 0 else "",
@@ -119,7 +123,7 @@ def compute_lengths(cds: str, utr5: str, utr3: str) -> dict[str, int]:
     return lengths
 
 
-def compute_gc_content_sequence_components(utr5: str, cds: str, utr3: str) -> dict[str, float]:
+def compute_gc_content_sequence_components(utr5: str, cds: str, utr3: str) -> Dict[str, float]:
     """ Compute the GC content of the cds, utr3 and utr5.
 
     GC content is defined as (G + C)/(A + T + G + C), where each letter
@@ -131,7 +135,7 @@ def compute_gc_content_sequence_components(utr5: str, cds: str, utr3: str) -> di
         utr3 (str): 3'UTR DNA sequence.
 
     Returns:
-        dict[str, float]: A dictionary with keys 'cds_gc', 'utr5_gc', and 'utr3_gc',
+        Dict[str, float]: A dictionary with keys 'cds_gc', 'utr5_gc', and 'utr3_gc',
                           and float values representing the GC content of these sequences.
     """
     utr5_gc_count = count_gc_nucleotides(utr5)
@@ -167,7 +171,7 @@ def count_gc_nucleotides(sequence: str) -> int:
     return g_content + c_content
 
 
-def compute_gc_content_wobble_positions(cds: str) -> dict[str, float]:
+def compute_gc_content_wobble_positions(cds: str) -> Dict[str, float]:
     """ Compute the GC content of wobble positions 2 and 3 in the cds.
 
     GC content is defined as (G + C)/(A + T + G + C), where each letter
@@ -178,7 +182,7 @@ def compute_gc_content_wobble_positions(cds: str) -> dict[str, float]:
         cds (str): CDS DNA sequence.
 
     Returns:
-        dict[str, float]: A dictionary with keys 'wobble2_gc' and 'wobble3_gc',
+        Dict[str, float]: A dictionary with keys 'wobble2_gc' and 'wobble3_gc',
                           and float values representing the GC content at wobble positions 2 and 3
                           in the cds, respectively.
     """

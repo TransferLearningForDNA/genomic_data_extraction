@@ -1,17 +1,18 @@
 import os
 import csv
+from typing import List
 
 
 # Assumptions: we have downloaded the fastq files from Onedrive.
 
-def list_files(directory: str) -> list[str]:
+def list_files(directory: str) -> List[str]:
     """ Lists all the files in a local directory.
 
     Args:
         directory (str): The path to the folder containing files.
 
     Returns:
-        list: A list of file paths.
+        List[str]: A list of file paths.
     """
     file_paths = []
 
@@ -30,7 +31,7 @@ def list_files(directory: str) -> list[str]:
 def create_samplesheet_for_one_species(species_name: str,
                                        local_dir_path_with_fastq_files_for_one_species: str,
                                        local_dir_path_to_save_samplesheets: str) -> None:
-    """ Creates a samplesheet csv file for a species (input to the nf-core/rna-seq pipeline).
+    """ Create a samplesheet csv file for a species (input to the nf-core/rna-seq pipeline).
 
     Args:
         species_name (str): name of the species that we are creating the samplesheet 
@@ -41,7 +42,7 @@ def create_samplesheet_for_one_species(species_name: str,
             use for saving the samplesheet csv files of all species.
 
     Returns:
-        None.
+        None: This function does not return a value but outputs files to the specified directory.
     """
     # Retrieve the list of file paths
     file_paths = list_files(local_dir_path_with_fastq_files_for_one_species)

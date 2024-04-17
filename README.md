@@ -171,11 +171,13 @@ Please edit the example file provided in the repository with the desired species
 The csv file should contain columns `name` and `tax_id`.
 
 - The following command uses NCBI SRA API to download fastq files for given species to the specified output_directory.
-<output_directory>: Specifies the path to the directory where the RNA-seq data will be saved.
-Ensure this directory exists and is writable. Please provide the full path to avoid errors.
+`<output_directory>`: Specifies the path to the directory where the RNA-seq data will be saved. Ensure this directory exists and is writable. Please provide the full path to avoid errors.
+`<file_number_limit>`: Specifies the maximum number of files to be downloaded (i.e. How many RNA-seq experiment run samples do you wish to download?).
+Defaults to 10 as a precaution due to large storage requirements.
 
 ```bash
-python main.py download_rna_data <output_directory>
+# file_number_limit (int) argument is optional (defaults to 10)
+python main.py download_rna_data <output_directory> <file_number_limit>
 ```
 
 **Important notes**:

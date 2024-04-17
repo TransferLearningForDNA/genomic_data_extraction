@@ -1,18 +1,19 @@
 import pandas as pd
 import os
 import csv
+from typing import Dict
 
 from pandas import DataFrame
 
 
-def import_species_data(csv_file_path: str) -> dict:
+def import_species_data(csv_file_path: str) -> Dict[str, int]:
     """ Create dictionary containing species names and taxonomy IDs.
 
     Args:
         csv_file_path (str)
 
     Returns:
-        dict: A dictionary with species names as keys and species IDs as values.
+        Dict[str, int]: A dictionary with species names as keys and species IDs as values.
     """
     df = pd.read_csv(csv_file_path)
     # Convert DataFrame to a dictionary with 'name' as keys and 'tax_id' as values
@@ -62,9 +63,4 @@ def merge_datasets(species_name: str) -> DataFrame | None:
 
 
 if __name__ == "__main__":
-    # species_data = import_species_data(csv_file_path="species_ids.csv")
-    # print(species_data)
-
-    # merge_datasets(species_name='chlamydomonas_reinhardtii')
-    # merge_datasets(species_name='cyanidioschyzon_merolae')
     merge_datasets(species_name='homo_sapiens')

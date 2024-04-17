@@ -42,6 +42,9 @@ def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> No
     Args:
         raw_data_path (str): Path to the folder containing raw quant files.
         processed_data_path (str): Path to store the processed expression matrix csv files.
+
+    Returns:
+        None: This function does not return a value but outputs files to the specified directory.
     """
 
     # Iterate over species
