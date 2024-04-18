@@ -65,9 +65,9 @@ def download_sra_data(csv_file_path: str, output_directory: str, limit: Optional
 
 if __name__ == "__main__":
     # Call CSV file path returned by the 'query_and_csv_production' file
-    csv_file_path = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/output_srx_srr.csv'  
+    csv_file_path = '/local/path/to/output_srx_srr.csv'  
 
     # Output dir here
-    output_directory = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/fasta'
+    output_directory = '/local/path/to/save/fastaq/files/'
 
     download_sra_data(csv_file_path, output_directory)

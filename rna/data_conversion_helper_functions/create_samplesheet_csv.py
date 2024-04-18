@@ -93,18 +93,14 @@ def create_samplesheet_for_one_species(species_name: str,
 
 
 if __name__ == "__main__":
-    local_dir_path_to_save_samplesheets = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/csv_dir"
-    # species_names = ['species1', 'species2', 'species3']
-    # for species_name in species_names:
+    local_dir_path_to_save_samplesheets = "/local/path/to/save/csv/samplesheet/for/each/species"
+    
+    species_names = ['species1', 'species2', 'species3']
+    for species_name in species_names:
 
-    #     local_dir_path_with_fastq_files_for_one_species = "/path/to/your/input/directory"
+        local_dir_path_with_fastq_files_for_one_species = "/local/path/to/your/input/directory"
 
-    #     create_samplesheet_for_one_species(species_name, 
-    #                                     local_dir_path_with_fastq_files_for_one_species,
-    #                                     local_dir_path_to_save_samplesheets)
+        create_samplesheet_for_one_species(species_name, 
+                                        local_dir_path_with_fastq_files_for_one_species,
+                                        local_dir_path_to_save_samplesheets)
 
-    species_name = 'Chlamydomonas_reinhardtii'
-    local_dir_path_with_fastq_files_for_one_species = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/fasta'
-    create_samplesheet_for_one_species(species_name,
-                                       local_dir_path_with_fastq_files_for_one_species,
-                                       local_dir_path_to_save_samplesheets)

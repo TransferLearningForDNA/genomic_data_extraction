@@ -41,8 +41,8 @@ def zip_files(directory):
 
 
 if __name__ == "__main__":
-    #  local directory containing the fasta files for 1 species
-    directory = '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/fasta'
+    #  local directory containing the fasta files (e.g., for 1 species)
+    directory = '/local/path/to/directory/containing/fastaq/files'
 
     # zip the fasta files
     zip_files(directory)

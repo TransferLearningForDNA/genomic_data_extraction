@@ -197,7 +197,7 @@ cd <fastq_files_directory>
 # optional flag '-k' to keep original files (avoids re-downloading in case the zipping corrupts the files)
 gzip -k *
 
-# OR use rna/data_conversion_helper_functions/zip_fasta_files.py ??
+# OR use rna/data_conversion_helper_functions/zip_fasta_files.py
 #zip_files(directory)
 ```
 
@@ -223,22 +223,22 @@ salmon index -t <path/to/the/transcript_fasta/file> -i <path/to/directory/to/sto
 ```
 
 - Create a samplesheet csv file for a species used as input to the nf-core/rna-seq pipeline.
+  - note: you can also process a few samples (coming from the same species) at a time for the species, if you are restrained by compute resources: this would require multiple csv files. In divide_sampleshet_into_batches.py, you can specify the number of samples that each csv file can contain.
 
 ```bash
-# Samplesheet csv file with columns: "sample", "fastq_1" (full path), "fastq_2", "strandedness
+# Samplesheet csv file with columns: "sample", "fastq_1" (full path), "fastq_2", "strandedness"
 # rna/data_conversion_helper_functions/create_samplesheet_csv.py
 create_samplesheet_for_one_species(species_name,
                                    local_dir_path_with_fastq_files_for_one_species,
                                    local_dir_path_to_save_samplesheets)
                                      
-# divide_sampleshet_into_batches.py?? (optional?)
+# optional: run divide_sampleshet_into_batches.py
+# currently, you need to manually specify the path of the original csv file containing all the samples from that one species
 ```
 
-- Change the file paths in the provided template YAML file (`rna/rnaseq_params.yaml`), which specifies the pipeline parameters. Particularly for `input` (), `outdir` (directory to store the ), `fasta` (), `gff` (), `salmon_index` (), `transcript_fasta` ().
+- Change the file paths in the provided template YAML file (`rna/rnaseq_params.yaml`), which specifies the pipeline parameters for running rna sequencing for one species.
 
-- Create the yaml for each species, batch? (how) Input csv
-
-- run the pipeline (per species or in batches).
+- Run the pipeline (per species), either inputting all samples in one go (using the original, full csv file) or a few samples at a time only (using a minibatch csv file, generated previously by splitting the original csv file into multiple csv files).
 
 ```bash
 # If conda is not activated run:
@@ -248,15 +248,13 @@ conda activate <virtual_env_name>
 # Run the pipeline:
 nextflow run nf-core/rnaseq -params file /path/to/yaml/with/params/to/rnaseq/pipeline -r 3.14.0 --max_cpus <integer_max_cpus_on_machine> --max_memory <float_max_memory_on_machine>.GB
 
-# rna/run_nfcore_rnaseq_pipeline.py?
-
-# Extract the necessary quant.sf files from the pipeline's output, add the sample name and move to species-specific folder
+# Extract the necessary quant.sf files from the pipeline's output, add the sample name to the filename and move to species-specific folder
 # rna/data_conversion_helper_functions/rename_quant_output_and_move_to_dir.py
 rename_and_move_files(source_dir, destination_dir)
 ```
 
-- WARNING: Possible error when running the nf-core rnaseq pipeline, but not a problem if quant.sf files have been created.
-- WARNING: Also possible faulty samples -> error. No output will be saved -> run in batched (remove sample from input csv)
+- WARNING: Possible error when running the nf-core rnaseq pipeline, but this is not a problem if quant.sf files have been created (i.e., if salmon quantification has been completed successfully). In our case, the pipeline consistently fails at the TX2GENE stage (called NFCORE_RNASEQ:RNASEQ: QUANTIFY_PSEUDO_ALIGNMENT:TX2GENE), which occurs after the quantification stage.
+- WARNING: Possible error with certain samples with data quality issues. In that case, no output from the quantification stage (i.e., quant .sf files) will be saved for any of the samples in the csv file. We thus recommend working with batches of samples from the same species. If a sample is faulty, its SRR ID will appear in the error message of the pipeline, and you are advised to remove that sample/row from the samplesheet csv file and try running the pipeline again to obtain the outputs for the other samples.
 
 #### 3. Process expression data _(all species)_
 - Run the following command to process raw transcriptomic data (quant.sf files obtained from the nf-core/rnaseq pipeline), filter transcripts with RSD < 2 and obtain the median expression (length scaled TPM) of each gene.

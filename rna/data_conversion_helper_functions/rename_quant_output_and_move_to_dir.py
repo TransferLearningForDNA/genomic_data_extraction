@@ -31,11 +31,11 @@ def rename_and_move_files(source_dir, destination_dir):
 if __name__ == "__main__":
     # source directory containing subdirectories with quant.sf files:
     # this is where the rna-seq pipeline stores the quant files for all samples from 1 species: inside the salmon directory
-    source_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/output_dir/Chlamydomonas_reinhardtii/salmon"
+    source_directory = "/local/path/to/quant/sf/files/for/one/species"
 
     # destination directory where the renamed files will be moved:
     # this is where we store all the quant files for 1 species
-    destination_directory = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/quant_files/raw/chlamydomonas_reinhardtii/sf_files"
+    destination_directory = "/local/path/to/save/the/renamed/quant/sf/files/for/one/species"
 
     # rename and move files
     rename_and_move_files(source_directory, destination_directory)
