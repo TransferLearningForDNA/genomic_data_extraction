@@ -4,6 +4,7 @@ import pandas as pd
 from rna.rna_download_logic.query_and_csv_production import query_and_get_srx_accession_ids, SRX_to_SRR_csv
 from rna.rna_download_logic.mRNA_fastq_download import download_sra_data
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
+from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
 
 @pytest.fixture
 def mock_sra_search():
@@ -34,3 +35,9 @@ def test_convert_all_species_files_no_directory():
         mock_listdir.return_value = []
         convert_all_species_files("/fake/dir")
         mock_print.assert_called_with("The directory /fake/dir/sf_files does not exist.")
+
+def test_create_expression_matrix_no_files():
+    with patch('os.listdir', return_value=[]) as mock_listdir, \
+         patch('os.path.isdir', return_value=True) as mock_isdir:
+        create_expression_matrix("raw_data_path", "processed_data_path")
+        mock_listdir.assert_called()
