@@ -1,16 +1,17 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 import pandas as pd
 
 from pysradb import SRAweb
 from pysradb.search import SraSearch
 
 
-def query_sra(species: str, taxonomy_id: int) -> pd.DataFrame | None:
+def query_sra(species: str, taxonomy_id: int, limit: Optional[int] = 10) -> pd.DataFrame | None:
     """Query the SRA database for RNA-seq species metadata results given a species name and taxonomy ID.
 
     Args:
         species (str): Species scientific name (format e.g. 'Homo sapiens')
         taxonomy_id (int): Taxonomy ID of the species (e.g. 9606)
+        limit (Optional[int]): Maximum number of experiment accessions IDs to query (defaults to 10).
 
     Returns:
         DataFrame: Species metadata RNA-seq results (contains experiment accession IDs)
@@ -18,15 +19,15 @@ def query_sra(species: str, taxonomy_id: int) -> pd.DataFrame | None:
     # First, search for 'RNA-Seq' strategy
     try:
         sra_search_rna_seq = SraSearch(
-            organism=species, layout="paired", strategy=["RNA-Seq"], return_max=50
+            organism=species, layout="paired", strategy=["RNA-Seq"], return_max=limit
         )
         sra_search_rna_seq.search()
         df_rna_seq = sra_search_rna_seq.get_df()
 
         # If 'RNA-Seq' results are fewer than 50, search with 'OTHER' strategy
         df_other = pd.DataFrame()
-        if len(df_rna_seq) < 50:
-            additional_results_needed = 50 - len(df_rna_seq)
+        if len(df_rna_seq) < limit:
+            additional_results_needed = limit - len(df_rna_seq)
             sra_search_other = SraSearch(
                 organism=species,
                 layout="paired",
@@ -56,12 +57,13 @@ def query_sra(species: str, taxonomy_id: int) -> pd.DataFrame | None:
 
 
 def query_and_get_srx_accession_ids(
-    species_data: Dict[str, int]
+    species_data: Dict[str, int], limit: Optional[int] = 10
 ) -> Dict[str, List[str]]:
     """Get experiment accession numbers (SRX IDs) for each species.
 
     Args:
         species_data (Dict[str, int]): A dictionary with species names as keys and taxonomy IDs as values.
+        limit (Optional[int]): Maximum number of experiment accessions IDs to query per species (defaults to 10).
 
     Returns:
         Dict[str, List[str]: A dictionary with species names as keys and SRX (experiment accession) ID as values.
@@ -70,7 +72,7 @@ def query_and_get_srx_accession_ids(
     species_srx_map = {}
 
     for species, tax_id in species_data.items():
-        df = query_sra(species, tax_id)
+        df = query_sra(species, tax_id, limit=limit)
 
         if df is not None and not df.empty:
             srx_ids = df["experiment_accession"].unique()

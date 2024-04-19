@@ -39,7 +39,7 @@ def download_sra_data(
             break
 
         srr_id = row["srr_id"]
-        species_name = "Chlamydomonas reinhardtii"
+        species_name = row["species"]
 
         # check that the fasta files have not already been downloaded
         # for this sample (i.e. SRR ID)
@@ -73,19 +73,15 @@ def download_sra_data(
 
             except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
                 print(f"An error occurred while processing {srr_id}: {e}", flush=True)
-            except (
-                Exception
-            ) as e:
+            except Exception as e:
                 print(f"An unexpected error occurred: {e}", flush=True)
 
 
 if __name__ == "__main__":
     # Call CSV file path returned by the 'query_and_csv_production' file
-    path_to_csv = (
-        "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/output_srx_srr.csv"
-    )
+    path_to_csv = "/local/path/to/output_srx_srr.csv"
 
-    # Output directory here
-    path_to_output_folder = "/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/fasta"
+    # Output dir here
+    path_to_output_folder = "/local/path/to/save/fastaq/files/"
 
     download_sra_data(path_to_csv, path_to_output_folder)

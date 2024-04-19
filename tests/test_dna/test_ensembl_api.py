@@ -160,7 +160,7 @@ def test_get_species_name():
 
 
 def test_check_extracted_components():
-    """Tests that gene components are correctly extracted by the Ensembl API 
+    """ Tests that gene components are correctly extracted by the Ensembl API
     for mandatory species.
     
     A txt file has been created for each mandatory species containing two gene 

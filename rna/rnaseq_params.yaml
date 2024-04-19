@@ -1,9 +1,9 @@
-input: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/csv_dir/Chlamydomonas_reinhardtii_samplesheet.csv'
-outdir: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/output_dir/Chlamydomonas_reinhardtii'
-fasta: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.dna.toplevel.fa.gz'
-gff: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.58.gff.gz'
-salmon_index: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/salmon_index'
-transcript_fasta: '/Users/dilay/Documents/Imperial/genomic_data_extraction/rna/rnaseq/input_dir/Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.cdna.all.fa.gz'
+input: '/local/path/to/species_name_samplesheet.csv'
+outdir: '/local/path/to/store/rnaseq/outputs/for/one/species'
+fasta: '/local/path/to/fasta/file/for/one/species/'  # e.g. Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.dna.toplevel.fa.gz
+gff: '/local/path/to/gff/file/for/one/species/'  # e.g. Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.58.gff.gz
+salmon_index: '/local/path/to/directory/of/generated/salmon/index/for/one/species'
+transcript_fasta: '/local/path/to/transcript/file/for/one/species/'  # e.g. Chlamydomonas_reinhardtii/Chlamydomonas_reinhardtii.Chlamydomonas_reinhardtii_v5.5.cdna.all.fa.gz
 skip_bbsplit: true
 pseudo_aligner: 'salmon'
 skip_alignment: true
