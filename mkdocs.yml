@@ -1,0 +1,25 @@
+site_name: Genomic Data Extraction
+repo_url: https://github.com/TransferLearningForDNA/genomic_data_extraction
+nav:
+  - Home: index.md
+  - genomic_data_extraction:
+    - dna:
+        - dna_extraction: genomic_data_extraction/dna/dna_extraction.md
+        - dna_feature_extraction: genomic_data_extraction/dna/dna_feature_extraction.md
+        - ensembl_api: genomic_data_extraction/dna/ensembl_api.md
+    - rna:
+        - data_conversion_helper_functions: 
+          - convert_quantsf_to_csv: genomic_data_extraction/rna/conversion_helper_functions/convert_quantsf_to_csv.md
+          - create_expression_matrix: genomic_data_extraction/rna/conversion_helper_functions/create_expression_matrix.md
+          - create_samplesheet_csv: genomic_data_extraction/rna/conversion_helper_functions/create_samplesheet_csv.md
+          - process_expression_matrix: genomic_data_extraction/rna/conversion_helper_functions/process_expression_matrix.md
+        - rna_download_logic:
+          - mRNA_fastq_download: genomic_data_extraction/rna/rna_download_logic/mRNA_fastq_download.md
+          - query_and_csv_production: genomic_data_extraction/rna/rna_download_logic/query_and_csv_production.md
+        - rna_extraction: genomic_data_extraction/rna/rna_extraction.md
+
+theme: readthedocs
+plugins:
+  - mkdocstrings
+watch:
+  - .  # reload docs for any file changes
