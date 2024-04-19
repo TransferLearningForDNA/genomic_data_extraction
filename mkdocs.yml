@@ -9,10 +9,10 @@ nav:
         - ensembl_api: genomic_data_extraction/dna/ensembl_api.md
     - rna:
         - data_conversion_helper_functions: 
-          - convert_quantsf_to_csv: genomic_data_extraction/rna/conversion_helper_functions/convert_quantsf_to_csv.md
-          - create_expression_matrix: genomic_data_extraction/rna/conversion_helper_functions/create_expression_matrix.md
-          - create_samplesheet_csv: genomic_data_extraction/rna/conversion_helper_functions/create_samplesheet_csv.md
-          - process_expression_matrix: genomic_data_extraction/rna/conversion_helper_functions/process_expression_matrix.md
+          - convert_quantsf_to_csv: genomic_data_extraction/rna/data_conversion_helper_functions/convert_quantsf_to_csv.md
+          - create_expression_matrix: genomic_data_extraction/rna/data_conversion_helper_functions/create_expression_matrix.md
+          - create_samplesheet_csv: genomic_data_extraction/rna/data_conversion_helper_functions/create_samplesheet_csv.md
+          - process_expression_matrix: genomic_data_extraction/rna/data_conversion_helper_functions/process_expression_matrix.md
         - rna_download_logic:
           - mRNA_fastq_download: genomic_data_extraction/rna/rna_download_logic/mRNA_fastq_download.md
           - query_and_csv_production: genomic_data_extraction/rna/rna_download_logic/query_and_csv_production.md
