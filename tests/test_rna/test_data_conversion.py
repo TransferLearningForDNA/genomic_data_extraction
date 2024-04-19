@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import pandas as pd
 from rna.rna_download_logic.query_and_csv_production import query_and_get_srx_accession_ids, SRX_to_SRR_csv
 from rna.rna_download_logic.mRNA_fastq_download import download_sra_data
+from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
 
 @pytest.fixture
 def mock_sra_search():
@@ -25,3 +26,11 @@ def test_download_sra_data_limit_reached():
         mock_exists.return_value = True
         download_sra_data("dummy.csv", "dummy_dir", 0)
         mock_run.assert_not_called()
+
+def test_convert_all_species_files_no_directory():
+    with patch('os.listdir') as mock_listdir, \
+         patch('os.path.isdir', return_value=True) as mock_isdir, \
+         patch('builtins.print') as mock_print:
+        mock_listdir.return_value = []
+        convert_all_species_files("/fake/dir")
+        mock_print.assert_called_with("The directory /fake/dir/sf_files does not exist.")
