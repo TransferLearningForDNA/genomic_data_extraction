@@ -7,7 +7,7 @@ from dataset_integration import import_species_data, merge_datasets
 
 
 def run_pipeline() -> None:
-    """ Run steps of the expression prediction data preprocessing pipeline via CLI commands."""
+    """Run steps of the expression prediction data preprocessing pipeline via CLI commands."""
 
     parser = argparse.ArgumentParser(
         description="Expression Prediction Data Preprocessing Pipeline."
@@ -15,7 +15,7 @@ def run_pipeline() -> None:
     subparsers = parser.add_subparsers(dest="command", help="sub-command help")
 
     # Adding sub-commands
-    parser_extract_dna = subparsers.add_parser(
+    subparsers.add_parser(
         "extract_dna_data",
         help="Query genomic sequences from Ensembl and extract DNA features.",
     )
@@ -31,14 +31,14 @@ def run_pipeline() -> None:
     parser_download_rna.add_argument(
         "file_number_limit",
         type=int,
-        help="Max number of files to download. Defaults to 10."
+        help="Max number of files to download. Defaults to 10.",
     )
-    parser_process_rna_expression = subparsers.add_parser(
+    subparsers.add_parser(
         "process_rna_expression",
         help="Process raw transcriptomic data to filter genes and "
         "obtain median expression of each gene.",
     )
-    parser_merge_datasets = subparsers.add_parser(
+    subparsers.add_parser(
         "merge_datasets",
         help="Merge processed genomic and transcriptomic data to obtain final dataset.",
     )
@@ -57,10 +57,18 @@ def run_pipeline() -> None:
             print("Please provide the full output file path (Warning: large files!)")
             return
         if not args.file_number_limit:
-            print("The file number limit was not specified. Maximum 10 files will be downloaded (default).")
-            download_rna_data(species_data=species, output_directory=args.output_directory)
+            print(
+                "The file number limit was not specified. Maximum 10 files will be downloaded (default)."
+            )
+            download_rna_data(
+                species_data=species, output_directory=args.output_directory
+            )
         else:
-            download_rna_data(species_data=species, output_directory=args.output_directory, file_number_limit=args.file_number_limit)
+            download_rna_data(
+                species_data=species,
+                output_directory=args.output_directory,
+                file_number_limit=args.file_number_limit,
+            )
     elif args.command == "process_rna_expression":
         # Process raw quant.sf files from the nf-core/rnaseq pipeline to obtain median expression for each gene
         process_rna_expression_data()

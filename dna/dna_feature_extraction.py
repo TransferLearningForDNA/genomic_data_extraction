@@ -7,7 +7,7 @@ from typing import List, Dict
 
 
 def extract_dna_features(folder_path: str) -> None:
-    """ Extract and compute DNA features for each CSV file containing genomic sequences.
+    """Extract and compute DNA features for each CSV file containing genomic sequences.
 
     Add new columns to the existing CSV files with computed codon frequencies, lengths of
     different DNA segments (utr5, cds, utr3), GC content in DNA segments, and GC content at
@@ -27,22 +27,44 @@ def extract_dna_features(folder_path: str) -> None:
 
             # Create a temporary file to write the modified data
             temp_file = tempfile.NamedTemporaryFile(
-                mode='w', delete=False, newline='', encoding='utf-8')
+                mode="w", delete=False, newline="", encoding="utf-8"
+            )
 
             # Open the CSV file for reading
-            with open(file_path, 'r', newline='', encoding='utf-8') as infile, temp_file:
+            with open(
+                file_path, "r", newline="", encoding="utf-8"
+            ) as infile, temp_file:
                 reader = csv.DictReader(infile)
 
                 # Define the fieldnames for the output CSV
                 header = reader.fieldnames
-                if header != ["ensembl_gene_id", "transcript_id", "promoter", "utr5", "cds", "utr3", "terminator"]:
+                if header != [
+                    "ensembl_gene_id",
+                    "transcript_id",
+                    "promoter",
+                    "utr5",
+                    "cds",
+                    "utr3",
+                    "terminator",
+                ]:
                     break
                 new_columns = []
-                codons = ["".join(combination) for combination in product("ACGT", repeat=3)]
+                codons = [
+                    "".join(combination) for combination in product("ACGT", repeat=3)
+                ]
                 new_columns.extend(codons)
-                new_columns.extend(["cds_length", "utr5_length",
-                                    "utr3_length", "utr5_gc", "cds_gc", "utr3_gc",
-                                    "cds_wobble2_gc", "cds_wobble3_gc"])
+                new_columns.extend(
+                    [
+                        "cds_length",
+                        "utr5_length",
+                        "utr3_length",
+                        "utr5_gc",
+                        "cds_gc",
+                        "utr3_gc",
+                        "cds_wobble2_gc",
+                        "cds_wobble3_gc",
+                    ]
+                )
                 header.extend(new_columns)
 
                 # Open the CSV file for writing
@@ -58,9 +80,11 @@ def extract_dna_features(folder_path: str) -> None:
 
                     row.update(compute_cds_codon_frequencies(cds=cds, codons=codons))
                     row.update(compute_lengths(cds=cds, utr5=utr5, utr3=utr3))
-                    row.update(compute_gc_content_sequence_components(utr5=utr5,
-                                                                      cds=cds,
-                                                                      utr3=utr3))
+                    row.update(
+                        compute_gc_content_sequence_components(
+                            utr5=utr5, cds=cds, utr3=utr3
+                        )
+                    )
                     row.update(compute_gc_content_wobble_positions(cds))
 
                     # Write the modified row to the temporary file
@@ -71,8 +95,8 @@ def extract_dna_features(folder_path: str) -> None:
 
 
 def compute_cds_codon_frequencies(cds: str, codons: List[str]) -> Dict[str, float]:
-    """ Compute the frequency of every possible codon in the cds.
-    
+    """Compute the frequency of every possible codon in the cds.
+
     Args:
         cds (str): cds sequence
 
@@ -94,7 +118,7 @@ def compute_cds_codon_frequencies(cds: str, codons: List[str]) -> Dict[str, floa
 
     # Compute codon frequencies based on the sequence in the row
     for i in range(0, cds_length - 2, 3):
-        codon = cds[i:i + 3]
+        codon = cds[i : i + 3]
         if len(codon) == 3:
             codon_frequencies[codon] += 1
 
@@ -105,8 +129,8 @@ def compute_cds_codon_frequencies(cds: str, codons: List[str]) -> Dict[str, floa
 
 
 def compute_lengths(cds: str, utr5: str, utr3: str) -> Dict[str, int]:
-    """ Compute the length of the cds, utr3 and utr5 DNA sequences.
-    
+    """Compute the length of the cds, utr3 and utr5 DNA sequences.
+
     Args:
         cds (str): CDS DNA sequence.
         utr5 (str): 5' UTR DNA sequence.
@@ -116,19 +140,23 @@ def compute_lengths(cds: str, utr5: str, utr3: str) -> Dict[str, int]:
         Dict[str, int]: A dictionary with keys 'cds', 'utr5', and 'utr3', and integer values
                         representing the lengths of these sequences.
     """
-    lengths = {"cds_length": len(cds) if len(cds) > 0 else "",
-               "utr5_length": len(utr5) if len(utr5) > 0 else "",
-               "utr3_length": len(utr3) if len(utr3) > 0 else ""}
+    lengths = {
+        "cds_length": len(cds) if len(cds) > 0 else "",
+        "utr5_length": len(utr5) if len(utr5) > 0 else "",
+        "utr3_length": len(utr3) if len(utr3) > 0 else "",
+    }
 
     return lengths
 
 
-def compute_gc_content_sequence_components(utr5: str, cds: str, utr3: str) -> Dict[str, float]:
-    """ Compute the GC content of the cds, utr3 and utr5.
+def compute_gc_content_sequence_components(
+    utr5: str, cds: str, utr3: str
+) -> Dict[str, float]:
+    """Compute the GC content of the cds, utr3 and utr5.
 
     GC content is defined as (G + C)/(A + T + G + C), where each letter
     represents the number of times that nucleotide appears in the DNA sequence.
-    
+
     Args:
         utr5 (str): 5' UTR DNA sequence.
         cds (str): CDS DNA sequence.
@@ -150,16 +178,14 @@ def compute_gc_content_sequence_components(utr5: str, cds: str, utr3: str) -> Di
     cds_gc = cds_gc_count / cds_length if cds_length != 0 else ""
     utr3_gc = utr3_gc_count / utr3_length if utr3_length != 0 else ""
 
-    gc_content = {"utr5_gc": utr5_gc,
-                  "cds_gc": cds_gc,
-                  "utr3_gc": utr3_gc}
+    gc_content = {"utr5_gc": utr5_gc, "cds_gc": cds_gc, "utr3_gc": utr3_gc}
 
     return gc_content
 
 
 def count_gc_nucleotides(sequence: str) -> int:
-    """ Count the number of times G and C nucleotides appear in a DNA sequence.
-    
+    """Count the number of times G and C nucleotides appear in a DNA sequence.
+
     Args:
         sequence (str): DNA sequence
 
@@ -172,12 +198,12 @@ def count_gc_nucleotides(sequence: str) -> int:
 
 
 def compute_gc_content_wobble_positions(cds: str) -> Dict[str, float]:
-    """ Compute the GC content of wobble positions 2 and 3 in the cds.
+    """Compute the GC content of wobble positions 2 and 3 in the cds.
 
     GC content is defined as (G + C)/(A + T + G + C), where each letter
     represents the number of times that nucleotide appears in a given
     wobble position
-    
+
     Args:
         cds (str): CDS DNA sequence.
 
@@ -190,25 +216,28 @@ def compute_gc_content_wobble_positions(cds: str) -> Dict[str, float]:
     wobble2_nucleotides = cds[1::3]
     wobble3_nucleotides = cds[2::3]
 
-    wobble2_gc_count = (wobble2_nucleotides.count("G") +
-                        wobble2_nucleotides.count("C"))
-    wobble3_gc_count = (wobble3_nucleotides.count("G") +
-                        wobble3_nucleotides.count("C"))
+    wobble2_gc_count = wobble2_nucleotides.count("G") + wobble2_nucleotides.count("C")
+    wobble3_gc_count = wobble3_nucleotides.count("G") + wobble3_nucleotides.count("C")
 
     # Compute the GC content
-    wobble2_gc = wobble2_gc_count / len(wobble2_nucleotides) \
-        if len(wobble2_nucleotides) != 0 else ""
+    wobble2_gc = (
+        wobble2_gc_count / len(wobble2_nucleotides)
+        if len(wobble2_nucleotides) != 0
+        else ""
+    )
 
-    wobble3_gc = wobble3_gc_count / len(wobble3_nucleotides) \
-        if len(wobble3_nucleotides) != 0 else ""
+    wobble3_gc = (
+        wobble3_gc_count / len(wobble3_nucleotides)
+        if len(wobble3_nucleotides) != 0
+        else ""
+    )
 
-    gc_content = {"cds_wobble2_gc": wobble2_gc,
-                  "cds_wobble3_gc": wobble3_gc}
+    gc_content = {"cds_wobble2_gc": wobble2_gc, "cds_wobble3_gc": wobble3_gc}
 
     return gc_content
 
 
 # Usage example
 if __name__ == "__main__":
-    folder_path = "csv_files"
-    extract_dna_features(folder_path)
+    path_to_folder = "csv_files"
+    extract_dna_features(path_to_folder)

@@ -4,7 +4,7 @@ from dna import ensembl_api, dna_feature_extraction
 
 
 def query_dna_sequences_from_ensembl(output_folder: str) -> None:
-    """ Query and download DNA sequences for specified gene lists from the Ensembl database.
+    """Query and download DNA sequences for specified gene lists from the Ensembl database.
 
     Use pre-defined file paths to locate gene lists and download their respective
     DNA sequences using Ensembl REST API, saving them as CSV files in a specified directory.
@@ -35,7 +35,7 @@ def query_dna_sequences_from_ensembl(output_folder: str) -> None:
 
 
 def extract_dna_data() -> None:
-    """ Extract and process DNA genomic data.
+    """Extract and process DNA genomic data.
 
     Query DNA sequences from the Ensembl database, compute necessary gene components
     and calculate codon frequency, GC content, and sequence length.
@@ -51,3 +51,4 @@ def extract_dna_data() -> None:
 
     # Calculate genomic features
     dna_feature_extraction.extract_dna_features(extracted_dna_storage_folder)
+    print("\nExtraction of DNA features is now complete!\n")

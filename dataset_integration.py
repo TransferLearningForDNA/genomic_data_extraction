@@ -1,13 +1,10 @@
-import pandas as pd
 import os
-import csv
 from typing import Dict
-
-from pandas import DataFrame
+import pandas as pd
 
 
 def import_species_data(csv_file_path: str) -> Dict[str, int]:
-    """ Create dictionary containing species names and taxonomy IDs.
+    """Create dictionary containing species names and taxonomy IDs.
 
     Args:
         csv_file_path (str)
@@ -21,8 +18,8 @@ def import_species_data(csv_file_path: str) -> Dict[str, int]:
     return species_data
 
 
-def merge_datasets(species_name: str) -> DataFrame | None:
-    """ Merge DNA and RNA data by transcript ID.
+def merge_datasets(species_name: str) -> pd.DataFrame | None:
+    """Merge DNA and RNA data by transcript ID.
 
     Args:
         species_name (str)
@@ -52,10 +49,10 @@ def merge_datasets(species_name: str) -> DataFrame | None:
     rna_df = pd.read_csv(rna_dataset_path)
 
     # Merge datasets based on transcript ID
-    merged_df = pd.merge(dna_df, rna_df, on='transcript_id', how='inner')
+    merged_df = pd.merge(dna_df, rna_df, on="transcript_id", how="inner")
 
     # Save merged dataframe to csv
-    merged_df.to_csv(f'merged_csv_files/merged_{species_name}_data.csv', index=False)
+    merged_df.to_csv(f"merged_csv_files/merged_{species_name}_data.csv", index=False)
 
     print(f"Successfully merged DNA and RNA data for species {species_name}!")
 
@@ -63,4 +60,4 @@ def merge_datasets(species_name: str) -> DataFrame | None:
 
 
 if __name__ == "__main__":
-    merge_datasets(species_name='homo_sapiens')
+    merge_datasets(species_name="homo_sapiens")
