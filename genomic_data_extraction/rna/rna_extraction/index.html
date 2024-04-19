@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>rna_extraction - Genomic Data Extraction</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="../../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "rna_extraction";
+        var mkdocs_page_input_path = "genomic_data_extraction\\rna\\rna_extraction.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../../../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Genomic Data Extraction
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">genomic_data_extraction</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="#">dna</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../dna/dna_extraction/">dna_extraction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dna/dna_feature_extraction/">dna_feature_extraction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dna/ensembl_api/">ensembl_api</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">rna</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="#">data_conversion_helper_functions</a>
+    <ul>
+                <li class="toctree-l3"><a class="" href="../conversion_helper_functions/convert_quantsf_to_csv.md">convert_quantsf_to_csv</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../conversion_helper_functions/create_expression_matrix.md">create_expression_matrix</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../conversion_helper_functions/create_samplesheet_csv.md">create_samplesheet_csv</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../conversion_helper_functions/process_expression_matrix.md">process_expression_matrix</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="#">rna_download_logic</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../rna_download_logic/mRNA_fastq_download/">mRNA_fastq_download</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../rna_download_logic/query_and_csv_production/">query_and_csv_production</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">rna_extraction</a>
+    <ul class="current">
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Genomic Data Extraction</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>genomic_data_extraction &raquo;</li>
+          <li>rna &raquo;</li>
+      <li>rna_extraction</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/TransferLearningForDNA/genomic_data_extraction/edit/master/docs/genomic_data_extraction/rna/rna_extraction.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<a id="rna.rna_extraction"></a>
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="rna.rna_extraction.download_rna_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">download_rna_data</span><span class="p">(</span><span class="n">species_data</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">file_number_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Download fastq files containing RNA-seq data from NCBI SRA API</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>species_data</code></b>
+                  (<code><span title="typing.Dict">Dict</span>[str, int]</code>)
+              –
+              <div class="doc-md-description">
+                <p>A dictionary with species names as keys and tax IDs as values.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>output_directory</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Full directory path where the downloaded files will be stored.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>file_number_limit</code></b>
+                  (<code>int</code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum number of files to download (defaults to 10).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+          <details class="quote">
+            <summary>Source code in <code>rna\rna_extraction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_rna_data</span><span class="p">(</span>
+    <span class="n">species_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">file_number_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download fastq files containing RNA-seq data from NCBI SRA API</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        species_data (Dict[str, int]): A dictionary with species names as keys and tax IDs as values.</span>
+<span class="sd">        output_directory (str): Full directory path where the downloaded files will be stored.</span>
+<span class="sd">        file_number_limit (int): Maximum number of files to download (defaults to 10).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading RNA data to </span><span class="si">{</span><span class="n">output_directory</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">Species: </span><span class="si">{</span><span class="n">species_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Obtain experiment accession numbers for each species</span>
+    <span class="c1"># Query NCBI SRA Database to obtain species metadata</span>
+    <span class="n">species_srx_map</span> <span class="o">=</span> <span class="n">query_and_get_srx_accession_ids</span><span class="p">(</span><span class="n">species_data</span><span class="p">)</span>
+
+    <span class="c1"># Storing only the needed data - SRX and SRR IDs - in a csv</span>
+    <span class="n">SRX_to_SRR_csv</span><span class="p">(</span><span class="n">species_srx_map</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;output_srx_srr.csv&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Use NCBI SRA API to download fastq files containing RNA-seq data</span>
+    <span class="n">csv_file_path</span> <span class="o">=</span> <span class="s2">&quot;/rna/output_srx_srr.csv&quot;</span>
+    <span class="n">download_sra_data</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">file_number_limit</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="rna.rna_extraction.process_rna_expression_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">process_rna_expression_data</span><span class="p">()</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Process raw transcriptomic data to filter genes and obtain median expression of each gene.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>rna\rna_extraction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">process_rna_expression_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process raw transcriptomic data to filter genes and obtain median expression of each gene.&quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Processing RNA expression data.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert raw quant.sf files (output of nf-core rna-seq pipeline) to csv files.</span>
+    <span class="n">raw_data_path</span> <span class="o">=</span> <span class="s2">&quot;rna/quant_files/raw&quot;</span>  <span class="c1"># path to raw quant files folder</span>
+    <span class="n">convert_all_species_files</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">)</span>
+
+    <span class="c1"># Create expression matrices of length scaled TPM values, indexed by transcript ID.</span>
+    <span class="n">processed_data_path</span> <span class="o">=</span> <span class="s2">&quot;rna/quant_files/processed&quot;</span>
+    <span class="n">create_expression_matrix</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">,</span> <span class="n">processed_data_path</span><span class="p">)</span>
+
+    <span class="c1"># Process expression matrices to filter for transcript with RSD &lt; 2 and calculate median expression</span>
+    <span class="n">median_expression_path</span> <span class="o">=</span> <span class="s2">&quot;rna/median_expression_files&quot;</span>
+    <span class="n">process_expression_matrix</span><span class="p">(</span><span class="n">processed_data_path</span><span class="p">,</span> <span class="n">median_expression_path</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../rna_download_logic/query_and_csv_production/" class="btn btn-neutral float-left" title="query_and_csv_production"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/TransferLearningForDNA/genomic_data_extraction" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../rna_download_logic/query_and_csv_production/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme_extra.js" defer></script>
+    <script src="../../../js/theme.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
