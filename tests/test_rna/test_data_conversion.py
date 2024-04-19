@@ -5,6 +5,7 @@ from rna.rna_download_logic.query_and_csv_production import query_and_get_srx_ac
 from rna.rna_download_logic.mRNA_fastq_download import download_sra_data
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
 from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
+from rna.data_conversion_helper_functions.process_expression_matrix import process_expression_matrix
 
 @pytest.fixture
 def mock_sra_search():
@@ -40,4 +41,11 @@ def test_create_expression_matrix_no_files():
     with patch('os.listdir', return_value=[]) as mock_listdir, \
          patch('os.path.isdir', return_value=True) as mock_isdir:
         create_expression_matrix("raw_data_path", "processed_data_path")
+        mock_listdir.assert_called()
+
+def test_process_expression_matrix_no_data():
+    with patch('os.listdir', return_value=[]) as mock_listdir, \
+         patch('os.path.isdir', return_value=True) as mock_isdir, \
+         patch('pandas.read_csv') as mock_read_csv:
+        process_expression_matrix("file_path", "output_file_path")
         mock_listdir.assert_called()
