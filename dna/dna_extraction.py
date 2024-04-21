@@ -1,7 +1,6 @@
 # Import the Ensembl API module
 import os
-import ensembl_api
-import dna_feature_extraction
+from dna import ensembl_api, dna_feature_extraction
 
 
 def query_dna_sequences_from_ensembl(output_folder: str) -> None:
@@ -52,3 +51,4 @@ def extract_dna_data() -> None:
 
     # Calculate genomic features
     dna_feature_extraction.extract_dna_features(extracted_dna_storage_folder)
+    print("\nExtraction of DNA features is now complete!\n")

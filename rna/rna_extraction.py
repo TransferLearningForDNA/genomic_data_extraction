@@ -1,18 +1,18 @@
 from typing import Dict, Optional
-from data_conversion_helper_functions.convert_quantsf_to_csv import (
+from rna.data_conversion_helper_functions.convert_quantsf_to_csv import (
     convert_all_species_files,
 )
-from data_conversion_helper_functions.create_expression_matrix import (
+from rna.data_conversion_helper_functions.create_expression_matrix import (
     create_expression_matrix,
 )
-from data_conversion_helper_functions.process_expression_matrix import (
+from rna.data_conversion_helper_functions.process_expression_matrix import (
     process_expression_matrix,
 )
-from rna_download_logic.query_and_csv_production import (
+from rna.rna_download_logic.query_and_csv_production import (
     query_and_get_srx_accession_ids,
     SRX_to_SRR_csv,
 )
-from rna_download_logic.mRNA_fastq_download import download_sra_data
+from rna.rna_download_logic.mRNA_fastq_download import download_sra_data
 
 
 def process_rna_expression_data() -> None:
@@ -43,21 +43,22 @@ def download_rna_data(
     Args:
         species_data (Dict[str, int]): A dictionary with species names as keys and tax IDs as values.
         output_directory (str): Full directory path where the downloaded files will be stored.
-        file_number_limit (int): Maximum number of files to download (defaults to 10).
+        file_number_limit (int): Maximum number of files to download per species (defaults to 10).
     """
 
     print(f"Downloading RNA data to {output_directory}. \nSpecies: {species_data}")
 
     # Obtain experiment accession numbers for each species
     # Query NCBI SRA Database to obtain species metadata
-    species_srx_map = query_and_get_srx_accession_ids(species_data)
+    species_srx_map = query_and_get_srx_accession_ids(species_data, limit=file_number_limit)
 
     # Storing only the needed data - SRX and SRR IDs - in a csv
-    SRX_to_SRR_csv(species_srx_map, output_file="output_srx_srr.csv")
+    csv_file_path = "rna/output_srx_srr.csv"
+    SRX_to_SRR_csv(species_srx_map, output_file=csv_file_path)
 
     # Use NCBI SRA API to download fastq files containing RNA-seq data
-    csv_file_path = "/rna/output_srx_srr.csv"
-    download_sra_data(csv_file_path, output_directory, limit=file_number_limit)
+    total_number_of_files = file_number_limit * len(species_data)
+    download_sra_data(csv_file_path, output_directory, limit=total_number_of_files)
 
     # (Optional) View the returned metadata
     # all_species_metadata = view_srx_metadata(species_srx_map)
