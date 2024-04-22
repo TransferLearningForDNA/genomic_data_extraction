@@ -14,8 +14,6 @@ from dna import dna_feature_extraction
 
 
 def test_compute_cds_codon_frequencies_standard_case():
-    """Tests that cds codon frequencies are correctly calculated."""
-
     codons = ["".join(combination) for combination in product("ACGT", repeat=3)]
     cds = "AGTCAAAGTTAT"
 
@@ -40,11 +38,6 @@ def test_compute_cds_codon_frequencies_standard_case():
 
 
 def test_compute_cds_codon_frequencies_empty_case():
-    """
-    Tests that cds codon frequencies are correctly calculated
-    when an empty cds sequence is provided.
-    """
-
     codons = ["".join(combination) for combination in product("ACGT", repeat=3)]
     cds = ""
 
@@ -62,8 +55,6 @@ def test_compute_cds_codon_frequencies_empty_case():
 
 
 def test_compute_lengths_standard_case():
-    """Tests that the length of cds, utr3 and utr5 DNA sequences are correctly calculated."""
-
     cds = "AGTCAAAGTTAT"
     utr5 = "AAA"
     utr3 = "TATAAA"
@@ -78,9 +69,6 @@ def test_compute_lengths_standard_case():
 
 
 def test_compute_lengths_empty_case():
-    """Tests that the length of cds, utr3 and utr5 DNA sequences are correctly calculated
-    when empty cds, utr5, utr3 sequences are provided."""
-
     cds = ""
     utr5 = ""
     utr3 = ""
@@ -95,14 +83,6 @@ def test_compute_lengths_empty_case():
 
 
 def test_compute_gc_content_sequence_components_standard_case():
-    """
-    Tests that the GC content of the cds, utr3 and utr5 sequences
-    is correctly calculated.
-
-    GC content is defined as (G + C)/(A + T + G + C), where each letter
-    represents the number of times that nucleotide appears in the DNA sequence.
-    """
-
     cds = "AGTCAAAGTTAT"
     utr5 = "AAGTGC"
     utr3 = "TATAAAGGGCCC"
@@ -119,14 +99,6 @@ def test_compute_gc_content_sequence_components_standard_case():
 
 
 def test_compute_gc_content_sequence_components_empty_case():
-    """
-    Tests that the GC content of the cds, utr3 and utr5 sequences
-    is correctly calculated.
-
-    GC content is defined as (G + C)/(A + T + G + C), where each letter
-    represents the number of times that nucleotide appears in the DNA sequence.
-    """
-
     cds = ""
     utr5 = ""
     utr3 = ""
@@ -143,15 +115,6 @@ def test_compute_gc_content_sequence_components_empty_case():
 
 
 def test_compute_gc_content_wobble_positions_standard_case():
-    """
-    Tests that the GC content of positions 2 and 3 in codons in the cds
-    is correctly calculated.
-
-    GC content is defined as (G + C)/(A + T + G + C), where each letter
-    represents the number of times that nucleotide appears in a given
-    wobble position
-    """
-
     cds = "AGTCGCAAATTT"
 
     wobble_gc_content = dna_feature_extraction.compute_gc_content_wobble_positions(
@@ -165,15 +128,6 @@ def test_compute_gc_content_wobble_positions_standard_case():
 
 
 def test_compute_gc_content_wobble_positions_empty_case():
-    """
-    Tests that the GC content of positions 2 and 3 in codons in the cds
-    is correctly calculated.
-
-    GC content is defined as (G + C)/(A + T + G + C), where each letter
-    represents the number of times that nucleotide appears in a given
-    wobble position
-    """
-
     cds = ""
 
     wobble_gc_content = dna_feature_extraction.compute_gc_content_wobble_positions(

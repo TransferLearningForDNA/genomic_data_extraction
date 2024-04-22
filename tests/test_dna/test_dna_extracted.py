@@ -11,13 +11,6 @@ from dna import ensembl_api
 
 
 def test_read_gene_ids_from_file():
-    """Tests that genes are read correctly by read_gene_ids_from_file in the
-    ensembl API.
-
-    Two Homo sapiens genes have been defined in gene_lists/homo_sapiens_genes.txt.
-    The function read_gene_ids_from_file() is called using that file and the
-    output of the function is compared with the ground truth gene ids.
-    """
     filepath = os.path.join(
         os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
     )
@@ -27,9 +20,6 @@ def test_read_gene_ids_from_file():
 
 
 def test_get_species_name():
-    """Tests that species name is read correctly from filename by
-    get_species_name in the ensembl API."""
-
     filepath = os.path.join(
         os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
     )
@@ -39,16 +29,6 @@ def test_get_species_name():
 
 
 def test_check_extracted_components():
-    """Tests that gene components are correctly extracted by the Ensembl API
-    for mandatory species.
-
-    A txt file has been created for each mandatory species containing two gene
-    ids. The Ensembl API is used to extract the gene components for the two
-    genes defined for each species. The correctness of the extracted sequences
-    is automatically verified against a folder containing the csv files with
-    the ground truth dna components for each of the genes processed.
-    """
-
     # Define the folder where gene ids of the 5 mandatory species are stored
     gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
     # Define the folder where the extracted dna sequences should be stored
