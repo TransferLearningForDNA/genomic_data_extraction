@@ -27,8 +27,10 @@ def mock_query_sra():
 def mock_csv_data():
     return pd.DataFrame(
         {
-            "srr_id": ["SRR123456", "SRR123457"],
-            "species": ["Homo sapiens", "Mus musculus"],
+            "species": ["Homo sapiens"],
+            "taxonomy_id": [9606],
+            "srx_id": ["DRX469035"],
+            "srr_id": ["DRR484809"],
         }
     )
 
@@ -116,6 +118,30 @@ def test_download_sra_data_limit_reached():
     ) as mock_run:
         mock_exists.return_value = True
         download_sra_data("dummy.csv", "dummy_dir", 0)
+        mock_run.assert_not_called()
+
+
+def test_download_sra_data_limit_reached():
+    mock_csv_data = pd.DataFrame(
+        {
+            "species": ["Homo sapiens", "Homo sapiens"],
+            "taxonomy_id": [9606, 9606],
+            "srx_id": ["DRX469035", "DRX469034"],
+            "srr_id": ["DRR484809", "DRR484808"],
+        }
+    )
+
+    with patch("pandas.read_csv", return_value=mock_csv_data) as mock_read_csv, patch(
+        "os.path.exists", return_value=False
+    ) as mock_exists, patch("os.makedirs") as mock_makedirs, patch(
+        "subprocess.run"
+    ) as mock_run:
+
+        download_sra_data("dummy.csv", "dummy_dir", 0)
+
+        mock_read_csv.assert_called_once_with("dummy.csv")
+        mock_makedirs.assert_called_once_with("dummy_dir")
+        mock_exists.assert_called()
         mock_run.assert_not_called()
 
 
