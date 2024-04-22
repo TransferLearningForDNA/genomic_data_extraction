@@ -23,7 +23,6 @@ def extract_dna_features(folder_path: str) -> None:
     for filename in os.listdir(folder_path):
         if filename.endswith(".csv"):
             file_path = os.path.join(folder_path, filename)
-            print("Extracting DNA features from:", filename)
 
             # Create a temporary file to write the modified data
             temp_file = tempfile.NamedTemporaryFile(
@@ -38,6 +37,7 @@ def extract_dna_features(folder_path: str) -> None:
 
                 # Define the fieldnames for the output CSV
                 header = reader.fieldnames
+
                 if header != [
                     "ensembl_gene_id",
                     "transcript_id",
@@ -47,7 +47,9 @@ def extract_dna_features(folder_path: str) -> None:
                     "utr3",
                     "terminator",
                 ]:
-                    break
+                    continue
+                print("Extracting DNA features from:", filename)
+
                 new_columns = []
                 codons = [
                     "".join(combination) for combination in product("ACGT", repeat=3)
