@@ -4,8 +4,6 @@
 This repository contains a pipeline for collecting, processing, and storing DNA and mRNA expression
 profile data of given species from publicly available genetic databases.
 
-## Features
-
 ### 1. Data Acquisition:
 
 - Extract DNA data from Ensembl genomic database. Includes nucleotide sequences of gene components
@@ -18,191 +16,317 @@ profile data of given species from publicly available genetic databases.
 - Calculate Relative Standard Deviation (RSD) and median expression, and filter genes with RSD < 2.
 - Merge genomic and transcriptomic data tables by gene ID.
 
-### 3. Data Preparation for Machine Learning:
+[//]: # (### 3. Data Preparation for Machine Learning:)
 
-- Discount irrelevant genes (low expression).
-- Pad remaining promoters and terminators to standardise length.
-- Pad all UTRs to the same length to ensure consistency.
-- Drop genes with incomplete regulatory sequences.
-- Combine all sequences (with equal length) into a unified dataset.
-- One-Hot Encode (OHE) and stack sequence data for machine learning model compatibility.
+[//]: # ()
+[//]: # (- Discount irrelevant genes &#40;low expression&#41;.)
 
-## Table of Contents
+[//]: # (- Pad remaining promoters and terminators to standardise length.)
 
-## Prerequisites
-List of software, libraries, and tools required (e.g., Python, AWS CLI, etc.).
+[//]: # (- Pad all UTRs to the same length to ensure consistency.)
+
+[//]: # (- Drop genes with incomplete regulatory sequences.)
+
+[//]: # (- Combine all sequences &#40;with equal length&#41; into a unified dataset.)
+
+[//]: # (- One-Hot Encode &#40;OHE&#41; and stack sequence data for machine learning model compatibility.)
+
+
+[//]: # (## Table of Contents)
 
 ## Installation
-Step-by-step guide on setting up the environment and installing dependencies.
 
-### NCBI SRA Toolkit (for the rnaseq workflow)
+### Prerequisites
+Before you begin the setup process, ensure you have the following prerequisites installed on your system:
+1. This repository runs on **python version 3.10**. Ensure you have this installed.
+2. The nf-core/rnaseq pipeline requires **Conda**. If you do not have Conda installed, we recommend installing **Miniconda**.
 
-The fasterq-dump command-line tool, part of the NCBI SRA Toolkit, also needs to be installed on your system or available in your system's PATH. brew install sra-toolkit. Note I did this in a local venv (recommend using a venv) using the followign steps:
+### Software Dependencies
 
-Download the SRA Toolkit:
-1. `run on terminal: curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz`
+**NOTE**: This repository requires two virtual environments for setup: a general `venv` for overall software dependencies, and a `conda` environment specific to the nf-core/rnaseq pipeline.
+You can create the conda environment later, just before you run the nf-core/rnaseq pipeline. Refer back to these instructions at that time.
 
-2. `tar -vxzf sratoolkit.current-mac64.tar.gz`
-3. `export PATH=$PATH:$PWD/the_name_of_your_extracted_directory/bin`
-e.g. mine was : `"sratoolkit.3.0.10-mac-x86_64"`
+### _1. venv_
+Create a virtual environment `venv` with **python version 3.10**.
 
-4. Then to avoid having to set the PATH every time, you can add the export line to your shell's profile script (example path given below, change it to your path):
-`echo 'export PATH=$PATH:/Users/meghoward/Documents/Imperial MSc/Term_2/Phycoworks/genomic_data_extraction/rna/sratoolkit.3.0.10-mac-x86_64/bin' >> ~/.zshrc`
+Activate the venv:
+```bash
+source <venv_name>/bin/activate
+```
 
-5. Activate venv whenever I want to run the code: my venv - `source notebook_to_py/bin/activate`
+Install the required depencencies:
+```bash
+pip install -r requirements.txt
+```
 
-### Dependencies (for the rnaseq workflow)
+### NCBI SRA Toolkit
+The NCBI SRA Toolkit is required for the download and extraction of the mRNA data from NCBI SRA (fasterq-dump command-line tool).
 
-1. First, create a conda virtual environment: `conda create --name <name_of_your_env>`. This environment will be stored inside, e.g., one of the directories for the miniconda distribution where your `conda` is from. We recommend using conda because most packages that the RNA sequencing worklow from nextflow uses can be easily installed using the bioconda channel of conda.
+Please follow the instructions below (run on terminal):
+1. Download and extract the SRA Toolkit: 
+```bash
+curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
+tar -vxzf sratoolkit.tar.gz
+```
+2. Temporary setup: Replace '<name_of_your_extracted_directory>' with the actual directory name (e.g., 'sratoolkit.3.0.10-mac-x86_64')
+```angular2html
+export PATH=$PATH:$PWD/<name_of_your_extracted_directory>/bin
+```
+3. For a permanent setup, add the PATH to your shell's profile script.
+Replace '<path_to_your_extracted_directory>' with the full path and adjust the file name (.zshrc, .bashrc or .bash_profile) as necessary.
+```bash
+echo 'export PATH=$PATH:/<path_to_your_extracted_directory>/bin' >> ~/.zshrc
+```
 
-2. Activate your new environment: `conda activate`
+### _2. conda_
+### nf-core/rnaseq pipeline
 
-3. Install the following packages, after ensuring your virtual environment is activated:
+The nf-core/rnaseq pipeline is used to extract gene expression levels from mRNA sequencing data.
+We recommend using Conda with the bioconda channel for easy installation of the packages required by the Nextflow RNA sequencing workflow.
 
-   - `conda install trim-galore`: you may need to `conda upgrade trim-galore` to get rid of an issue that has do with an obsolete `—cores` flag that is no longer used in newer versions of trim-galore
-   - `conda install gffread`
-   - `conda install fq`
-   - `conda install -c conda-forge -c bioconda salmon=1.3.0`: specify the version for salmon, otherwise `conda install salmon` installs an obsolete version that does not integrate well with the other dependencies
+1. Create a conda virtual environment. This will create a new virtual environment stored within your Miniconda directory structure.
+
+```bash
+conda create --name <name_of_your_env>
+```
+
+2. Activate the conda environment and install the following packages:
+
+```bash
+# Ensure your conda environment is activated before installing packages.
+conda activate <name_of_your_env>
+
+# Note: 
+# - You may need to upgrade trim-galore with `conda upgrade trim-galore` if you encounter an issue with an obsolete `—cores` flag.
+# - Specify version 1.3.0 for salmon to avoid compatibility issues with other dependencies.
+conda install trim-galore
+conda install gffread
+conda install fq
+conda install -c conda-forge -c bioconda salmon=1.3.0
+conda install nextflow
+```
+
+3. If you plan to use this environment on another machine or share it, create a YML file that lists all the installed packages.
+Removing build information from the YML file makes the environment more portable across different operating systems (e.g. MacOS -> Linux).
+
+```bash
+# Export environment to yml
+# Optional flag for removing build strings: --no-build
+conda <name_of_activated_conda_env> export --no-build > <env_file_name>.yml
+
+# Recreate environment from yml file
+conda env -f <env_file_name>.yml
+```
 
 
+  
 ## Usage
-Instructions on how to use the pipeline (starting from the *outputs* of the RNA sequencing workflow), including commands and expected inputs/outputs.
 
-TBC
+**NOTE**: The pipeline operates in discrete steps and handles large datasets, notably fastq files, which may require significant storage. Consider the following recommendations to ensure smooth operation:
+
+- **Storage Planning**: Anticipate the need for substantial storage capacity. You may need to execute some sections of the pipeline in batches to manage space efficiently.
+
+- **Time Expectations**: Downloading DNA and mRNA data, along with preprocessing of fastq files, can be time-consuming. Plan accordingly.
+
+- **Performance Optimisation**: We advise running the DNA extraction from Ensembl database on High-Performance Computing (HPC) systems.
+We also recommend ensuring that your machine has enough RAM to handle the computational load of the nf-core/rnaseq pipeline.
+You can use tools such as `tmux` to process tasks in parallel and reduce runtimes. The pipeline is also compatible with various HPC execution schedulers.
+Please find more information in the nextflow documentation: https://nf-co.re/docs/usage/configuration.
+
+
+[//]: # (TAILORED USE: specific species guidelines)
+
+### Genomic data
+
+#### 1. Get gene lists from Ensembl BioMart
+
+- Go to Ensembl BioMart page and download the gene ID lists of desired species as TSV/.txt files (select species, select attribute Gene Stable ID and click 'Results').
+https://www.ensembl.org/biomart/martview
+- Store the files in the repository `dna/gene_lists/` folder. 
+
+#### 2. Extract and process DNA data _(all species)_
+
+Query genomic sequences from the Ensembl database and extract DNA components including:
+- DNA sequences: promoter, utr5, cds, utr3 and terminator
+- Codon frequencies in the CDS (coding sequence)
+- Sequence lenghts: cds_length, utr5_length, utr3_length
+- GC content: utr5_gc, cds_gc, utr3_gc, cds_wobble2_gc, cds_wobble3_gc
+
+_Note:_ You might want to test this first with a small dataset e.g. `dna/gene_lists/homo_sapiens_genes_small.txt`.
+
+- After you have added the desired files to `dna/gene_lists/` run the following command in the terminal.
+```bash
+python3.10 main.py extract_dna_data
+```
+
+- The obtained CSV files will be saved under `dna/csv_files` and named `ensembl_data_<species_name>.csv`.
+
+
+### Expression data
+
+#### 1. Download mRNA data from NCBI SRA _(all species, per species recommended)_
+
+- Ensure a file named `species_ids.csv` is located in the main repository directory.
+Please edit the example file provided in the repository with the desired species names and taxonomy IDs.
+The csv file should contain columns `name` and `tax_id`.
+
+- The following command uses NCBI SRA API to download fastq files for given species to the specified output_directory.
+`<output_directory>`: Specifies the path to the directory where the RNA-seq data will be saved. Ensure this directory exists and is writable. Please provide the full path to avoid errors.
+`<file_number_limit>`: Specifies the maximum number of files to be downloaded per species (i.e. How many RNA-seq experiment run samples do you wish to download?).
+Defaults to 10 as a precaution due to large storage requirements.
+
+```bash
+# file_number_limit (int) argument is optional (defaults to 10)
+python main.py download_rna_data <output_directory> <file_number_limit>
+```
+
+**Important notes**:
+- Ensure the NCBI SRA Toolkit is correctly installed (see Installation instructions).
+- The species_ids.csv file must be correctly formatted and located in your main repository directory.
+- Ensure the output directory has sufficient storage space for the downloaded data.
+As fastq files can be large, it's advisable to download the files per species or in batches to manage disk space effectively.
+
+#### 2. Run nf-core/rnaseq pipeline to obtain gene expression matrix _(per species)_
+
+- Once downloaded, zip the fastq files by running the following commands:
+
+```bash
+# Go to the output folder directory (e.g. species-specific) containing the fastq files you would like to process. 
+cd <fastq_files_directory>
+# Convert all files from .fastq to .fastq.gz
+# optional flag '-k' to keep original files (avoids re-downloading in case the zipping corrupts the files)
+gzip -k *
+```
+
+- The pipeline requires FASTA and GFF3 reference genome files. Manually download these from the Ensembl website (it should take a few seconds).
+  - Species Ensembl page -> Gene annotation section
+  - Click on FASTA (takes you to another page e.g. https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-58/fasta/chlamydomonas_reinhardtii/)
+    1. Under `dna/` download the file ending in `.dna.toplevel.fa.gz`
+    2. Under `cdna/` download the file ending in `.cdna.all.fa.gz`.
+  - Click on GFF3 (take you to another page e.g. https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-58/gff3/chlamydomonas_reinhardtii/). Download the file ending in `.gff3.gz`. 
+    - IMPORTANT: Manually edit the extension from `.gff3.gz` to `.gff.gz` (otherwise the rnaseq pipeline does not recognise the file). In the terminal, type: `mv <name_of_file.gff3.gz> <name_of_file.gff.gz>`.
+
+- Ensure a conda environment has been created containing all required dependencies for the nf-core/rnaseq pipeline (see Installation section).
+
+- Activate the conda environment and create the salmon index file (run this only once per species).
+
+```bash
+# If conda is not activated run:
+# source ~/.zshrc (or .bashrc)
+conda activate <virtual_env_name>
+
+# transcript_fasta file: .cdna.all.fa.gz
+salmon index -t <path/to/the/transcript_fasta/file> -i <path/to/directory/to/store/salmon_index/files> 
+```
+
+- Create a samplesheet csv file for a species used as input to the nf-core/rna-seq pipeline.
+  - Note: You can also process a few samples (from the same species) at a time, if you are restrained by compute resources: this would require multiple csv files. In `rna/data_conversion_helper_functions/divide_samplesheet_into_batches.py`, you can specify the number of samples (batch) that each csv file should contain.
+
+```bash
+"""
+Create samplesheet csv file with columns: sample, fastq_1 (full path), fastq_2, strandedness
+Make sure to update the directory variables within the script to point to the correct paths before running. 
+- local_dir_path_with_fastq_files_for_one_species
+- local_dir_path_to_save_samplesheets
+"""
+# Run the script:
+python3.10 rna/data_conversion_helper_functions/create_samplesheet_csv.py
+                                     
+# optional: run divide_samplesheet_into_batches.py
+# currently, you need to manually specify the path of the original csv file containing all the samples from that one species
+```
+
+- Change the file paths in the provided template YAML file (`rna/rnaseq_params.yaml`), which specifies the pipeline parameters for running rna sequencing for one species.
+
+- Run the pipeline (per species), either inputting all samples in one go (using the original, full csv file) or a few samples at a time only (using a minibatch csv file, generated previously by splitting the original csv file into multiple csv files).
+
+```bash
+# If conda is not activated run:
+# source ~/.zshrc (or .bashrc)
+conda activate <virtual_env_name>
+
+# Run the pipeline:
+nextflow run nf-core/rnaseq -params file /path/to/yaml/with/params/to/rnaseq/pipeline -r 3.14.0 --max_cpus <integer_max_cpus_on_machine> --max_memory <float_max_memory_on_machine>.GB
+
+# Extract the necessary quant.sf files from the pipeline's output, add the sample name to the filename and move to species-specific folder.
+# Make sure to update the source_directory and destination_directory variables within the script to point to the correct paths before running.
+python3.10 rna/data_conversion_helper_functions/rename_quant_output_and_move_to_dir.py
+```
+
+- WARNINGS:
+  1. Possible error when running the nf-core rnaseq pipeline, but this is not a problem if quant.sf files have been created (i.e., if salmon quantification has been completed successfully). In our case, the pipeline consistently fails at the TX2GENE stage (called NFCORE_RNASEQ:RNASEQ: QUANTIFY_PSEUDO_ALIGNMENT:TX2GENE), which occurs after the quantification stage.
+  2. Possible error with certain samples with data quality issues. In that case, no output from the quantification stage (i.e., quant.sf files) will be saved for any of the samples in the csv file. We thus recommend working with batches of samples from the same species. If a sample is faulty, its SRR ID will appear in the error message of the pipeline, and you are advised to remove that sample/row from the samplesheet csv file and try running the pipeline again to obtain the outputs for the other samples.
+
+#### 3. Process expression data _(all species)_
+- Run the following command to process raw transcriptomic data (quant.sf files obtained from the nf-core/rnaseq pipeline), filter transcripts with RSD < 2 and obtain the median expression (length scaled TPM) of each gene.
+
+```bash
+python3.10 main.py process_rna_expression
+```
+
+### Final dataset
+
+#### 1. Merge processed genomic and transcriptomic data
+
+```bash
+python3.10 main.py merge_datasets
+```
+
+The final dataset csv files can be found under `merged_csv_files` and will be named `merged_<species_name>`.
+
+Here is an example of what such a file will look like (only a snippet of the data for one gene is depicted):
+
+```text
+ensembl_gene_id,transcript_id,promoter,utr5,cds,utr3,terminator,AAA,AAC,AAG,AAT,ACA,ACC,ACG,ACT,AGA,AGC,AGG,AGT,ATA,ATC,ATG,
+ATT,CAA,CAC,CAG,CAT,CCA,CCC,CCG,CCT,CGA,CGC,CGG,CGT,CTA,CTC,CTG,CTT,GAA,GAC,GAG,GAT,GCA,GCC,GCG,GCT,GGA,GGC,GGG,GGT,GTA,GTC,
+GTG,GTT,TAA,TAC,TAG,TAT,TCA,TCC,TCG,TCT,TGA,TGC,TGG,TGT,TTA,TTC,TTG,TTT,cds_length,utr5_length,utr3_length,utr5_gc,cds_gc,
+utr3_gc,cds_wobble2_gc,cds_wobble3_gc,median_exp
+CMA001C,CMA001CT,ATGTAAAAATACACTCCACGGAGGATTTTTCGGTAAATTGGGTGAAACGTGAGGAAGTCTCCGATTGTGAAAGTATTCTACGCGGATCATTGGTCTGCGCCAGCCC
+TGCAAATGCATGGTGATGCAAGGCTTGCCAGCGGCAGTTGAAATACATGCTCAAAGCTTACGCCGAATAAGGTTAGATGAAAAAGTGACTTACGAGTTCCCACTTCGTGGGTTGATAGCTGAA
+[...]
+0.0152838427947598,0.0,0.0349344978165938,0.029475982532751,0.0054585152838427,0.0010917030567685,0.0207423580786026,
+0.0163755458515283,0.0240174672489082,2748,,4.0,,0.5505822416302766,0.5,0.537117903930131,0.601528384279476,34.8769964989974
+```
+
+
+
 
 ## Directory Structure
 Description of the repository's organization, explaining what each file and folder contains.
 
-### dna/
-
-#### gene_lists/
-
-#### test/
-    - csv_files/
-    - gene_lists/
-    - ground_truth_components/
-    - test_dna_extracted.py
-
-#### dna_extraction.py
-#### dna_feature_extraction.py
-#### ensembl_api.py
-#### removeshortpromotersandterminators.py
+- `dna/`: Contains scripts and data for DNA extraction and feature analysis.
+  - `dna_extraction.py`: Extracts and processes genomic data from Ensembl database.
+  - `dna_feature_extraction.py`: Analyses DNA sequences to extract features ( e.g.codon frequencies, lengths, GC content).
+  - `ensembl_api.py`: Interacts with the Ensembl API for data retrieval.
+  - `gene_lists/`: Directory containing lists of gene stable IDs for each species.
+  - `csv_files/`: Directory containing csv files with raw (temporary) or processed DNA data. 
 
 
-
-### rna/
-
-#### rna_download_logic/
-
-This repository contains Python scripts for extracting RNA data from the NCBI Sequence Read Archive (SRA) database. It includes functionalities for querying metadata from the SRA database, retrieving experiment accession numbers, and downloading SRA data.
-
-##### query_and_csv_production.py
-
-    This script queries the NCBI SRA database for a given species and taxonomy ID. It retrieves metadata for RNA-Seq experiments and stores the results in a DataFrame.
-        
-    Functions:
-
-        query_sra(species, taxonomy_id): Queries the SRA database for metadata of RNA-Seq experiments for a given species and taxonomy ID.
-
-        query_and_get_srx_accession_ids(species_data): Calls query_sra() for each species in a dictionary and creates a dictionary mapping species names to their experiment accession numbers (SRX IDs).
-
-        view_srx_metadata(species_srx_map): Populates a dictionary with DataFrames containing metadata for each species (optional).
-
-        SRX_to_SRR_csv(species_srx_map, output_file): Saves the species names, taxonomy IDs, SRX IDs, and corresponding SRR IDs to a CSV file.
-
-            You must manually enter your Entrez.email and species data input.
+- `rna/`: Scripts and resources for RNA data processing and analysis.
+    - `rna_extraction.py`: Script for RNA sequence extraction (download & processing).
+    - `rna_download_logic/`: Logic for downloading RNA data from NCBI SRA.
+    - `data_conversion_helper_functions/`: Helper scripts for data format conversion and expression matrix processing.
+    - `quant_files/`: Contains raw and processed nf-core/rnaseq pipeline output data.
+      - `processed/`: Contains expression matrix csv files for each species (length-scaled TPM of all RNA-seq samples).
+      - `raw/`: Contains folders for each species within which are stored `sf_files/` (raw nf-core/rnaseq Salmon quantification output files) and `csv_files/` (converted format).
+    - `media_expression_files/`: Contains csv files with calculated median expression of selected transcripts.
+    - `rnaseq_params.yaml`: Template YAML file used to run the nf-core/rnaseq pipeline.
 
 
-    Usage:
-
-        Querying SRA Database:
-
-            Edit species_data dictionary in query_sra.py to specify the species of interest along with their taxonomy IDs.
-
-            Run query_sra.py to query the SRA database and generate a CSV file (output_srx_srr.csv) containing the metadata.
-
-##### mRNA_fastq_download.py
-
-    This script downloads SRA data using the fasterq-dump command for each SRR ID listed in the CSV file generated by query_and_get_srx_accession_ids().
-        
-    Functions:
-
-        download_sra_data(csv_file_path, output_directory, limit=1): Downloads SRA data using fasterq-dump command from the CSV file containing SRR IDs.
+- `dataset_integration.py`: Integrates DNA and RNA datasets.
+- `main.py`: The main script to run analyses.
+- `requirements.txt`: Required Python packages for the repository.
+- `species_ids.csv`: CSV file containing s`pecies identifiers used in analysis.
+- `rnaseqpipeline_conda_env.yml`
 
 
-    Usage:
-
-        Downloading SRA Data:
-
-            Ensure SRA-toolkit is installed correctly in your environment.
-
-            Specify the CSV file path (csv_file_path) and output directory (output_directory) in download_sra_data.py.
-
-            Run download_sra_data.py to download SRA data using fasterq-dump command.
-
-    Notes:
-
-        Ensure proper installation of SRA-toolkit for downloading SRA data.
-
-        Adjust the download limit parameter in download_sra_data.py according to memory constraints and download requirements.
+- `tests/`: Unit tests for DNA and RNA processing scripts.
+- `tutorials/`: Jupyter notebooks.
+- `visualizations/`: Scripts for exploratory data analysis (EDA) visualisations.
 
 
-#### data_conversion_helper_functions/
+For detailed usage and function descriptions, refer to the corresponding script's documentation.
 
-    - convert_quantsf_to_csv.py
-    - create_expression_matrix.py
-    - create_samplesheet_csv.py
-    - divide_samplesheet_into_batches.py
-    - process_expression_matrix.py
-    - rename_quant_output_and_move_to_dir.py
-    - zip_fasta_files.py
-
-
-
-#### median_expression_files/
-    - rna_expression_chlamydomonas_reinhardtii.csv
-
-#### quant_files/
-
-##### processed/
-    - chlamydomonas_reinhardtii.csv
-
-##### raw/
-    - chlamydomonas_reinhardtii/csv_files/
-    - chlamydomonas_reinhardtii/sf_files/
-
-
-
-#### test/
-    - quant_test.csv
-    - quant_test.sf
-
-#### output_srx_srr.csv
-#### requirements.txt
-#### rna_extraction.py
-#### rnaseq_params.yaml
-#### run_nfcore_rnaseq_pipeline.py
-#### sratoolkit.tar.gz
-
-
-
-### tests/
-#### test_dna/
-#### test_rna/
-#### test_main.py
-
-
-### tutorials/
-
-### visualisations/
-
-### dataset_integration.py
-
-### main.py
-
-### requirements.txt
-
-### species_ids.csv
 
 ## Running the Tests
 TBC

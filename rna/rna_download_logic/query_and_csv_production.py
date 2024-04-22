@@ -1,31 +1,39 @@
-import os
-import subprocess
+from typing import Dict, List, Optional
 import pandas as pd
-import csv
-from Bio import Entrez
+
 from pysradb import SRAweb
 from pysradb.search import SraSearch
-from pysradb.sradb import SRAdb
-
-# Configuration your NCBI API email here
-Entrez.email = "email@example.com"
 
 
-# Step 1: Query NCBI SRA Database -> outputs species metadata
-def query_sra(species, taxonomy_id):
-    """This function queries the SRA database for a given species and taxonomy ID input in the main call (bottom of the page), and returns a DataFrame of the metadata results."""
+def query_sra(species: str, taxonomy_id: int, limit: Optional[int] = 10) -> pd.DataFrame | None:
+    """Query the SRA database for RNA-seq species metadata results given a species name and taxonomy ID.
 
+    Args:
+        species (str): Species scientific name (format e.g. 'Homo sapiens')
+        taxonomy_id (int): Taxonomy ID of the species (e.g. 9606)
+        limit (Optional[int]): Maximum number of experiment accessions IDs to query (defaults to 10).
+
+    Returns:
+        DataFrame: Species metadata RNA-seq results (contains experiment accession IDs)
+    """
     # First, search for 'RNA-Seq' strategy
     try:
-        sra_search_rna_seq = SraSearch(organism=species, layout="paired", strategy=['RNA-Seq'], return_max=50)
+        sra_search_rna_seq = SraSearch(
+            organism=species, layout="paired", strategy=["RNA-Seq"], return_max=limit
+        )
         sra_search_rna_seq.search()
         df_rna_seq = sra_search_rna_seq.get_df()
 
         # If 'RNA-Seq' results are fewer than 50, search with 'OTHER' strategy
         df_other = pd.DataFrame()
-        if len(df_rna_seq) < 50:
-            additional_results_needed = 50 - len(df_rna_seq)
-            sra_search_other = SraSearch(organism=species, layout="paired", strategy=['OTHER'], return_max=additional_results_needed)
+        if len(df_rna_seq) < limit:
+            additional_results_needed = limit - len(df_rna_seq)
+            sra_search_other = SraSearch(
+                organism=species,
+                layout="paired",
+                strategy=["OTHER"],
+                return_max=additional_results_needed,
+            )
             sra_search_other.search()
             df_other = sra_search_other.get_df()
 
@@ -34,26 +42,40 @@ def query_sra(species, taxonomy_id):
         # print(f"{species} df_combined:", df_combined.columns)
 
         # Filter these combined dataframes to ensure they match the taxonomy ID
-        df_filtered = df_combined[df_combined['sample_taxon_id'] == str(taxonomy_id)]
+        df_filtered = df_combined[df_combined["sample_taxon_id"] == str(taxonomy_id)]
 
         return df_filtered if not df_filtered.empty else None
 
-    except Exception as e:
+    except (ValueError, KeyError, AttributeError) as e:
         print(f"Error querying {species}: {e}")
         return None
-    
-# Step 2: Function to query by Species Dictionary, and return experiment accession numbers
-def query_and_get_srx_accession_ids(species_data):
-    """This function calls the SRA query function above, and creates a dictionary of corresponding SRX IDs for each species name. This dictionary is then returned."""
+    except Exception as e:
+        print(
+            f"Error querying {species}, possibly due to external libraries or API (SraSearch): {e}"
+        )
+        return None
 
+
+def query_and_get_srx_accession_ids(
+    species_data: Dict[str, int], limit: Optional[int] = 10
+) -> Dict[str, List[str]]:
+    """Get experiment accession numbers (SRX IDs) for each species.
+
+    Args:
+        species_data (Dict[str, int]): A dictionary with species names as keys and taxonomy IDs as values.
+        limit (Optional[int]): Maximum number of experiment accessions IDs to query per species (defaults to 10).
+
+    Returns:
+        Dict[str, List[str]: A dictionary with species names as keys and SRX (experiment accession) ID as values.
+    """
     # Dictionary to store species names and their SRX IDs
     species_srx_map = {}
 
     for species, tax_id in species_data.items():
-        df = query_sra(species, tax_id)
+        df = query_sra(species, tax_id, limit=limit)
 
         if df is not None and not df.empty:
-            srx_ids = df['experiment_accession'].unique()
+            srx_ids = df["experiment_accession"].unique()
             species_srx_map[species] = srx_ids
         else:
             print(f"No results or empty DataFrame for {species}")
@@ -64,10 +86,15 @@ def query_and_get_srx_accession_ids(species_data):
     return species_srx_map
 
 
-# Step 3: Viewing the returned metadata (optional)
-def view_srx_metadata(species_srx_map):
-    """This function takes the species_srx_map dictionary (from function above) and populated a dictionary with DataFrames containing the metadata for each species. This is optional but can be useful to view the metadata."""
+def view_srx_metadata(species_srx_map: Dict[str, List[str]]) -> Dict[str, pd.DataFrame]:
+    """Get metadata for all species and experiment accession numbers.
 
+    Args:
+        species_srx_map (Dict[str, List[str]]): A dictionary with species names as keys and SRX (experiment accession) IDs as values.
+
+    Returns:
+        Dict[str, pd.DataFrame]: A dictionary with species name as keys and dataframes with experiment metadata as values.
+    """
     db = SRAweb()
 
     all_species_metadata = {}
@@ -84,22 +111,29 @@ def view_srx_metadata(species_srx_map):
     return all_species_metadata
 
 
-# Step 4: Storing only the needed data - SRX and SRR IDs - in a csv
-def SRX_to_SRR_csv(species_srx_map, output_file):
-    """This function takes the species_srx_map dictionary and saves the species, taxonomy_id, srx_id and corresponding srr_ids to a CSV file. This is the file that will be used to download the data, and can also be used for handling logic in later stages of the processing and testing."""
+def SRX_to_SRR_csv(species_srx_map: Dict[str, List[str]], output_file: str) -> None:
+    """Save a CSV file with columns for species, taxonomy_id, srx_id, and corresponding srr_ids.
 
+    This function processes each species and its SRX IDs to fetch SRR IDs and taxonomy IDs from the SRA database,
+    and then compiles this information into a CSV file.
+    This file can be used for downloading data and for logic handling in later stages of processing and testing.
+
+    Args:
+        species_srx_map (Dict[str, List[str]]): A dictionary with species names as keys and lists of SRX (experiment accession) IDs as values.
+        output_file (str): The path to the output CSV file where the data will be saved.
+    """
     db = SRAweb()
-    data_rows = [] 
+    data_rows = []
 
     for species, srx_ids in species_srx_map.items():
         print(f"Processing {species} with {len(srx_ids)} SRX IDs...")
 
         for srx_id in srx_ids:
             df = db.sra_metadata([srx_id])
-            srr_ids = df['run_accession'].unique()
+            srr_ids = df["run_accession"].unique()
 
-            if not df.empty and 'organism_taxid' in df.columns:
-                taxonomy_id = df.iloc[0]['organism_taxid']
+            if not df.empty and "organism_taxid" in df.columns:
+                taxonomy_id = df.iloc[0]["organism_taxid"]
             else:
                 taxonomy_id = None  # Use None or an appropriate placeholder if taxonomy ID is not available
 
@@ -109,7 +143,7 @@ def SRX_to_SRR_csv(species_srx_map, output_file):
                     "species": species,
                     "taxonomy_id": taxonomy_id,
                     "srx_id": srx_id,
-                    "srr_id": srr_id
+                    "srr_id": srr_id,
                 }
                 data_rows.append(data_row)
 
@@ -120,26 +154,21 @@ def SRX_to_SRR_csv(species_srx_map, output_file):
     df_output.to_csv(output_file, index=False)
     print(f"Data saved to {output_file}")
 
+
 # Specify our species of interest here
 if __name__ == "__main__":
-
-    species_data = {
-    'Chlamydomonas reinhardtii': 3055,
-    # Removed: 'Ostreococcus tauri': 70448,
-    'Galdieria sulphuraria': 130081,
-    'Cyanidioschyzon merolae': 45157,
-    'Homo sapiens': 9606,
-    'Saccharomyces cerevisiae': 4932
+    species_tax_id = {
+        "Chlamydomonas reinhardtii": 3055,
+        "Galdieria sulphuraria": 130081,
+        "Cyanidioschyzon merolae": 45157,
+        "Homo sapiens": 9606,
+        "Saccharomyces cerevisiae": 4932,
     }
 
-    # NOTE: There is a discrepancy here for 'Cyanidioschyzon merolae', many entries are strain 10D - Taxonomy ID: 280699. 
-    # These get filtered out in this process. Not sure what we should decide to do / how to handle?
-    
-    species_srx_map = query_and_get_srx_accession_ids(species_data)
-    
+    species_srx_ids = query_and_get_srx_accession_ids(species_tax_id)
+
     # (Optional) View the returned metadata
     # all_species_metadata = view_srx_metadata(species_srx_map)
     # print(all_species_metadata['Homo sapiens'].head(5))
 
-    SRX_to_SRR_csv(species_srx_map, 'output_srx_srr.csv')
-
+    SRX_to_SRR_csv(species_srx_ids, "output_srx_srr.csv")
