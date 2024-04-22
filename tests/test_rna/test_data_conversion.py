@@ -15,6 +15,10 @@ from rna.data_conversion_helper_functions.process_expression_matrix import (
     calculate_median_expression,
     calculate_rsd,
 )
+from rna.data_conversion_helper_functions.create_samplesheet_csv import (
+    list_files,
+    create_samplesheet_for_one_species,
+)
 
 
 @patch("builtins.print")
@@ -301,3 +305,51 @@ def test_process_expression_matrix_with_data():
         mock_to_csv.assert_called_with(
             "output_file_path/rna_expression_species2.csv", index=False
         )
+
+
+def test_list_files():
+    with patch("os.walk") as mock_walk:
+        mock_walk.return_value = [
+            ("/fake/dir", ("subdir",), ("file1.txt", "file2.txt")),
+            ("/fake/dir/subdir", (), ("file3.txt",)),
+        ]
+
+        expected_files = [
+            "/fake/dir/file1.txt",
+            "/fake/dir/file2.txt",
+            "/fake/dir/subdir/file3.txt",
+        ]
+
+        result = list_files("/fake/dir")
+
+        assert result == expected_files
+        mock_walk.assert_called_once_with("/fake/dir")
+
+
+def test_create_samplesheet_for_one_species():
+    fake_files = [
+        "/path/to/species/sample1_1.fastq.gz",
+        "/path/to/species/sample1_2.fastq.gz",
+        "/path/to/species/sample2_1.fastq.gz",
+    ]
+
+    with patch(
+        "rna.data_conversion_helper_functions.create_samplesheet_csv.list_files",
+        return_value=fake_files,
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "csv.writer"
+    ) as mock_csv_writer:
+
+        create_samplesheet_for_one_species(
+            species_name="homo_sapiens",
+            local_dir_path_with_fastq_files_for_one_species="/path/to/species",
+            local_dir_path_to_save_samplesheets="/path/to/save",
+        )
+
+        mocked_file.assert_called_once_with(
+            "/path/to/save/homo_sapiens_samplesheet.csv", "w", encoding="utf-8"
+        )
+
+        mock_csv_writer_instance = mock_csv_writer.return_value
+        mock_csv_writer_instance.writerow.assert_called()
+        assert mock_csv_writer_instance.writerows.call_count == 1
