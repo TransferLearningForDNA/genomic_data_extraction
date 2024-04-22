@@ -82,6 +82,20 @@ def test_compute_lengths_empty_case():
     )
 
 
+def test_count_gc_nucleotides_standard_case():
+    sequence = "AGTCAAAGTTAT"
+    counts = dna_feature_extraction.count_gc_nucleotides(sequence)
+
+    assert counts == 3
+
+
+def test_count_gc_nucleotides_empty_case():
+    sequence = ""
+    counts = dna_feature_extraction.count_gc_nucleotides(sequence)
+
+    assert counts == 0
+
+
 def test_compute_gc_content_sequence_components_standard_case():
     cds = "AGTCAAAGTTAT"
     utr5 = "AAGTGC"
