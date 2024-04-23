@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "rna_extraction";
-        var mkdocs_page_input_path = "genomic_data_extraction\\rna\\rna_extraction.md";
+        var mkdocs_page_input_path = "genomic_data_extraction/rna/rna_extraction.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -133,7 +133,7 @@
 
 
 <h2 id="rna.rna_extraction.download_rna_data" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">download_rna_data</span><span class="p">(</span><span class="n">species_data</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">file_number_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
+          <code class="highlight language-python">download_rna_data(species_data, output_directory, file_number_limit=10)</code>
 
 </h2>
 
@@ -177,7 +177,7 @@
 )
               –
               <div class="doc-md-description">
-                <p>Maximum number of files to download (defaults to 10).</p>
+                <p>Maximum number of files to download per species (defaults to 10).</p>
               </div>
             </li>
         </ul>
@@ -186,57 +186,33 @@
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>rna\rna_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_rna_data</span><span class="p">(</span>
-    <span class="n">species_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-    <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">file_number_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download fastq files containing RNA-seq data from NCBI SRA API</span>
+            <summary>Source code in <code>rna/rna_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def download_rna_data(
+    species_data: Dict[str, int],
+    output_directory: str,
+    file_number_limit: Optional[int] = 10,
+) -&gt; None:
+    """Download fastq files containing RNA-seq data from NCBI SRA API
 
-<span class="sd">    Args:</span>
-<span class="sd">        species_data (Dict[str, int]): A dictionary with species names as keys and tax IDs as values.</span>
-<span class="sd">        output_directory (str): Full directory path where the downloaded files will be stored.</span>
-<span class="sd">        file_number_limit (int): Maximum number of files to download (defaults to 10).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    Args:
+        species_data (Dict[str, int]): A dictionary with species names as keys and tax IDs as values.
+        output_directory (str): Full directory path where the downloaded files will be stored.
+        file_number_limit (int): Maximum number of files to download per species (defaults to 10).
+    """
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading RNA data to </span><span class="si">{</span><span class="n">output_directory</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">Species: </span><span class="si">{</span><span class="n">species_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    print(f"Downloading RNA data to {output_directory}. \nSpecies: {species_data}")
 
-    <span class="c1"># Obtain experiment accession numbers for each species</span>
-    <span class="c1"># Query NCBI SRA Database to obtain species metadata</span>
-    <span class="n">species_srx_map</span> <span class="o">=</span> <span class="n">query_and_get_srx_accession_ids</span><span class="p">(</span><span class="n">species_data</span><span class="p">)</span>
+    # Obtain experiment accession numbers for each species
+    # Query NCBI SRA Database to obtain species metadata
+    species_srx_map = query_and_get_srx_accession_ids(species_data, limit=file_number_limit)
 
-    <span class="c1"># Storing only the needed data - SRX and SRR IDs - in a csv</span>
-    <span class="n">SRX_to_SRR_csv</span><span class="p">(</span><span class="n">species_srx_map</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;output_srx_srr.csv&quot;</span><span class="p">)</span>
+    # Storing only the needed data - SRX and SRR IDs - in a csv
+    csv_file_path = "rna/output_srx_srr.csv"
+    SRX_to_SRR_csv(species_srx_map, output_file=csv_file_path)
 
-    <span class="c1"># Use NCBI SRA API to download fastq files containing RNA-seq data</span>
-    <span class="n">csv_file_path</span> <span class="o">=</span> <span class="s2">&quot;/rna/output_srx_srr.csv&quot;</span>
-    <span class="n">download_sra_data</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">file_number_limit</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+    # Use NCBI SRA API to download fastq files containing RNA-seq data
+    total_number_of_files = file_number_limit * len(species_data)
+    download_sra_data(csv_file_path, output_directory, limit=total_number_of_files)</code></pre>
           </details>
   </div>
 
@@ -248,7 +224,7 @@
 
 
 <h2 id="rna.rna_extraction.process_rna_expression_data" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">process_rna_expression_data</span><span class="p">()</span></code>
+          <code class="highlight language-python">process_rna_expression_data()</code>
 
 </h2>
 
@@ -258,39 +234,23 @@
       <p>Process raw transcriptomic data to filter genes and obtain median expression of each gene.</p>
 
           <details class="quote">
-            <summary>Source code in <code>rna\rna_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">process_rna_expression_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process raw transcriptomic data to filter genes and obtain median expression of each gene.&quot;&quot;&quot;</span>
+            <summary>Source code in <code>rna/rna_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def process_rna_expression_data() -&gt; None:
+    """Process raw transcriptomic data to filter genes and obtain median expression of each gene."""
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Processing RNA expression data.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    print("\nProcessing RNA expression data.\n")
 
-    <span class="c1"># Convert raw quant.sf files (output of nf-core rna-seq pipeline) to csv files.</span>
-    <span class="n">raw_data_path</span> <span class="o">=</span> <span class="s2">&quot;rna/quant_files/raw&quot;</span>  <span class="c1"># path to raw quant files folder</span>
-    <span class="n">convert_all_species_files</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">)</span>
+    # Convert raw quant.sf files (output of nf-core rna-seq pipeline) to csv files.
+    raw_data_path = "rna/quant_files/raw"  # path to raw quant files folder
+    convert_all_species_files(raw_data_path)
 
-    <span class="c1"># Create expression matrices of length scaled TPM values, indexed by transcript ID.</span>
-    <span class="n">processed_data_path</span> <span class="o">=</span> <span class="s2">&quot;rna/quant_files/processed&quot;</span>
-    <span class="n">create_expression_matrix</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">,</span> <span class="n">processed_data_path</span><span class="p">)</span>
+    # Create expression matrices of length scaled TPM values, indexed by transcript ID.
+    processed_data_path = "rna/quant_files/processed"
+    create_expression_matrix(raw_data_path, processed_data_path)
 
-    <span class="c1"># Process expression matrices to filter for transcript with RSD &lt; 2 and calculate median expression</span>
-    <span class="n">median_expression_path</span> <span class="o">=</span> <span class="s2">&quot;rna/median_expression_files&quot;</span>
-    <span class="n">process_expression_matrix</span><span class="p">(</span><span class="n">processed_data_path</span><span class="p">,</span> <span class="n">median_expression_path</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+    # Process expression matrices to filter for transcript with RSD &lt; 2 and calculate median expression
+    median_expression_path = "rna/median_expression_files"
+    process_expression_matrix(processed_data_path, median_expression_path)</code></pre>
           </details>
   </div>
 

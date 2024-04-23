@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "dna_feature_extraction";
-        var mkdocs_page_input_path = "genomic_data_extraction\\dna\\dna_feature_extraction.md";
+        var mkdocs_page_input_path = "genomic_data_extraction/dna/dna_feature_extraction.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -133,7 +133,7 @@
 
 
 <h2 id="dna.dna_feature_extraction.compute_cds_codon_frequencies" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">compute_cds_codon_frequencies</span><span class="p">(</span><span class="n">cds</span><span class="p">,</span> <span class="n">codons</span><span class="p">)</span></code>
+          <code class="highlight language-python">compute_cds_codon_frequencies(cds, codons)</code>
 
 </h2>
 
@@ -207,71 +207,39 @@
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna\dna_feature_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_cds_codon_frequencies</span><span class="p">(</span><span class="n">cds</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">codons</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the frequency of every possible codon in the cds.</span>
+            <summary>Source code in <code>dna/dna_feature_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def compute_cds_codon_frequencies(cds: str, codons: List[str]) -&gt; Dict[str, float]:
+    """Compute the frequency of every possible codon in the cds.
 
-<span class="sd">    Args:</span>
-<span class="sd">        cds (str): cds sequence</span>
+    Args:
+        cds (str): cds sequence
 
-<span class="sd">        codons (List[str]): list of strings representing all 64 possible codons</span>
-<span class="sd">        e.g. &quot;AGA&quot;</span>
+        codons (List[str]): list of strings representing all 64 possible codons
+        e.g. "AGA"
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict[str, float]: dictionary of codon frequencies for all 64 possible codons,</span>
-<span class="sd">        with codons as keys and their frequencies as values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cds_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span>
-    <span class="n">codon_count</span> <span class="o">=</span> <span class="n">cds_length</span> <span class="o">//</span> <span class="mi">3</span>
-    <span class="c1"># Placeholder for codon frequencies</span>
-    <span class="n">codon_frequencies</span> <span class="o">=</span> <span class="p">{</span><span class="n">codon</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">codon</span> <span class="ow">in</span> <span class="n">codons</span><span class="p">}</span>
+    Returns:
+        Dict[str, float]: dictionary of codon frequencies for all 64 possible codons,
+        with codons as keys and their frequencies as values.
+    """
+    cds_length = len(cds)
+    codon_count = cds_length // 3
+    # Placeholder for codon frequencies
+    codon_frequencies = {codon: 0 for codon in codons}
 
-    <span class="c1"># Address situation in which the cds provided is too short</span>
-    <span class="k">if</span> <span class="n">codon_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">codon_frequencies</span>
+    # Address situation in which the cds provided is too short
+    if codon_count == 0:
+        return codon_frequencies
 
-    <span class="c1"># Compute codon frequencies based on the sequence in the row</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cds_length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="n">codon</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">codon</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">codon_frequencies</span><span class="p">[</span><span class="n">codon</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    # Compute codon frequencies based on the sequence in the row
+    for i in range(0, cds_length - 2, 3):
+        codon = cds[i : i + 3]
+        if len(codon) == 3:
+            codon_frequencies[codon] += 1
 
-    <span class="k">for</span> <span class="n">codon</span> <span class="ow">in</span> <span class="n">codon_frequencies</span><span class="p">:</span>
-        <span class="n">codon_frequencies</span><span class="p">[</span><span class="n">codon</span><span class="p">]</span> <span class="o">/=</span> <span class="n">codon_count</span>
+    for codon in codon_frequencies:
+        codon_frequencies[codon] /= codon_count
 
-    <span class="k">return</span> <span class="n">codon_frequencies</span>
-</code></pre></div></td></tr></table></div>
+    return codon_frequencies</code></pre>
           </details>
   </div>
 
@@ -283,7 +251,7 @@
 
 
 <h2 id="dna.dna_feature_extraction.compute_gc_content_sequence_components" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">compute_gc_content_sequence_components</span><span class="p">(</span><span class="n">utr5</span><span class="p">,</span> <span class="n">cds</span><span class="p">,</span> <span class="n">utr3</span><span class="p">)</span></code>
+          <code class="highlight language-python">compute_gc_content_sequence_components(utr5, cds, utr3)</code>
 
 </h2>
 
@@ -361,71 +329,39 @@ represents the number of times that nucleotide appears in the DNA sequence.</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna\dna_feature_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_gc_content_sequence_components</span><span class="p">(</span>
-    <span class="n">utr5</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cds</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">utr3</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the GC content of the cds, utr3 and utr5.</span>
+            <summary>Source code in <code>dna/dna_feature_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def compute_gc_content_sequence_components(
+    utr5: str, cds: str, utr3: str
+) -&gt; Dict[str, float]:
+    """Compute the GC content of the cds, utr3 and utr5.
 
-<span class="sd">    GC content is defined as (G + C)/(A + T + G + C), where each letter</span>
-<span class="sd">    represents the number of times that nucleotide appears in the DNA sequence.</span>
+    GC content is defined as (G + C)/(A + T + G + C), where each letter
+    represents the number of times that nucleotide appears in the DNA sequence.
 
-<span class="sd">    Args:</span>
-<span class="sd">        utr5 (str): 5&#39; UTR DNA sequence.</span>
-<span class="sd">        cds (str): CDS DNA sequence.</span>
-<span class="sd">        utr3 (str): 3&#39;UTR DNA sequence.</span>
+    Args:
+        utr5 (str): 5' UTR DNA sequence.
+        cds (str): CDS DNA sequence.
+        utr3 (str): 3'UTR DNA sequence.
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict[str, float]: A dictionary with keys &#39;cds_gc&#39;, &#39;utr5_gc&#39;, and &#39;utr3_gc&#39;,</span>
-<span class="sd">                          and float values representing the GC content of these sequences.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">utr5_gc_count</span> <span class="o">=</span> <span class="n">count_gc_nucleotides</span><span class="p">(</span><span class="n">utr5</span><span class="p">)</span>
-    <span class="n">cds_gc_count</span> <span class="o">=</span> <span class="n">count_gc_nucleotides</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span>
-    <span class="n">utr3_gc_count</span> <span class="o">=</span> <span class="n">count_gc_nucleotides</span><span class="p">(</span><span class="n">utr3</span><span class="p">)</span>
+    Returns:
+        Dict[str, float]: A dictionary with keys 'cds_gc', 'utr5_gc', and 'utr3_gc',
+                          and float values representing the GC content of these sequences.
+    """
+    utr5_gc_count = count_gc_nucleotides(utr5)
+    cds_gc_count = count_gc_nucleotides(cds)
+    utr3_gc_count = count_gc_nucleotides(utr3)
 
-    <span class="n">utr5_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">utr5</span><span class="p">)</span>
-    <span class="n">cds_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span>
-    <span class="n">utr3_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">utr3</span><span class="p">)</span>
+    utr5_length = len(utr5)
+    cds_length = len(cds)
+    utr3_length = len(utr3)
 
-    <span class="n">utr5_gc</span> <span class="o">=</span> <span class="n">utr5_gc_count</span> <span class="o">/</span> <span class="n">utr5_length</span> <span class="k">if</span> <span class="n">utr5_length</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">cds_gc</span> <span class="o">=</span> <span class="n">cds_gc_count</span> <span class="o">/</span> <span class="n">cds_length</span> <span class="k">if</span> <span class="n">cds_length</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">utr3_gc</span> <span class="o">=</span> <span class="n">utr3_gc_count</span> <span class="o">/</span> <span class="n">utr3_length</span> <span class="k">if</span> <span class="n">utr3_length</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    utr5_gc = utr5_gc_count / utr5_length if utr5_length != 0 else ""
+    cds_gc = cds_gc_count / cds_length if cds_length != 0 else ""
+    utr3_gc = utr3_gc_count / utr3_length if utr3_length != 0 else ""
 
-    <span class="n">gc_content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;utr5_gc&quot;</span><span class="p">:</span> <span class="n">utr5_gc</span><span class="p">,</span> <span class="s2">&quot;cds_gc&quot;</span><span class="p">:</span> <span class="n">cds_gc</span><span class="p">,</span> <span class="s2">&quot;utr3_gc&quot;</span><span class="p">:</span> <span class="n">utr3_gc</span><span class="p">}</span>
+    gc_content = {"utr5_gc": utr5_gc, "cds_gc": cds_gc, "utr3_gc": utr3_gc}
 
-    <span class="k">return</span> <span class="n">gc_content</span>
-</code></pre></div></td></tr></table></div>
+    return gc_content</code></pre>
           </details>
   </div>
 
@@ -437,7 +373,7 @@ represents the number of times that nucleotide appears in the DNA sequence.</p>
 
 
 <h2 id="dna.dna_feature_extraction.compute_gc_content_wobble_positions" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">compute_gc_content_wobble_positions</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span></code>
+          <code class="highlight language-python">compute_gc_content_wobble_positions(cds)</code>
 
 </h2>
 
@@ -501,83 +437,45 @@ wobble position</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna\dna_feature_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_gc_content_wobble_positions</span><span class="p">(</span><span class="n">cds</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the GC content of wobble positions 2 and 3 in the cds.</span>
+            <summary>Source code in <code>dna/dna_feature_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def compute_gc_content_wobble_positions(cds: str) -&gt; Dict[str, float]:
+    """Compute the GC content of wobble positions 2 and 3 in the cds.
 
-<span class="sd">    GC content is defined as (G + C)/(A + T + G + C), where each letter</span>
-<span class="sd">    represents the number of times that nucleotide appears in a given</span>
-<span class="sd">    wobble position</span>
+    GC content is defined as (G + C)/(A + T + G + C), where each letter
+    represents the number of times that nucleotide appears in a given
+    wobble position
 
-<span class="sd">    Args:</span>
-<span class="sd">        cds (str): CDS DNA sequence.</span>
+    Args:
+        cds (str): CDS DNA sequence.
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict[str, float]: A dictionary with keys &#39;wobble2_gc&#39; and &#39;wobble3_gc&#39;,</span>
-<span class="sd">                          and float values representing the GC content at wobble positions 2 and 3</span>
-<span class="sd">                          in the cds, respectively.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Extract the nucleotides in positions 2 and 3 into separate lists</span>
-    <span class="n">wobble2_nucleotides</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">3</span><span class="p">]</span>
-    <span class="n">wobble3_nucleotides</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">3</span><span class="p">]</span>
+    Returns:
+        Dict[str, float]: A dictionary with keys 'wobble2_gc' and 'wobble3_gc',
+                          and float values representing the GC content at wobble positions 2 and 3
+                          in the cds, respectively.
+    """
+    # Extract the nucleotides in positions 2 and 3 into separate lists
+    wobble2_nucleotides = cds[1::3]
+    wobble3_nucleotides = cds[2::3]
 
-    <span class="n">wobble2_gc_count</span> <span class="o">=</span> <span class="n">wobble2_nucleotides</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">wobble2_nucleotides</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-    <span class="n">wobble3_gc_count</span> <span class="o">=</span> <span class="n">wobble3_nucleotides</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">wobble3_nucleotides</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    wobble2_gc_count = wobble2_nucleotides.count("G") + wobble2_nucleotides.count("C")
+    wobble3_gc_count = wobble3_nucleotides.count("G") + wobble3_nucleotides.count("C")
 
-    <span class="c1"># Compute the GC content</span>
-    <span class="n">wobble2_gc</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">wobble2_gc_count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">wobble2_nucleotides</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wobble2_nucleotides</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="p">)</span>
+    # Compute the GC content
+    wobble2_gc = (
+        wobble2_gc_count / len(wobble2_nucleotides)
+        if len(wobble2_nucleotides) != 0
+        else ""
+    )
 
-    <span class="n">wobble3_gc</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">wobble3_gc_count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">wobble3_nucleotides</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wobble3_nucleotides</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="p">)</span>
+    wobble3_gc = (
+        wobble3_gc_count / len(wobble3_nucleotides)
+        if len(wobble3_nucleotides) != 0
+        else ""
+    )
 
-    <span class="n">gc_content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cds_wobble2_gc&quot;</span><span class="p">:</span> <span class="n">wobble2_gc</span><span class="p">,</span> <span class="s2">&quot;cds_wobble3_gc&quot;</span><span class="p">:</span> <span class="n">wobble3_gc</span><span class="p">}</span>
+    gc_content = {"cds_wobble2_gc": wobble2_gc, "cds_wobble3_gc": wobble3_gc}
 
-    <span class="k">return</span> <span class="n">gc_content</span>
-</code></pre></div></td></tr></table></div>
+    return gc_content</code></pre>
           </details>
   </div>
 
@@ -589,7 +487,7 @@ wobble position</p>
 
 
 <h2 id="dna.dna_feature_extraction.compute_lengths" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">compute_lengths</span><span class="p">(</span><span class="n">cds</span><span class="p">,</span> <span class="n">utr5</span><span class="p">,</span> <span class="n">utr3</span><span class="p">)</span></code>
+          <code class="highlight language-python">compute_lengths(cds, utr5, utr3)</code>
 
 </h2>
 
@@ -665,45 +563,26 @@ wobble position</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna\dna_feature_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lengths</span><span class="p">(</span><span class="n">cds</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">utr5</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">utr3</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the length of the cds, utr3 and utr5 DNA sequences.</span>
+            <summary>Source code in <code>dna/dna_feature_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def compute_lengths(cds: str, utr5: str, utr3: str) -&gt; Dict[str, int]:
+    """Compute the length of the cds, utr3 and utr5 DNA sequences.
 
-<span class="sd">    Args:</span>
-<span class="sd">        cds (str): CDS DNA sequence.</span>
-<span class="sd">        utr5 (str): 5&#39; UTR DNA sequence.</span>
-<span class="sd">        utr3 (str): 3&#39; UTR DNA sequence.</span>
+    Args:
+        cds (str): CDS DNA sequence.
+        utr5 (str): 5' UTR DNA sequence.
+        utr3 (str): 3' UTR DNA sequence.
 
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict[str, int]: A dictionary with keys &#39;cds&#39;, &#39;utr5&#39;, and &#39;utr3&#39;, and integer values</span>
-<span class="sd">                        representing the lengths of these sequences.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;cds_length&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;utr5_length&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">utr5</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">utr5</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;utr3_length&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">utr3</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">utr3</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="p">}</span>
+    Returns:
+        Dict[str, int]: A dictionary with keys 'cds', 'utr5', and 'utr3', and integer values
+                        representing the lengths of these sequences.
+    """
+    lengths = {
+        "cds_length": len(cds) if len(cds) &gt; 0 else "",
+        "utr5_length": len(utr5) if len(utr5) &gt; 0 else "",
+        "utr3_length": len(utr3) if len(utr3) &gt; 0 else "",
+    }
 
-    <span class="k">return</span> <span class="n">lengths</span>
-</code></pre></div></td></tr></table></div>
+    return lengths</code></pre>
           </details>
   </div>
 
@@ -715,7 +594,7 @@ wobble position</p>
 
 
 <h2 id="dna.dna_feature_extraction.count_gc_nucleotides" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">count_gc_nucleotides</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span></code>
+          <code class="highlight language-python">count_gc_nucleotides(sequence)</code>
 
 </h2>
 
@@ -774,31 +653,19 @@ wobble position</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna\dna_feature_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_gc_nucleotides</span><span class="p">(</span><span class="n">sequence</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Count the number of times G and C nucleotides appear in a DNA sequence.</span>
+            <summary>Source code in <code>dna/dna_feature_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def count_gc_nucleotides(sequence: str) -&gt; int:
+    """Count the number of times G and C nucleotides appear in a DNA sequence.
 
-<span class="sd">    Args:</span>
-<span class="sd">        sequence (str): DNA sequence</span>
+    Args:
+        sequence (str): DNA sequence
 
-<span class="sd">    Returns:</span>
-<span class="sd">        int: Sum of G and C counts in the sequence.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">g_content</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">)</span>
-    <span class="n">c_content</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">g_content</span> <span class="o">+</span> <span class="n">c_content</span>
-</code></pre></div></td></tr></table></div>
+    Returns:
+        int: Sum of G and C counts in the sequence.
+    """
+    g_content = sequence.count("G")
+    c_content = sequence.count("C")
+    return g_content + c_content</code></pre>
           </details>
   </div>
 
@@ -810,7 +677,7 @@ wobble position</p>
 
 
 <h2 id="dna.dna_feature_extraction.extract_dna_features" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">extract_dna_features</span><span class="p">(</span><span class="n">folder_path</span><span class="p">)</span></code>
+          <code class="highlight language-python">extract_dna_features(folder_path)</code>
 
 </h2>
 
@@ -872,179 +739,95 @@ wobble positions.</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna\dna_feature_extraction.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">extract_dna_features</span><span class="p">(</span><span class="n">folder_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract and compute DNA features for each CSV file containing genomic sequences.</span>
+            <summary>Source code in <code>dna/dna_feature_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def extract_dna_features(folder_path: str) -&gt; None:
+    """Extract and compute DNA features for each CSV file containing genomic sequences.
 
-<span class="sd">    Add new columns to the existing CSV files with computed codon frequencies, lengths of</span>
-<span class="sd">    different DNA segments (utr5, cds, utr3), GC content in DNA segments, and GC content at</span>
-<span class="sd">    wobble positions.</span>
+    Add new columns to the existing CSV files with computed codon frequencies, lengths of
+    different DNA segments (utr5, cds, utr3), GC content in DNA segments, and GC content at
+    wobble positions.
 
-<span class="sd">    Args:</span>
-<span class="sd">        folder_path (str): The path to the folder containing genomic data CSV files.</span>
+    Args:
+        folder_path (str): The path to the folder containing genomic data CSV files.
 
-<span class="sd">    Returns:</span>
-<span class="sd">        None: This function does not return a value but modifies the files in the specified directory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Iterate over files in the directory</span>
-    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
-            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extracting DNA features from:&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    Returns:
+        None: This function does not return a value but modifies the files in the specified directory.
+    """
+    # Iterate over files in the directory
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".csv"):
+            file_path = os.path.join(folder_path, filename)
 
-            <span class="c1"># Create a temporary file to write the modified data</span>
-            <span class="n">temp_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
-            <span class="p">)</span>
+            # Create a temporary file to write the modified data
+            temp_file = tempfile.NamedTemporaryFile(
+                mode="w", delete=False, newline="", encoding="utf-8"
+            )
 
-            <span class="c1"># Open the CSV file for reading</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-                <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
-            <span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">,</span> <span class="n">temp_file</span><span class="p">:</span>
-                <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+            # Open the CSV file for reading
+            with open(
+                file_path, "r", newline="", encoding="utf-8"
+            ) as infile, temp_file:
+                reader = csv.DictReader(infile)
 
-                <span class="c1"># Define the fieldnames for the output CSV</span>
-                <span class="n">header</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">fieldnames</span>
-                <span class="k">if</span> <span class="n">header</span> <span class="o">!=</span> <span class="p">[</span>
-                    <span class="s2">&quot;ensembl_gene_id&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;transcript_id&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;promoter&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;utr5&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;cds&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;utr3&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;terminator&quot;</span><span class="p">,</span>
-                <span class="p">]:</span>
-                    <span class="k">break</span>
-                <span class="n">new_columns</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">codons</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combination</span><span class="p">)</span> <span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="s2">&quot;ACGT&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-                <span class="p">]</span>
-                <span class="n">new_columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">codons</span><span class="p">)</span>
-                <span class="n">new_columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="s2">&quot;cds_length&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;utr5_length&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;utr3_length&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;utr5_gc&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;cds_gc&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;utr3_gc&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;cds_wobble2_gc&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;cds_wobble3_gc&quot;</span><span class="p">,</span>
-                    <span class="p">]</span>
-                <span class="p">)</span>
-                <span class="n">header</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_columns</span><span class="p">)</span>
+                # Define the fieldnames for the output CSV
+                header = reader.fieldnames
 
-                <span class="c1"># Open the CSV file for writing</span>
-                <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">temp_file</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
-                <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+                if header != [
+                    "ensembl_gene_id",
+                    "transcript_id",
+                    "promoter",
+                    "utr5",
+                    "cds",
+                    "utr3",
+                    "terminator",
+                ]:
+                    continue
+                print("Extracting DNA features from:", filename)
 
-                <span class="c1"># Compute features for each gene</span>
-                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
-                    <span class="c1"># Add data for new columns (assuming new_columns is a list of values)</span>
-                    <span class="n">utr5</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;utr5&quot;</span><span class="p">)</span>
-                    <span class="n">cds</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cds&quot;</span><span class="p">)</span>
-                    <span class="n">utr3</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;utr3&quot;</span><span class="p">)</span>
+                new_columns = []
+                codons = [
+                    "".join(combination) for combination in product("ACGT", repeat=3)
+                ]
+                new_columns.extend(codons)
+                new_columns.extend(
+                    [
+                        "cds_length",
+                        "utr5_length",
+                        "utr3_length",
+                        "utr5_gc",
+                        "cds_gc",
+                        "utr3_gc",
+                        "cds_wobble2_gc",
+                        "cds_wobble3_gc",
+                    ]
+                )
+                header.extend(new_columns)
 
-                    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">compute_cds_codon_frequencies</span><span class="p">(</span><span class="n">cds</span><span class="o">=</span><span class="n">cds</span><span class="p">,</span> <span class="n">codons</span><span class="o">=</span><span class="n">codons</span><span class="p">))</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">compute_lengths</span><span class="p">(</span><span class="n">cds</span><span class="o">=</span><span class="n">cds</span><span class="p">,</span> <span class="n">utr5</span><span class="o">=</span><span class="n">utr5</span><span class="p">,</span> <span class="n">utr3</span><span class="o">=</span><span class="n">utr3</span><span class="p">))</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                        <span class="n">compute_gc_content_sequence_components</span><span class="p">(</span>
-                            <span class="n">utr5</span><span class="o">=</span><span class="n">utr5</span><span class="p">,</span> <span class="n">cds</span><span class="o">=</span><span class="n">cds</span><span class="p">,</span> <span class="n">utr3</span><span class="o">=</span><span class="n">utr3</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">compute_gc_content_wobble_positions</span><span class="p">(</span><span class="n">cds</span><span class="p">))</span>
+                # Open the CSV file for writing
+                writer = csv.DictWriter(temp_file, fieldnames=header)
+                writer.writeheader()
 
-                    <span class="c1"># Write the modified row to the temporary file</span>
-                    <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                # Compute features for each gene
+                for row in reader:
+                    # Add data for new columns (assuming new_columns is a list of values)
+                    utr5 = row.get("utr5")
+                    cds = row.get("cds")
+                    utr3 = row.get("utr3")
 
-            <span class="c1"># Replace the original file with the temporary file</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">temp_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+                    row.update(compute_cds_codon_frequencies(cds=cds, codons=codons))
+                    row.update(compute_lengths(cds=cds, utr5=utr5, utr3=utr3))
+                    row.update(
+                        compute_gc_content_sequence_components(
+                            utr5=utr5, cds=cds, utr3=utr3
+                        )
+                    )
+                    row.update(compute_gc_content_wobble_positions(cds))
+
+                    # Write the modified row to the temporary file
+                    writer.writerow(row)
+
+            # Replace the original file with the temporary file
+            shutil.move(temp_file.name, file_path)</code></pre>
           </details>
   </div>
 

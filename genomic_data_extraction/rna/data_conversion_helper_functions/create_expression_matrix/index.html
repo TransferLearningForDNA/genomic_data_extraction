@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "create_expression_matrix";
-        var mkdocs_page_input_path = "genomic_data_extraction\\rna\\data_conversion_helper_functions\\create_expression_matrix.md";
+        var mkdocs_page_input_path = "genomic_data_extraction/rna/data_conversion_helper_functions/create_expression_matrix.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -134,7 +134,7 @@
 
 
 <h2 id="rna.data_conversion_helper_functions.create_expression_matrix.create_expression_matrix" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">create_expression_matrix</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">,</span> <span class="n">processed_data_path</span><span class="p">)</span></code>
+          <code class="highlight language-python">create_expression_matrix(raw_data_path, processed_data_path)</code>
 
 </h2>
 
@@ -201,151 +201,79 @@
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>rna\data_conversion_helper_functions\create_expression_matrix.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_expression_matrix</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">processed_data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the expression matrices for all species.</span>
+            <summary>Source code in <code>rna/data_conversion_helper_functions/create_expression_matrix.py</code></summary>
+            <pre class="highlight"><code class="language-python">def create_expression_matrix(raw_data_path: str, processed_data_path: str) -&gt; None:
+    """Create the expression matrices for all species.
 
-<span class="sd">    Args:</span>
-<span class="sd">        raw_data_path (str): Path to the folder containing raw quant files.</span>
-<span class="sd">        processed_data_path (str): Path to store the processed expression matrix csv files.</span>
+    Args:
+        raw_data_path (str): Path to the folder containing raw quant files.
+        processed_data_path (str): Path to store the processed expression matrix csv files.
 
-<span class="sd">    Returns:</span>
-<span class="sd">        None: This function does not return a value but outputs files to the specified directory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    Returns:
+        None: This function does not return a value but outputs files to the specified directory.
+    """
 
-    <span class="c1"># Iterate over species</span>
-    <span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">):</span>
-        <span class="n">raw_csv_data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="s2">&quot;csv_files&quot;</span><span class="p">)</span>
+    # Iterate over species
+    for species in os.listdir(raw_data_path):
+        raw_csv_data_path = os.path.join(raw_data_path, species, "csv_files")
 
-        <span class="c1"># Skip if it&#39;s not a directory (e.g., .DS_Store)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">raw_csv_data_path</span><span class="p">):</span>
-            <span class="k">continue</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">raw_csv_data_path</span><span class="p">):</span>
-            <span class="k">continue</span>
+        # Skip if it's not a directory (e.g., .DS_Store)
+        if not os.path.isdir(raw_csv_data_path):
+            continue
+        if not os.listdir(raw_csv_data_path):
+            continue
 
-        <span class="c1"># Initialise empty DataFrames for the abundance, length and counts matrices</span>
-        <span class="n">abundance_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>  <span class="c1"># TPM</span>
-        <span class="n">length_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>  <span class="c1"># EffectiveLength</span>
-        <span class="n">counts_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>  <span class="c1"># NumReads</span>
+        # Initialise empty DataFrames for the abundance, length and counts matrices
+        abundance_mat = pd.DataFrame()  # TPM
+        length_mat = pd.DataFrame()  # EffectiveLength
+        counts_mat = pd.DataFrame()  # NumReads
 
-        <span class="c1"># Iterate through each quant csv file</span>
-        <span class="k">for</span> <span class="n">quant_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">raw_csv_data_path</span><span class="p">):</span>
-            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_csv_data_path</span><span class="p">,</span> <span class="n">quant_file</span><span class="p">)</span>
-            <span class="c1"># Read the csv file into a DataFrame</span>
-            <span class="c1"># Abundance TPM matrix</span>
-            <span class="n">abundance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;TPM&quot;</span><span class="p">])</span>
-            <span class="c1"># Effective Length matrix</span>
-            <span class="n">length_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;EffectiveLength&quot;</span><span class="p">])</span>
-            <span class="c1"># Counts NumReads matrix</span>
-            <span class="n">counts_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;NumReads&quot;</span><span class="p">])</span>
+        # Iterate through each quant csv file
+        for quant_file in os.listdir(raw_csv_data_path):
+            file_path = os.path.join(raw_csv_data_path, quant_file)
+            # Read the csv file into a DataFrame
+            # Abundance TPM matrix
+            abundance_df = pd.read_csv(file_path, usecols=["Name", "TPM"])
+            # Effective Length matrix
+            length_df = pd.read_csv(file_path, usecols=["Name", "EffectiveLength"])
+            # Counts NumReads matrix
+            counts_df = pd.read_csv(file_path, usecols=["Name", "NumReads"])
 
-            <span class="c1"># Rename &#39;TPM&#39; column to the run ID (file name e.g. &#39;quant_DRR513083.csv&#39;)</span>
-            <span class="n">abundance_df</span> <span class="o">=</span> <span class="n">abundance_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;TPM&quot;</span><span class="p">:</span> <span class="n">quant_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]}</span>
-            <span class="p">)</span>
-            <span class="n">length_df</span> <span class="o">=</span> <span class="n">length_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;EffectiveLength&quot;</span><span class="p">:</span> <span class="n">quant_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]}</span>
-            <span class="p">)</span>
-            <span class="n">counts_df</span> <span class="o">=</span> <span class="n">counts_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;NumReads&quot;</span><span class="p">:</span> <span class="n">quant_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]}</span>
-            <span class="p">)</span>
-            <span class="c1"># Set &#39;Name&#39; as index</span>
-            <span class="n">abundance_df</span> <span class="o">=</span> <span class="n">abundance_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Name&quot;</span><span class="p">)</span>
-            <span class="n">length_df</span> <span class="o">=</span> <span class="n">length_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Name&quot;</span><span class="p">)</span>
-            <span class="n">counts_df</span> <span class="o">=</span> <span class="n">counts_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Name&quot;</span><span class="p">)</span>
-            <span class="c1"># Remove duplicates</span>
-            <span class="n">abundance_df</span> <span class="o">=</span> <span class="n">abundance_df</span><span class="p">[</span><span class="o">~</span><span class="n">abundance_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">duplicated</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)]</span>
-            <span class="n">length_df</span> <span class="o">=</span> <span class="n">length_df</span><span class="p">[</span><span class="o">~</span><span class="n">length_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">duplicated</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)]</span>
-            <span class="n">counts_df</span> <span class="o">=</span> <span class="n">counts_df</span><span class="p">[</span><span class="o">~</span><span class="n">counts_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">duplicated</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)]</span>
+            # Rename 'TPM' column to the run ID (file name e.g. 'quant_DRR513083.csv')
+            abundance_df = abundance_df.rename(
+                columns={"TPM": quant_file.split("_")[1][:-4]}
+            )
+            length_df = length_df.rename(
+                columns={"EffectiveLength": quant_file.split("_")[1][:-4]}
+            )
+            counts_df = counts_df.rename(
+                columns={"NumReads": quant_file.split("_")[1][:-4]}
+            )
+            # Set 'Name' as index
+            abundance_df = abundance_df.set_index("Name")
+            length_df = length_df.set_index("Name")
+            counts_df = counts_df.set_index("Name")
+            # Remove duplicates
+            abundance_df = abundance_df[~abundance_df.index.duplicated(keep="first")]
+            length_df = length_df[~length_df.index.duplicated(keep="first")]
+            counts_df = counts_df[~counts_df.index.duplicated(keep="first")]
 
-            <span class="c1"># Concatenate with the main expression matrix</span>
-            <span class="c1"># If the index (Name) does not exist in expression_matrix, NaN values will be added for other columns</span>
-            <span class="n">abundance_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">abundance_mat</span><span class="p">,</span> <span class="n">abundance_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">length_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">length_mat</span><span class="p">,</span> <span class="n">length_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">counts_mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">counts_mat</span><span class="p">,</span> <span class="n">counts_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            # Concatenate with the main expression matrix
+            # If the index (Name) does not exist in expression_matrix, NaN values will be added for other columns
+            abundance_mat = pd.concat([abundance_mat, abundance_df], axis=1, sort=False)
+            length_mat = pd.concat([length_mat, length_df], axis=1, sort=False)
+            counts_mat = pd.concat([counts_mat, counts_df], axis=1, sort=False)
 
-        <span class="c1"># Calculate the length scaled TPM values</span>
-        <span class="n">length_scaled_tpm_mat</span> <span class="o">=</span> <span class="n">get_length_scaled_tpm_matrix</span><span class="p">(</span>
-            <span class="n">counts_mat</span><span class="p">,</span> <span class="n">abundance_mat</span><span class="p">,</span> <span class="n">length_mat</span>
-        <span class="p">)</span>
+        # Calculate the length scaled TPM values
+        length_scaled_tpm_mat = get_length_scaled_tpm_matrix(
+            counts_mat, abundance_mat, length_mat
+        )
 
-        <span class="c1"># Save the processed expression matrix to a CSV file</span>
-        <span class="n">expression_matrix_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processed_data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
-        <span class="n">length_scaled_tpm_mat</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">expression_matrix_path</span><span class="p">)</span>
+        # Save the processed expression matrix to a CSV file
+        expression_matrix_path = os.path.join(processed_data_path, f"{species}.csv")
+        length_scaled_tpm_mat.to_csv(expression_matrix_path)
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Expression matrix for </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2"> created successfully.&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+        print(f"\nExpression matrix for {species} created successfully.")</code></pre>
           </details>
   </div>
 
@@ -357,7 +285,7 @@
 
 
 <h2 id="rna.data_conversion_helper_functions.create_expression_matrix.get_length_scaled_tpm_matrix" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">get_length_scaled_tpm_matrix</span><span class="p">(</span><span class="n">counts_mat</span><span class="p">,</span> <span class="n">abundance_mat</span><span class="p">,</span> <span class="n">length_mat</span><span class="p">)</span></code>
+          <code class="highlight language-python">get_length_scaled_tpm_matrix(counts_mat, abundance_mat, length_mat)</code>
 
 </h2>
 
@@ -432,73 +360,40 @@
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>rna\data_conversion_helper_functions\create_expression_matrix.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_length_scaled_tpm_matrix</span><span class="p">(</span>
-    <span class="n">counts_mat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">abundance_mat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">length_mat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate length scaled TPM matrix.</span>
+            <summary>Source code in <code>rna/data_conversion_helper_functions/create_expression_matrix.py</code></summary>
+            <pre class="highlight"><code class="language-python">def get_length_scaled_tpm_matrix(
+    counts_mat: pd.DataFrame, abundance_mat: pd.DataFrame, length_mat: pd.DataFrame
+) -&gt; pd.DataFrame:
+    """Generate length scaled TPM matrix.
 
-<span class="sd">    Args:</span>
-<span class="sd">        counts_mat (DataFrame): A matrix of original counts (NumReads).</span>
-<span class="sd">        abundance_mat (DataFrame): A matrix of abundances (TPM).</span>
-<span class="sd">        length_mat (DataFrame): A matrix of effective lengths.</span>
+    Args:
+        counts_mat (DataFrame): A matrix of original counts (NumReads).
+        abundance_mat (DataFrame): A matrix of abundances (TPM).
+        length_mat (DataFrame): A matrix of effective lengths.
 
-<span class="sd">    Returns:</span>
-<span class="sd">        DataFrame: A matrix of length scaled TPM values indexed by transcript ID.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    Returns:
+        DataFrame: A matrix of length scaled TPM values indexed by transcript ID.
+    """
 
-    <span class="c1"># Calculate the sum of counts across all transcripts for each sample: per-sample library size</span>
-    <span class="n">counts_sum</span> <span class="o">=</span> <span class="n">counts_mat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    # Calculate the sum of counts across all transcripts for each sample: per-sample library size
+    counts_sum = counts_mat.sum(axis=0)
 
-    <span class="c1"># Calculate the average transcript lengths (averaged over samples)</span>
-    <span class="n">length_means</span> <span class="o">=</span> <span class="n">length_mat</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    # Calculate the average transcript lengths (averaged over samples)
+    length_means = length_mat.mean(axis=1)
 
-    <span class="c1"># Multiply abundance matrix (TPM) by average transcript lengths</span>
-    <span class="n">length_tpm_mat</span> <span class="o">=</span> <span class="n">abundance_mat</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">length_means</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    # Multiply abundance matrix (TPM) by average transcript lengths
+    length_tpm_mat = abundance_mat.multiply(length_means, axis=0)
 
-    <span class="c1"># Calculate the sum of new counts across transcripts for each sample</span>
-    <span class="n">new_sum</span> <span class="o">=</span> <span class="n">length_tpm_mat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    # Calculate the sum of new counts across transcripts for each sample
+    new_sum = length_tpm_mat.sum(axis=0)
 
-    <span class="c1"># Determine the scaling factor for each sample</span>
-    <span class="n">scaling_factor</span> <span class="o">=</span> <span class="n">counts_sum</span> <span class="o">/</span> <span class="n">new_sum</span>
+    # Determine the scaling factor for each sample
+    scaling_factor = counts_sum / new_sum
 
-    <span class="c1"># Apply the scaling factor to scale new counts to match the original total counts</span>
-    <span class="n">length_scaled_tpm_mat</span> <span class="o">=</span> <span class="n">length_tpm_mat</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">scaling_factor</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    # Apply the scaling factor to scale new counts to match the original total counts
+    length_scaled_tpm_mat = length_tpm_mat.multiply(scaling_factor, axis=1)
 
-    <span class="k">return</span> <span class="n">length_scaled_tpm_mat</span>
-</code></pre></div></td></tr></table></div>
+    return length_scaled_tpm_mat</code></pre>
           </details>
   </div>
 
