@@ -111,7 +111,7 @@ def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> No
         print(f"\nExpression matrix for {species} created successfully.")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover, create expression matrix
     path_to_raw_data = "quant_files/raw"
     path_to_processed_data = "quant_files/processed"
     create_expression_matrix(path_to_raw_data, path_to_processed_data)

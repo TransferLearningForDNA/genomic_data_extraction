@@ -77,7 +77,7 @@ def download_sra_data(
                 print(f"An unexpected error occurred: {e}", flush=True)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover, main function to download SRA data
     # Call CSV file path returned by the 'query_and_csv_production' file
     path_to_csv = "/local/path/to/output_srx_srr.csv"
 

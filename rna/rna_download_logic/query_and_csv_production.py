@@ -86,7 +86,7 @@ def query_and_get_srx_accession_ids(
     return species_srx_map
 
 
-def view_srx_metadata(species_srx_map: Dict[str, List[str]]) -> Dict[str, pd.DataFrame]:
+def view_srx_metadata(species_srx_map: Dict[str, List[str]]) -> Dict[str, pd.DataFrame]: # pragma: no cover, view metadata
     """Get metadata for all species and experiment accession numbers.
 
     Args:
@@ -156,7 +156,7 @@ def SRX_to_SRR_csv(species_srx_map: Dict[str, List[str]], output_file: str) -> N
 
 
 # Specify our species of interest here
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover, query and save SRX to SRR CSV
     species_tax_id = {
         "Chlamydomonas reinhardtii": 3055,
         "Galdieria sulphuraria": 130081,

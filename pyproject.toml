@@ -1,0 +1,6 @@
+# Pytest cov
+[tool.coverage.run]
+omit=["dna/removeshortpromotersandterminators.py", "rna/data_conversion_helper_functions/divide_samplesheet_into_batches.py",
+"rna/data_conversion_helper_functions/rename_quant_output_and_move_to_dir.py",
+"rna/data_conversion_helper_functions/zip_fasta_files.py",
+"rna/rna_extraction.py"]

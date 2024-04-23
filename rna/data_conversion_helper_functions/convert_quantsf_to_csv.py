@@ -63,7 +63,7 @@ def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
                     csv_writer.writerow(row)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover, convert quant.sf files to csv
     # Path to input raw quant.sf files folder
     raw_quant_path = "quant_files/raw"
     convert_all_species_files(raw_quant_path)
