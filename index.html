@@ -41,6 +41,12 @@
                 <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#project-layout">Project layout</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-data-acquisition">1. Data Acquisition:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-data-preprocessing">2. Data Preprocessing:</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#code">Code</a>
     </li>
@@ -61,15 +67,21 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="#">rna</a>
     <ul>
+                <li class="toctree-l2"><a class="reference internal" href="genomic_data_extraction/rna/rna_extraction/">rna_extraction</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="#">data_conversion_helper_functions</a>
     <ul>
                 <li class="toctree-l3"><a class="reference internal" href="genomic_data_extraction/rna/data_conversion_helper_functions/convert_quantsf_to_csv/">convert_quantsf_to_csv</a>
                 </li>
                 <li class="toctree-l3"><a class="reference internal" href="genomic_data_extraction/rna/data_conversion_helper_functions/create_expression_matrix/">create_expression_matrix</a>
                 </li>
+                <li class="toctree-l3"><a class="reference internal" href="genomic_data_extraction/rna/data_conversion_helper_functions/process_expression_matrix/">process_expression_matrix</a>
+                </li>
                 <li class="toctree-l3"><a class="reference internal" href="genomic_data_extraction/rna/data_conversion_helper_functions/create_samplesheet_csv/">create_samplesheet_csv</a>
                 </li>
-                <li class="toctree-l3"><a class="reference internal" href="genomic_data_extraction/rna/data_conversion_helper_functions/process_expression_matrix/">process_expression_matrix</a>
+                <li class="toctree-l3"><a class="reference internal" href="genomic_data_extraction/rna/data_conversion_helper_functions/divide_samplesheet_into_batches/">divide_samplesheet_into_batches</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="genomic_data_extraction/rna/data_conversion_helper_functions/rename_quant_output_and_move_to_dir.md">rename_quant_output_and_move_to_dir</a>
                 </li>
     </ul>
                 </li>
@@ -81,9 +93,11 @@
                 </li>
     </ul>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="genomic_data_extraction/rna/rna_extraction/">rna_extraction</a>
-                </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="dataset_integration.md">dataset_integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="main.md">main</a>
                   </li>
               </ul>
       </div>
@@ -110,16 +124,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="welcome-to-the-genomic-data-extraction-project">Welcome to the Genomic Data Extraction project</h1>
+                <h1 id="welcome-to-the-expression-prediction-data-preprocessing-pipeline">Welcome to the Expression Prediction Data Preprocessing Pipeline</h1>
 <!-- * `mkdocs new [dir-name]` - Create a new project.
 * `mkdocs serve` - Start the live-reloading docs server.
 * `mkdocs build` - Build the documentation site.
 * `mkdocs -h` - Print help message and exit. -->
 
 <h2 id="project-layout">Project layout</h2>
+<p>This repository contains a pipeline for collecting, processing, and storing DNA and mRNA expression
+profile data of given species from publicly available genetic databases.</p>
+<h3 id="1-data-acquisition">1. Data Acquisition:</h3>
 <ul>
-<li>DNA data extraction</li>
-<li>mRNA data extraction</li>
+<li>Extract DNA data from Ensembl genomic database. Includes nucleotide sequences of gene components
+  (promoter, 5'UTR, CDS, 3'UTR and terminator) for each protein-coding gene.</li>
+<li>Extract mRNA data from NCBI SRA. Gene expression data is obtained using nf-core/rnaseq processing workflow.</li>
+</ul>
+<h3 id="2-data-preprocessing">2. Data Preprocessing:</h3>
+<ul>
+<li>Calculate required codon frequency, GC content, and sequence length features for genomic data.</li>
+<li>Calculate Relative Standard Deviation (RSD) and median expression, and filter genes with RSD &lt; 2.</li>
+<li>Merge genomic and transcriptomic data tables by gene ID.</li>
 </ul>
 <h2 id="code">Code</h2>
 <p><a href="https://github.com/TransferLearningForDNA/genomic_data_extraction">Genomic Data Extraction</a></p>
@@ -173,5 +197,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2024-04-23 11:48:11.646071+00:00
+Build Date UTC : 2024-04-23 14:10:20.003497+00:00
 -->

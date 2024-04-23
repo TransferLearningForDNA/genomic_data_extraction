@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Dataset integration - Genomic Data Extraction</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Dataset integration";
+        var mkdocs_page_input_path = "genomic_data_extraction/dataset_integration.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Genomic Data Extraction
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">genomic_data_extraction</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="#">dna</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../dna/dna_extraction/">dna_extraction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../dna/dna_feature_extraction/">dna_feature_extraction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../dna/ensembl_api/">ensembl_api</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">rna</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../rna/rna_extraction/">rna_extraction</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="#">data_conversion_helper_functions</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/data_conversion_helper_functions/convert_quantsf_to_csv/">convert_quantsf_to_csv</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/data_conversion_helper_functions/create_expression_matrix/">create_expression_matrix</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/data_conversion_helper_functions/process_expression_matrix/">process_expression_matrix</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/data_conversion_helper_functions/create_samplesheet_csv/">create_samplesheet_csv</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/data_conversion_helper_functions/divide_samplesheet_into_batches/">divide_samplesheet_into_batches</a>
+                </li>
+                <li class="toctree-l3"><a class="" href="../rna/data_conversion_helper_functions/rename_quant_output_and_move_to_dir.md">rename_quant_output_and_move_to_dir</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="#">rna_download_logic</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/rna_download_logic/mRNA_fastq_download/">mRNA_fastq_download</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../rna/rna_download_logic/query_and_csv_production/">query_and_csv_production</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../../dataset_integration.md">dataset_integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../../main.md">main</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Genomic Data Extraction</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Dataset integration</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/TransferLearningForDNA/genomic_data_extraction/edit/master/docs/genomic_data_extraction/dataset_integration.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<a id="dataset_integration"></a>
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="dataset_integration.import_species_data" class="doc doc-heading">
+          <code class="highlight language-python">import_species_data(csv_file_path)</code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Create dictionary containing species names and taxonomy IDs.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+      <ul class="first simple">
+          <li>
+                <code><span title="typing.Dict">Dict</span>[str, int]</code>
+            –
+            <div class="doc-md-description">
+              <p>Dict[str, int]: A dictionary with species names as keys and species IDs as values.</p>
+            </div>
+          </li>
+      </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>
+          <details class="quote">
+            <summary>Source code in <code>dataset_integration.py</code></summary>
+            <pre class="highlight"><code class="language-python">def import_species_data(csv_file_path: str) -&gt; Dict[str, int]:
+    """Create dictionary containing species names and taxonomy IDs.
+
+    Args:
+        csv_file_path (str)
+
+    Returns:
+        Dict[str, int]: A dictionary with species names as keys and species IDs as values.
+    """
+    df = pd.read_csv(csv_file_path)
+    # Convert DataFrame to a dictionary with 'name' as keys and 'tax_id' as values
+    species_data = pd.Series(df.tax_id.values, index=df.name).to_dict()
+    return species_data</code></pre>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="dataset_integration.merge_datasets" class="doc doc-heading">
+          <code class="highlight language-python">merge_datasets(species_name)</code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Merge DNA and RNA data by transcript ID.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+      <ul class="first simple">
+          <li>
+<b><code>DataFrame</code></b>(                <code><span title="pandas.DataFrame">DataFrame</span> | None</code>
+)            –
+            <div class="doc-md-description">
+              <p>Merged DNA and RNA data for the all transcripts of the given species.
+    Columns: ensembl_gene_id, transcript_id, promoter, utr5, cds, utr3, terminator sequences
+    64x codon frequencies, cds_length, utr5_length, utr3_length, utr5_gc, cds_gc, utr3_gc,
+    cds_wobble2_gc, cds_wobble3_gc, median_expression</p>
+            </div>
+          </li>
+          <li>
+                <code><span title="pandas.DataFrame">DataFrame</span> | None</code>
+            –
+            <div class="doc-md-description">
+              <p>OR None if one of the DNA or RNA data paths does not exist</p>
+            </div>
+          </li>
+      </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>
+          <details class="quote">
+            <summary>Source code in <code>dataset_integration.py</code></summary>
+            <pre class="highlight"><code class="language-python">def merge_datasets(species_name: str) -&gt; pd.DataFrame | None:
+    """Merge DNA and RNA data by transcript ID.
+
+    Args:
+        species_name (str)
+
+    Returns:
+        DataFrame: Merged DNA and RNA data for the all transcripts of the given species.
+                Columns: ensembl_gene_id, transcript_id, promoter, utr5, cds, utr3, terminator sequences
+                64x codon frequencies, cds_length, utr5_length, utr3_length, utr5_gc, cds_gc, utr3_gc,
+                cds_wobble2_gc, cds_wobble3_gc, median_expression
+
+        OR None if one of the DNA or RNA data paths does not exist
+    """
+    # Specify CSV file paths of the DNA and RNA datasets
+    dna_dataset_path = f"dna/csv_files/ensembl_data_{species_name}.csv"
+    rna_dataset_path = f"rna/median_expression_files/rna_expression_{species_name}.csv"  # median expression matrix
+
+    # Check if both files exist
+    if not os.path.exists(dna_dataset_path):
+        print(f"Warning: DNA dataset not found at {dna_dataset_path}.")
+        return None
+    if not os.path.exists(rna_dataset_path):
+        print(f"Warning: RNA dataset not found at {rna_dataset_path}.")
+        return None
+
+    # Read datasets into pandas DataFrames
+    dna_df = pd.read_csv(dna_dataset_path)
+    rna_df = pd.read_csv(rna_dataset_path)
+
+    # Merge datasets based on transcript ID
+    merged_df = pd.merge(dna_df, rna_df, on="transcript_id", how="inner")
+
+    # Save merged dataframe to csv
+    merged_df.to_csv(f"merged_csv_files/merged_{species_name}_data.csv", index=False)
+
+    print(f"Successfully merged DNA and RNA data for species {species_name}!")
+
+    return merged_df</code></pre>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/TransferLearningForDNA/genomic_data_extraction" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme_extra.js" defer></script>
+    <script src="../../js/theme.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
