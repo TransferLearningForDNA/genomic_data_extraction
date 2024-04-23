@@ -81,7 +81,7 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="" href="../../../../dataset_integration.md">dataset_integration</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../dataset_integration/">dataset_integration</a>
                   </li>
               </ul>
       </div>
@@ -379,6 +379,8 @@
     """
     # Iterate over species
     for species in os.listdir(file_path):
+        if species == '.gitignore':
+            continue
         expression_matrix_path = os.path.join(file_path, species)
 
         # Read the csv file into a DataFrame

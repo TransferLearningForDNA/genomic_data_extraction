@@ -81,7 +81,7 @@
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="" href="../../../dataset_integration.md">dataset_integration</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../dataset_integration/">dataset_integration</a>
                   </li>
               </ul>
       </div>
@@ -128,6 +128,81 @@
 
 
 
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="rna.rna_extraction.create_directories_for_species" class="doc doc-heading">
+          <code class="highlight language-python">create_directories_for_species(species_data, base_directory)</code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Creates directories for storing quantification files.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>species_data</code></b>
+                  (<code><span title="typing.Dict">Dict</span>[str, int]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary with species names as keys.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>base_directory</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Base directory path under which to create species directories.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+          <details class="quote">
+            <summary>Source code in <code>rna/rna_extraction.py</code></summary>
+            <pre class="highlight"><code class="language-python">def create_directories_for_species(species_data: Dict[str, int], base_directory: str) -&gt; None:
+    """Creates directories for storing quantification files.
+
+    Args:
+        species_data (Dict[str, int]): Dictionary with species names as keys.
+        base_directory (str): Base directory path under which to create species directories.
+    """
+    for species_name in species_data.keys():
+        # Format the species name to be lowercase and linked with an underscore
+        formatted_species_name = "_".join(species_name.lower().split())
+        species_directory = os.path.join(base_directory, formatted_species_name)
+
+        # Create main directory for the species
+        os.makedirs(species_directory, exist_ok=True)
+
+        # Create subdirectories for sf_files (nf-core/rnaseq output) and csv_files (converted files)
+        os.makedirs(os.path.join(species_directory, 'sf_files'), exist_ok=True)
+        os.makedirs(os.path.join(species_directory, 'csv_files'), exist_ok=True)
+
+        print(f"Created directories for {species_name} at {species_directory}.")</code></pre>
+          </details>
+  </div>
+
+</div>
 
 
 <div class="doc doc-object doc-function">
@@ -201,6 +276,9 @@
         output_directory (str): Full directory path where the downloaded files will be stored.
         file_number_limit (int): Maximum number of files to download per species (defaults to 10).
     """
+
+    # First, create necessary directories for each species for later processing
+    create_directories_for_species(species_data, 'quant_files/raw')
 
     print(f"Downloading RNA data to {output_directory}. \nSpecies: {species_data}")
 
