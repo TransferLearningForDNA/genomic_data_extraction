@@ -1,4 +1,4 @@
-# Welcome to the Genomic Data Extraction project
+# Welcome to the Expression Prediction Data Preprocessing Pipeline
 
 
 <!-- * `mkdocs new [dir-name]` - Create a new project.
@@ -8,8 +8,20 @@
 
 ## Project layout
 
-- DNA data extraction
-- mRNA data extraction
+This repository contains a pipeline for collecting, processing, and storing DNA and mRNA expression
+profile data of given species from publicly available genetic databases.
+
+### 1. Data Acquisition:
+
+- Extract DNA data from Ensembl genomic database. Includes nucleotide sequences of gene components
+  (promoter, 5'UTR, CDS, 3'UTR and terminator) for each protein-coding gene.
+- Extract mRNA data from NCBI SRA. Gene expression data is obtained using nf-core/rnaseq processing workflow.
+
+### 2. Data Preprocessing:
+
+- Calculate required codon frequency, GC content, and sequence length features for genomic data.
+- Calculate Relative Standard Deviation (RSD) and median expression, and filter genes with RSD < 2.
+- Merge genomic and transcriptomic data tables by gene ID.
 
 ## Code
 

@@ -13,6 +13,8 @@ def convert_all_species_files(folder_path: str) -> None:
     """
     # Iterate over items in the directory
     for item in os.listdir(folder_path):
+        if item == ".gitignore":
+            continue
         item_path = os.path.join(folder_path, item)  # Get the full path of the item
         if os.path.isdir(item_path):  # Check if the item is a directory
             print(f"\nConverting quant files for species: {item}")

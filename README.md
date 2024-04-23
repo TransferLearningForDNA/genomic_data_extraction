@@ -16,21 +16,6 @@ profile data of given species from publicly available genetic databases.
 - Calculate Relative Standard Deviation (RSD) and median expression, and filter genes with RSD < 2.
 - Merge genomic and transcriptomic data tables by gene ID.
 
-[//]: # (### 3. Data Preparation for Machine Learning:)
-
-[//]: # ()
-[//]: # (- Discount irrelevant genes &#40;low expression&#41;.)
-
-[//]: # (- Pad remaining promoters and terminators to standardise length.)
-
-[//]: # (- Pad all UTRs to the same length to ensure consistency.)
-
-[//]: # (- Drop genes with incomplete regulatory sequences.)
-
-[//]: # (- Combine all sequences &#40;with equal length&#41; into a unified dataset.)
-
-[//]: # (- One-Hot Encode &#40;OHE&#41; and stack sequence data for machine learning model compatibility.)
-
 
 [//]: # (## Table of Contents)
 
@@ -65,6 +50,7 @@ The NCBI SRA Toolkit is required for the download and extraction of the mRNA dat
 Please follow the instructions below (run on terminal):
 1. Download and extract the SRA Toolkit: 
 ```bash
+# The link might change depending on your operating system
 curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
 tar -vxzf sratoolkit.tar.gz
 ```
@@ -175,9 +161,12 @@ The csv file should contain columns `name` and `tax_id`.
 `<file_number_limit>`: Specifies the maximum number of files to be downloaded per species (i.e. How many RNA-seq experiment run samples do you wish to download?).
 Defaults to 10 as a precaution due to large storage requirements.
 
+- Directories will be automatically created for each species under `rna/quant_files/raw/` and named 'species_name' (e.g. `homo_sapiens/`). Each species-specific directory will contain two sub-folders: `sf_files/` (to store nf-core/rnaseq output quant.sf files) and `csv_files/` (the converted csv version of these files).
+This is necessary for later processing of expression data.
+
 ```bash
 # file_number_limit (int) argument is optional (defaults to 10)
-python main.py download_rna_data <output_directory> <file_number_limit>
+python3.10 main.py download_rna_data <output_directory> <file_number_limit>
 ```
 
 **Important notes**:
@@ -258,6 +247,7 @@ python3.10 rna/data_conversion_helper_functions/rename_quant_output_and_move_to_
   2. Possible error with certain samples with data quality issues. In that case, no output from the quantification stage (i.e., quant.sf files) will be saved for any of the samples in the csv file. We thus recommend working with batches of samples from the same species. If a sample is faulty, its SRR ID will appear in the error message of the pipeline, and you are advised to remove that sample/row from the samplesheet csv file and try running the pipeline again to obtain the outputs for the other samples.
 
 #### 3. Process expression data _(all species)_
+- Ensure that the quant.sf files obtained from the nf-core/rnaseq pipeline are placed in `rna/quant_files/raw/<species_name>/sf_files` (You might have to move them manually if the download was performed elsewhere.).
 - Run the following command to process raw transcriptomic data (quant.sf files obtained from the nf-core/rnaseq pipeline), filter transcripts with RSD < 2 and obtain the median expression (length scaled TPM) of each gene.
 
 ```bash
@@ -267,7 +257,7 @@ python3.10 main.py process_rna_expression
 ### Final dataset
 
 #### 1. Merge processed genomic and transcriptomic data
-
+Ensure that the desired species names are specified in `species_ids.csv`.
 ```bash
 python3.10 main.py merge_datasets
 ```
@@ -288,51 +278,58 @@ TGCAAATGCATGGTGATGCAAGGCTTGCCAGCGGCAGTTGAAATACATGCTCAAAGCTTACGCCGAATAAGGTTAGATGA
 0.0163755458515283,0.0240174672489082,2748,,4.0,,0.5505822416302766,0.5,0.537117903930131,0.601528384279476,34.8769964989974
 ```
 
-
+_Note_: If the obtained file is empty, there might be a mismatch between the `"transript_id"` of the DNA and RNA csv files.
 
 
 ## Directory Structure
-Description of the repository's organization, explaining what each file and folder contains.
+For detailed function descriptions, please refer to the documentation: https://transferlearningfordna.github.io/genomic_data_extraction/.
 
 - `dna/`: Contains scripts and data for DNA extraction and feature analysis.
+
   - `dna_extraction.py`: Extracts and processes genomic data from Ensembl database.
+
   - `dna_feature_extraction.py`: Analyses DNA sequences to extract features ( e.g.codon frequencies, lengths, GC content).
-  - `ensembl_api.py`: Interacts with the Ensembl API for data retrieval.
+
+  - `ensembl_api.py`: Interacts with the Ensembl API for DNA data retrieval.
+
   - `gene_lists/`: Directory containing lists of gene stable IDs for each species.
+
   - `csv_files/`: Directory containing csv files with raw (temporary) or processed DNA data. 
 
 
+
 - `rna/`: Scripts and resources for RNA data processing and analysis.
+
     - `rna_extraction.py`: Script for RNA sequence extraction (download & processing).
+
     - `rna_download_logic/`: Logic for downloading RNA data from NCBI SRA.
+
     - `data_conversion_helper_functions/`: Helper scripts for data format conversion and expression matrix processing.
+
     - `quant_files/`: Contains raw and processed nf-core/rnaseq pipeline output data.
+
       - `processed/`: Contains expression matrix csv files for each species (length-scaled TPM of all RNA-seq samples).
+
       - `raw/`: Contains folders for each species within which are stored `sf_files/` (raw nf-core/rnaseq Salmon quantification output files) and `csv_files/` (converted format).
+
     - `media_expression_files/`: Contains csv files with calculated median expression of selected transcripts.
+
     - `rnaseq_params.yaml`: Template YAML file used to run the nf-core/rnaseq pipeline.
 
 
-- `dataset_integration.py`: Integrates DNA and RNA datasets.
-- `main.py`: The main script to run analyses.
+- `dataset_integration.py`: Integrates DNA and RNA data to obtain final 'merged' dataset.
+- `merged_csv_files/`: Folder containing final dataset csv files (processed genomic and transcriptomic data).
+
+- `main.py`: The main script to run analyses via CLI commands.
+
 - `requirements.txt`: Required Python packages for the repository.
-- `species_ids.csv`: CSV file containing s`pecies identifiers used in analysis.
-- `rnaseqpipeline_conda_env.yml`
+
+- `species_ids.csv`: Template csv file containing name and taxonomy IDs of desired species.
 
 
-- `tests/`: Unit tests for DNA and RNA processing scripts.
-- `tutorials/`: Jupyter notebooks.
-- `visualizations/`: Scripts for exploratory data analysis (EDA) visualisations.
 
+## Gotchas
 
-For detailed usage and function descriptions, refer to the corresponding script's documentation.
-
-
-## Running the Tests
-TBC
-
-## Time and Space Complexity
-TBD
 
 ## Acknowledgments
 Credits to contributors, funding organizations, or any third-party tools or datasets used.

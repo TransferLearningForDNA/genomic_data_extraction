@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, MagicMock, mock_open, call
 import csv
 import pandas as pd
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import (
@@ -19,6 +19,7 @@ from rna.data_conversion_helper_functions.create_samplesheet_csv import (
     list_files,
     create_samplesheet_for_one_species,
 )
+from rna.rna_extraction import create_directories_for_species
 
 
 @patch("builtins.print")
@@ -353,3 +354,22 @@ def test_create_samplesheet_for_one_species():
         mock_csv_writer_instance = mock_csv_writer.return_value
         mock_csv_writer_instance.writerow.assert_called()
         assert mock_csv_writer_instance.writerows.call_count == 1
+
+
+def test_create_directories_for_species():
+    with patch("rna.rna_extraction.os.makedirs") as mock_makedirs:
+        species_data = {"Homo sapiens": 9606, "Mus musculus": 10090}
+        base_directory = "/fakepath/data"
+
+        expected_calls = [
+            call("/fakepath/data/homo_sapiens", exist_ok=True),
+            call("/fakepath/data/homo_sapiens/sf_files", exist_ok=True),
+            call("/fakepath/data/homo_sapiens/csv_files", exist_ok=True),
+            call("/fakepath/data/mus_musculus", exist_ok=True),
+            call("/fakepath/data/mus_musculus/sf_files", exist_ok=True),
+            call("/fakepath/data/mus_musculus/csv_files", exist_ok=True),
+        ]
+
+        create_directories_for_species(species_data, base_directory)
+
+        mock_makedirs.assert_has_calls(expected_calls, any_order=True)
