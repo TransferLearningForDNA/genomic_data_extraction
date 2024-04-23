@@ -1,3 +1,4 @@
+import os
 from typing import Dict, Optional
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import (
     convert_all_species_files,
@@ -33,6 +34,28 @@ def process_rna_expression_data() -> None:
     process_expression_matrix(processed_data_path, median_expression_path)
 
 
+def create_directories_for_species(species_data: Dict[str, int], base_directory: str) -> None:
+    """Creates directories for storing quantification files.
+
+    Args:
+        species_data (Dict[str, int]): Dictionary with species names as keys.
+        base_directory (str): Base directory path under which to create species directories.
+    """
+    for species_name in species_data.keys():
+        # Format the species name to be lowercase and linked with an underscore
+        formatted_species_name = "_".join(species_name.lower().split())
+        species_directory = os.path.join(base_directory, formatted_species_name)
+
+        # Create main directory for the species
+        os.makedirs(species_directory, exist_ok=True)
+
+        # Create subdirectories for sf_files (nf-core/rnaseq output) and csv_files (converted files)
+        os.makedirs(os.path.join(species_directory, 'sf_files'), exist_ok=True)
+        os.makedirs(os.path.join(species_directory, 'csv_files'), exist_ok=True)
+
+        print(f"Created directories for {species_name} at {species_directory}.")
+
+
 def download_rna_data(
     species_data: Dict[str, int],
     output_directory: str,
@@ -45,6 +68,9 @@ def download_rna_data(
         output_directory (str): Full directory path where the downloaded files will be stored.
         file_number_limit (int): Maximum number of files to download per species (defaults to 10).
     """
+
+    # First, create necessary directories for each species for later processing
+    create_directories_for_species(species_data, 'quant_files/raw')
 
     print(f"Downloading RNA data to {output_directory}. \nSpecies: {species_data}")
 

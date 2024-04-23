@@ -1,4 +1,4 @@
-# Expression Prediction Data Preprocessing Pipeline
+# 🧬 Expression Prediction Data Preprocessing Pipeline 🧬
 
 ## Overview
 This repository contains a pipeline for collecting, processing, and storing DNA and mRNA expression
@@ -16,25 +16,8 @@ profile data of given species from publicly available genetic databases.
 - Calculate Relative Standard Deviation (RSD) and median expression, and filter genes with RSD < 2.
 - Merge genomic and transcriptomic data tables by gene ID.
 
-[//]: # (### 3. Data Preparation for Machine Learning:)
 
-[//]: # ()
-[//]: # (- Discount irrelevant genes &#40;low expression&#41;.)
-
-[//]: # (- Pad remaining promoters and terminators to standardise length.)
-
-[//]: # (- Pad all UTRs to the same length to ensure consistency.)
-
-[//]: # (- Drop genes with incomplete regulatory sequences.)
-
-[//]: # (- Combine all sequences &#40;with equal length&#41; into a unified dataset.)
-
-[//]: # (- One-Hot Encode &#40;OHE&#41; and stack sequence data for machine learning model compatibility.)
-
-
-[//]: # (## Table of Contents)
-
-## Installation
+## ⚙️ Installation ⚙️
 
 ### Prerequisites
 Before you begin the setup process, ensure you have the following prerequisites installed on your system:
@@ -65,6 +48,7 @@ The NCBI SRA Toolkit is required for the download and extraction of the mRNA dat
 Please follow the instructions below (run on terminal):
 1. Download and extract the SRA Toolkit: 
 ```bash
+# The link might change depending on your operating system
 curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
 tar -vxzf sratoolkit.tar.gz
 ```
@@ -120,9 +104,9 @@ conda env -f <env_file_name>.yml
 
 
   
-## Usage
+## 🤖 Usage 🤖
 
-**NOTE**: The pipeline operates in discrete steps and handles large datasets, notably fastq files, which may require significant storage. Consider the following recommendations to ensure smooth operation:
+❗**NOTE**: The pipeline operates in discrete steps and handles large datasets, notably fastq files, which may require significant storage. Consider the following recommendations to ensure smooth operation:
 
 - **Storage Planning**: Anticipate the need for substantial storage capacity. You may need to execute some sections of the pipeline in batches to manage space efficiently.
 
@@ -134,9 +118,8 @@ You can use tools such as `tmux` to process tasks in parallel and reduce runtime
 Please find more information in the nextflow documentation: https://nf-co.re/docs/usage/configuration.
 
 
-[//]: # (TAILORED USE: specific species guidelines)
 
-### Genomic data
+### 🧬 Genomic data
 
 #### 1. Get gene lists from Ensembl BioMart
 
@@ -162,7 +145,7 @@ python3.10 main.py extract_dna_data
 - The obtained CSV files will be saved under `dna/csv_files` and named `ensembl_data_<species_name>.csv`.
 
 
-### Expression data
+### 🧬 Expression data
 
 #### 1. Download mRNA data from NCBI SRA _(all species, per species recommended)_
 
@@ -175,9 +158,12 @@ The csv file should contain columns `name` and `tax_id`.
 `<file_number_limit>`: Specifies the maximum number of files to be downloaded per species (i.e. How many RNA-seq experiment run samples do you wish to download?).
 Defaults to 10 as a precaution due to large storage requirements.
 
+- Directories will be automatically created for each species under `rna/quant_files/raw/` and named 'species_name' (e.g. `homo_sapiens/`). Each species-specific directory will contain two sub-folders: `sf_files/` (to store nf-core/rnaseq output quant.sf files) and `csv_files/` (the converted csv version of these files).
+This is necessary for later processing of expression data.
+
 ```bash
 # file_number_limit (int) argument is optional (defaults to 10)
-python main.py download_rna_data <output_directory> <file_number_limit>
+python3.10 main.py download_rna_data <output_directory> <file_number_limit>
 ```
 
 **Important notes**:
@@ -220,7 +206,7 @@ salmon index -t <path/to/the/transcript_fasta/file> -i <path/to/directory/to/sto
 ```
 
 - Create a samplesheet csv file for a species used as input to the nf-core/rna-seq pipeline.
-  - Note: You can also process a few samples (from the same species) at a time, if you are restrained by compute resources: this would require multiple csv files. In `rna/data_conversion_helper_functions/divide_samplesheet_into_batches.py`, you can specify the number of samples (batch) that each csv file should contain.
+  - _Note_: You can also process a few samples (from the same species) at a time, if you are restrained by compute resources: this would require multiple csv files. In `rna/data_conversion_helper_functions/divide_samplesheet_into_batches.py`, you can specify the number of samples (batch) that each csv file should contain.
 
 ```bash
 """
@@ -253,11 +239,12 @@ nextflow run nf-core/rnaseq -params file /path/to/yaml/with/params/to/rnaseq/pip
 python3.10 rna/data_conversion_helper_functions/rename_quant_output_and_move_to_dir.py
 ```
 
-- WARNINGS:
+- ❗WARNINGS:
   1. Possible error when running the nf-core rnaseq pipeline, but this is not a problem if quant.sf files have been created (i.e., if salmon quantification has been completed successfully). In our case, the pipeline consistently fails at the TX2GENE stage (called NFCORE_RNASEQ:RNASEQ: QUANTIFY_PSEUDO_ALIGNMENT:TX2GENE), which occurs after the quantification stage.
   2. Possible error with certain samples with data quality issues. In that case, no output from the quantification stage (i.e., quant.sf files) will be saved for any of the samples in the csv file. We thus recommend working with batches of samples from the same species. If a sample is faulty, its SRR ID will appear in the error message of the pipeline, and you are advised to remove that sample/row from the samplesheet csv file and try running the pipeline again to obtain the outputs for the other samples.
 
 #### 3. Process expression data _(all species)_
+- Ensure that the quant.sf files obtained from the nf-core/rnaseq pipeline are placed in `rna/quant_files/raw/<species_name>/sf_files` (You might have to move them manually if the download was performed elsewhere.).
 - Run the following command to process raw transcriptomic data (quant.sf files obtained from the nf-core/rnaseq pipeline), filter transcripts with RSD < 2 and obtain the median expression (length scaled TPM) of each gene.
 
 ```bash
@@ -267,7 +254,7 @@ python3.10 main.py process_rna_expression
 ### Final dataset
 
 #### 1. Merge processed genomic and transcriptomic data
-
+Ensure that the desired species names are specified in `species_ids.csv`.
 ```bash
 python3.10 main.py merge_datasets
 ```
@@ -288,54 +275,71 @@ TGCAAATGCATGGTGATGCAAGGCTTGCCAGCGGCAGTTGAAATACATGCTCAAAGCTTACGCCGAATAAGGTTAGATGA
 0.0163755458515283,0.0240174672489082,2748,,4.0,,0.5505822416302766,0.5,0.537117903930131,0.601528384279476,34.8769964989974
 ```
 
-
+_Note_: If the obtained file is empty, there might be a mismatch between the `"transript_id"` of the DNA and RNA csv files.
 
 
 ## Directory Structure
-Description of the repository's organization, explaining what each file and folder contains.
+For detailed function descriptions, please refer to the documentation: https://transferlearningfordna.github.io/genomic_data_extraction/.
 
 - `dna/`: Contains scripts and data for DNA extraction and feature analysis.
+
   - `dna_extraction.py`: Extracts and processes genomic data from Ensembl database.
+
   - `dna_feature_extraction.py`: Analyses DNA sequences to extract features ( e.g.codon frequencies, lengths, GC content).
-  - `ensembl_api.py`: Interacts with the Ensembl API for data retrieval.
+
+  - `ensembl_api.py`: Interacts with the Ensembl API for DNA data retrieval.
+
   - `gene_lists/`: Directory containing lists of gene stable IDs for each species.
+
   - `csv_files/`: Directory containing csv files with raw (temporary) or processed DNA data. 
 
 
+
 - `rna/`: Scripts and resources for RNA data processing and analysis.
+
     - `rna_extraction.py`: Script for RNA sequence extraction (download & processing).
+
     - `rna_download_logic/`: Logic for downloading RNA data from NCBI SRA.
+
     - `data_conversion_helper_functions/`: Helper scripts for data format conversion and expression matrix processing.
+
     - `quant_files/`: Contains raw and processed nf-core/rnaseq pipeline output data.
+
       - `processed/`: Contains expression matrix csv files for each species (length-scaled TPM of all RNA-seq samples).
+
       - `raw/`: Contains folders for each species within which are stored `sf_files/` (raw nf-core/rnaseq Salmon quantification output files) and `csv_files/` (converted format).
+
     - `media_expression_files/`: Contains csv files with calculated median expression of selected transcripts.
+
     - `rnaseq_params.yaml`: Template YAML file used to run the nf-core/rnaseq pipeline.
 
 
-- `dataset_integration.py`: Integrates DNA and RNA datasets.
-- `main.py`: The main script to run analyses.
+- `dataset_integration.py`: Integrates DNA and RNA data to obtain final 'merged' dataset.
+- `merged_csv_files/`: Folder containing final dataset csv files (processed genomic and transcriptomic data).
+
+- `main.py`: The main script to run analyses via CLI commands.
+
 - `requirements.txt`: Required Python packages for the repository.
-- `species_ids.csv`: CSV file containing s`pecies identifiers used in analysis.
-- `rnaseqpipeline_conda_env.yml`
+
+- `species_ids.csv`: Template csv file containing name and taxonomy IDs of desired species.
 
 
-- `tests/`: Unit tests for DNA and RNA processing scripts.
-- `tutorials/`: Jupyter notebooks.
-- `visualizations/`: Scripts for exploratory data analysis (EDA) visualisations.
 
+## ⚠️ Gotchas ⚠️
+### nf-core/rnaseq pipeline
+- Possible error when running the nf-core rnaseq pipeline, but this is not a problem if quant.sf files have been created (i.e., if salmon quantification has been completed successfully). In our case, the pipeline consistently fails at the TX2GENE stage (called NFCORE_RNASEQ:RNASEQ: QUANTIFY_PSEUDO_ALIGNMENT:TX2GENE), which occurs after the quantification stage.
+- Possible error with certain samples with data quality issues. In that case, no output from the quantification stage (i.e., quant.sf files) will be saved for any of the samples in the csv file. We thus recommend working with batches of samples from the same species. If a sample is faulty, its SRR ID will appear in the error message of the pipeline, and you are advised to remove that sample/row from the samplesheet csv file and try running the pipeline again to obtain the outputs for the other samples.
 
-For detailed usage and function descriptions, refer to the corresponding script's documentation.
-
-
-## Running the Tests
-TBC
-
-## Time and Space Complexity
-TBD
+### Final merged dataset
+- If the obtained file is empty, there might be a mismatch between the `"transript_id"` of the DNA (Ensembl) and RNA (NCBI SRA) csv files.
 
 ## Acknowledgments
-Credits to contributors, funding organizations, or any third-party tools or datasets used.
+Many thanks to PhycoWorks for their supervision and support!
 
 ## References
-Links to the public databases, bioinformatics pipelines, and any other external references used in the project.
+
+- Ensembl: https://www.ensembl.org/info/data/biomart/
+- Ensembl REST API: https://rest.ensembl.org
+- NSBI SRA: https://www.ncbi.nlm.nih.gov/sra
+- SRA Toolkit: https://hpc.nih.gov/apps/sratoolkit.html
+- nf-core/rnaseq: https://nf-co.re/rnaseq/3.14.0

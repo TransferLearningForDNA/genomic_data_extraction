@@ -63,6 +63,8 @@ def process_expression_matrix(file_path: str, output_file_path: str) -> None:
     """
     # Iterate over species
     for species in os.listdir(file_path):
+        if species == '.gitignore':
+            continue
         expression_matrix_path = os.path.join(file_path, species)
 
         # Read the csv file into a DataFrame
