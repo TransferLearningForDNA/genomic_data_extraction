@@ -9,6 +9,7 @@ from unittest.mock import patch, Mock, MagicMock
 # Add the parent directory of `dna` to `sys.path`
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from dna import ensembl_api
+from dna.dna_extraction import query_dna_sequences_from_ensembl
 
 
 def test_get_cds_valid_id(sequence_PNW69574):
@@ -217,7 +218,6 @@ def test_read_gene_ids_from_file():
 
 
 def test_read_gene_ids_from_file_not_found():
-
     test_file_path = "test_file.txt"
 
     # Redirect stderr to a StringIO object
@@ -273,7 +273,6 @@ def test_read_gene_ids_other_exceptions(mock_open):
 
 
 def test_get_species_name():
-
     filepath = os.path.join(
         os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
     )
@@ -356,7 +355,6 @@ def test_check_extracted_components_empty_transcript(
 
 
 def test_check_extracted_components():
-
     # Define the folder where gene ids of the 5 mandatory species are stored
     gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
     # Define the folder where the extracted dna sequences should be stored
@@ -405,3 +403,28 @@ def test_check_extracted_components():
                     and dna_true["utr3"] == dna_test["utr3"]
                     and dna_true["terminator"] == dna_test["terminator"]
                 )
+
+
+def test_query_dna_sequences_from_ensembl():
+    with patch("os.listdir") as mock_listdir, patch(
+        "os.path.isfile"
+    ) as mock_isfile, patch(
+        "dna.dna_extraction.ensembl_api.get_data_as_csv"
+    ) as mock_api_call:
+
+        mock_listdir.return_value = [
+            "homo_sapiens_genes_small.txt",
+            "mus_musculus_genes_small.txt",
+        ]
+        mock_isfile.return_value = True
+
+        query_dna_sequences_from_ensembl("output_folder")
+
+        expected_paths = [
+            "dna/gene_lists/homo_sapiens_genes_small.txt",
+            "dna/gene_lists/mus_musculus_genes_small.txt",
+        ]
+        mock_api_call.assert_called_once_with(expected_paths, "output_folder")
+
+        mock_listdir.assert_called_once_with("dna/gene_lists/")
+        assert mock_isfile.call_count == len(mock_listdir.return_value)
