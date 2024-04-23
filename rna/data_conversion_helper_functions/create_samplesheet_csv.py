@@ -109,7 +109,7 @@ def create_samplesheet_for_one_species(
         writer.writerows(data)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover, create samplesheet csv files for each species
     local_dir_path_to_save_samplesheets = (
         "/local/path/to/save/csv/samplesheet/for/each/species"
     )
