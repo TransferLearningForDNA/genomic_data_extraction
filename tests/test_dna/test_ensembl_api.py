@@ -1,9 +1,10 @@
 import pytest
-from unittest.mock import patch, Mock, MagicMock
 import sys
 import os
-import csv
 import ensembl_rest
+import csv
+from io import StringIO
+from unittest.mock import patch, Mock, MagicMock
 
 # Add the parent directory of `dna` to `sys.path`
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -92,6 +93,37 @@ def test_get_utr_sequence(mock_sequence_region):
 
 
 @patch("ensembl_rest.sequence_region")
+def test_get_utr_sequence_http_error(mock_sequence_region):
+    # Define input parameters
+    chromosome = "chr1"
+    strand = 1
+    start = 1000
+    end = 2000
+    species = "human"
+
+    # Redirect stderr to a StringIO object
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
+
+    # Configure the mock to raise an exception
+    mock_sequence_region.side_effect = [
+        ensembl_rest.core.restclient.HTTPError(response=MagicMock(status_code=429)),
+        {"seq": "ATGC"},
+    ]
+
+    ensembl_api.get_utr_sequence(chromosome, strand, start, end, species)
+
+    # Get the printed output
+    printed_output = sys.stdout.getvalue()
+
+    # Restore stderr
+    sys.stdout = old_stdout
+
+    # Assert the exception message if needed
+    assert printed_output == "Rate limit exceeded. Waiting before retrying...\n"
+
+
+@patch("ensembl_rest.sequence_region")
 def test_get_full_utr_sequence(mock_get_utr_sequence):
     # Mock input data
     list_utr_coordinates = [(100, 200), (300, 400)]
@@ -153,6 +185,29 @@ def test_request_with_retry(mock_lookup):
     )  # Assuming sleep is called with a delay of 1 second
 
 
+@patch("ensembl_rest.lookup")
+def test_request_with_retry_other_error(mock_lookup):
+    # Mock input data
+    transcript_id = "ENST00000619136"
+
+    # Mock Ensembl REST API response
+    mock_response = {}
+
+    # Expected output
+    expected_data = {}
+
+    # Call the function under test
+
+    mock_lookup.side_effect = ensembl_rest.core.restclient.HTTPError(
+        response=MagicMock(status_code=450)
+    )
+
+    transcript_data = ensembl_api.request_with_retry(transcript_id)
+
+    # Assertion
+    assert transcript_data == expected_data
+
+
 def test_read_gene_ids_from_file():
     filepath = os.path.join(
         os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
@@ -162,6 +217,61 @@ def test_read_gene_ids_from_file():
     assert gene_ids == gene_ids_true
 
 
+def test_read_gene_ids_from_file_not_found():
+    test_file_path = "test_file.txt"
+
+    # Redirect stderr to a StringIO object
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
+
+    # Call the function with a non-existing file path
+    ensembl_api.read_gene_ids_from_file(test_file_path)
+
+    # Get the printed output
+    printed_output = sys.stdout.getvalue()
+
+    # Restore stderr
+    sys.stdout = old_stdout
+
+    # Check if the error message is printed
+    expected_error_message = f"Error: File '{test_file_path}' not found.\n"
+    assert printed_output == expected_error_message
+
+
+@patch("builtins.open")
+def test_read_gene_ids_other_exceptions(mock_open):
+    # Create a temporary directory and file path
+    test_file_path = os.path.join(
+        os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
+    )
+
+    # Mock the open function to simulate an exception
+    mock_open.side_effect = Exception("Simulated exception")
+
+    # Redirect stderr to a StringIO object
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
+
+    # Call the function
+    result = ensembl_api.read_gene_ids_from_file(test_file_path)
+
+    # Get the printed output
+    printed_output = sys.stdout.getvalue()
+
+    # Restore stderr
+    sys.stdout = old_stdout
+
+    # Check that the mock was called with the correct arguments
+    mock_open.assert_called_once_with(test_file_path, "r", encoding="utf-8")
+
+    # Check that the function returns an empty list
+    assert result == []
+
+    # Check that the error message is printed
+    expected_error_message = "Error: Simulated exception\n"
+    assert printed_output == expected_error_message
+
+
 def test_get_species_name():
     filepath = os.path.join(
         os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
@@ -169,6 +279,79 @@ def test_get_species_name():
     species_name = ensembl_api.get_species_name(filepath)
     species_name_true = "homo_sapiens"
     assert species_name == species_name_true
+
+
+@patch("dna.ensembl_api.get_cds")
+@patch("ensembl_rest.lookup")
+@patch("dna.ensembl_api.read_gene_ids_from_file")
+def test_check_extracted_components_empty_cds(gene_ids, mock_lookup, mock_cds):
+
+    # Define the folder where gene ids of the 5 mandatory species are stored
+    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
+    # Define the folder where the extracted dna sequences should be stored
+    output_filepath = os.path.join(os.path.dirname(__file__), "csv_files")
+
+    gene_ids.return_value = ["CHLRE_01g000017v5"]
+    mock_response = {"canonical_transcript": "PNW87736"}
+    mock_lookup.side_effect = [
+        ensembl_rest.core.restclient.HTTPError(
+            response=MagicMock(status_code=429)
+        ),  # First call raises rate limit error
+        mock_response,
+    ]
+
+    mock_cds.return_value = ""
+
+    # Extract 1 filename of the txt files where the gene id lists are stored
+    species = os.listdir(gene_ids_folderpath)[0]
+    # Extract DNA sequence components into csv files using ensembl_api
+    gene_ids_filepath = os.path.join(gene_ids_folderpath, species)
+    ensembl_api.get_data_as_csv([gene_ids_filepath], output_filepath)
+
+    assert mock_lookup.call_count == 2
+
+    species_name = "_".join(species.split("_")[:2])
+    # check that the csv file only has the header
+    with open(
+        os.path.join(output_filepath, f"ensembl_data_{species_name}.csv")
+    ) as file:
+        reader = csv.DictReader(file)
+        dna_extracted_test = [gene for gene in reader]
+    assert len(dna_extracted_test) == 0
+
+
+@patch("dna.ensembl_api.request_with_retry")
+@patch("ensembl_rest.lookup")
+@patch("dna.ensembl_api.read_gene_ids_from_file")
+def test_check_extracted_components_empty_transcript(
+    gene_ids, mock_lookup, mock_transcript_data
+):
+
+    # Define the folder where gene ids of the 5 mandatory species are stored
+    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
+    # Define the folder where the extracted dna sequences should be stored
+    output_filepath = os.path.join(os.path.dirname(__file__), "csv_files")
+
+    gene_ids.return_value = ["CHLRE_01g000017v5"]
+    mock_response = {"canonical_transcript": "PNW87736"}
+    mock_lookup.return_value = mock_response
+
+    mock_transcript_data.return_value = {}
+
+    # Extract 1 filename of the txt files where the gene id lists are stored
+    species = os.listdir(gene_ids_folderpath)[0]
+    # Extract DNA sequence components into csv files using ensembl_api
+    gene_ids_filepath = os.path.join(gene_ids_folderpath, species)
+    ensembl_api.get_data_as_csv([gene_ids_filepath], output_filepath)
+
+    species_name = "_".join(species.split("_")[:2])
+    # check that the csv file only has the header
+    with open(
+        os.path.join(output_filepath, f"ensembl_data_{species_name}.csv")
+    ) as file:
+        reader = csv.DictReader(file)
+        dna_extracted_test = [gene for gene in reader]
+    assert len(dna_extracted_test) == 0
 
 
 def test_check_extracted_components():

@@ -354,7 +354,7 @@ def get_data_as_csv(file_paths: List[str], output_directory: str) -> None:
         print(f"Data extraction for {species} is now complete.")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover, extracting data from Ensembl
     folder = "gene_lists/"
     # Specify the list of file paths for gene lists
     files = [
