@@ -543,7 +543,7 @@ This file can be used for downloading data and for logic handling in later stage
 </table>
           <details class="quote">
             <summary>Source code in <code>rna/rna_download_logic/query_and_csv_production.py</code></summary>
-            <pre class="highlight"><code class="language-python">def view_srx_metadata(species_srx_map: Dict[str, List[str]]) -&gt; Dict[str, pd.DataFrame]:
+            <pre class="highlight"><code class="language-python">def view_srx_metadata(species_srx_map: Dict[str, List[str]]) -&gt; Dict[str, pd.DataFrame]: # pragma: no cover, view metadata
     """Get metadata for all species and experiment accession numbers.
 
     Args:
