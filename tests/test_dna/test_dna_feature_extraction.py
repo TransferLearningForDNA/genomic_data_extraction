@@ -229,7 +229,7 @@ def test_extract_dna_features_unexpected_input():
     dna_feature_extraction.extract_dna_features(input_folder_path)
 
     try:
-        # Extract the filenames of the txt files where the gene id lists are stored
+        # Extract the filename of the txt files where the gene id lists are stored
         extracted_features_filepath = (
                 f"{input_folder_path}/ensembl_data_chlamydomonas_reinhardtii.csv"
             )
@@ -238,9 +238,10 @@ def test_extract_dna_features_unexpected_input():
             f"Test input file ensembl_data_chlamydomonas_reinhardtii.csv not found."
         )
 
+    # Read the output of the feature extraction
     with open(extracted_features_filepath) as file:
         reader = csv.DictReader(file)
-        features_extracted = [gene for gene in reader]
+        features_extracted = [gene for gene in reader][0]
 
     correct_headers = [
         "ensembl_gene_id",
@@ -252,8 +253,8 @@ def test_extract_dna_features_unexpected_input():
         "terminator"
     ]
 
-    for gene in features_extracted:
-        populated_columns = [key for key, value in gene.items() if value != None]
-        assert len(populated_columns) == 7
-        for header in correct_headers:
-            assert header in populated_columns
+    # Check that no features were calculated for the gene in the incorrect input file
+    populated_columns = [key for key, value in features_extracted.items() if value != None]
+    assert len(populated_columns) == 7
+    for header in correct_headers:
+        assert header in populated_columns
