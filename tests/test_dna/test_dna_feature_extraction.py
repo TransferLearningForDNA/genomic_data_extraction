@@ -154,7 +154,7 @@ def test_compute_gc_content_wobble_positions_empty_case():
     )
 
 
-def test_extract_dna_features():
+def test_extract_dna_features_standard():
 
     input_folder_path = os.path.join(
         os.path.dirname(__file__), "feature_extraction_csv_files"
@@ -217,3 +217,44 @@ def test_extract_dna_features():
         df = pd.read_csv(extracted_features_filepath)
         df = df.iloc[:, :7]
         df.to_csv(extracted_features_filepath, index=False)
+
+
+def test_extract_dna_features_unexpected_input():
+
+    input_folder_path = os.path.join(
+        os.path.dirname(__file__), "feature_extraction_bad_input"
+    )
+
+    # Extract features from input csv files in input folder path
+    dna_feature_extraction.extract_dna_features(input_folder_path)
+
+    try:
+        # Extract the filename of the txt files where the gene id lists are stored
+        extracted_features_filepath = (
+                f"{input_folder_path}/ensembl_data_chlamydomonas_reinhardtii.csv"
+            )
+    except FileNotFoundError:
+        print(
+            f"Test input file ensembl_data_chlamydomonas_reinhardtii.csv not found."
+        )
+
+    # Read the output of the feature extraction
+    with open(extracted_features_filepath) as file:
+        reader = csv.DictReader(file)
+        features_extracted = [gene for gene in reader][0]
+
+    correct_headers = [
+        "ensembl_gene_id",
+        "transcript_id",
+        "promoter",
+        "utr5",
+        "cds",
+        "utr3",
+        "terminator"
+    ]
+
+    # Check that no features were calculated for the gene in the incorrect input file
+    populated_columns = [key for key, value in features_extracted.items() if value != None]
+    assert len(populated_columns) == 7
+    for header in correct_headers:
+        assert header in populated_columns
