@@ -210,7 +210,7 @@ def test_request_with_retry_other_error(mock_lookup):
 
 def test_read_gene_ids_from_file():
     filepath = os.path.join(
-        os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
+        os.path.dirname(__file__), "test_data/gene_lists/homo_sapiens_genes.txt"
     )
     gene_ids_true = ["ENSG00000000003", "ENSG00000000005"]
     gene_ids = ensembl_api.read_gene_ids_from_file(filepath)
@@ -242,7 +242,7 @@ def test_read_gene_ids_from_file_not_found():
 def test_read_gene_ids_other_exceptions(mock_open):
     # Create a temporary directory and file path
     test_file_path = os.path.join(
-        os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
+        os.path.dirname(__file__), "test_data/gene_lists/homo_sapiens_genes.txt"
     )
 
     # Mock the open function to simulate an exception
@@ -274,7 +274,7 @@ def test_read_gene_ids_other_exceptions(mock_open):
 
 def test_get_species_name():
     filepath = os.path.join(
-        os.path.dirname(__file__), "gene_lists/homo_sapiens_genes.txt"
+        os.path.dirname(__file__), "test_data/gene_lists/homo_sapiens_genes.txt"
     )
     species_name = ensembl_api.get_species_name(filepath)
     species_name_true = "homo_sapiens"
@@ -287,9 +287,9 @@ def test_get_species_name():
 def test_check_extracted_components_empty_cds(gene_ids, mock_lookup, mock_cds):
 
     # Define the folder where gene ids of the 5 mandatory species are stored
-    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
+    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "test_data/gene_lists")
     # Define the folder where the extracted dna sequences should be stored
-    output_filepath = os.path.join(os.path.dirname(__file__), "csv_files")
+    output_filepath = os.path.join(os.path.dirname(__file__), "test_data/csv_files")
 
     gene_ids.return_value = ["CHLRE_01g000017v5"]
     mock_response = {"canonical_transcript": "PNW87736"}
@@ -328,9 +328,9 @@ def test_check_extracted_components_empty_transcript(
 ):
 
     # Define the folder where gene ids of the 5 mandatory species are stored
-    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
+    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "test_data/gene_lists")
     # Define the folder where the extracted dna sequences should be stored
-    output_filepath = os.path.join(os.path.dirname(__file__), "csv_files")
+    output_filepath = os.path.join(os.path.dirname(__file__), "test_data/csv_files")
 
     gene_ids.return_value = ["CHLRE_01g000017v5"]
     mock_response = {"canonical_transcript": "PNW87736"}
@@ -356,9 +356,9 @@ def test_check_extracted_components_empty_transcript(
 
 def test_check_extracted_components():
     # Define the folder where gene ids of the 5 mandatory species are stored
-    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "gene_lists")
+    gene_ids_folderpath = os.path.join(os.path.dirname(__file__), "test_data/gene_lists")
     # Define the folder where the extracted dna sequences should be stored
-    output_filepath = os.path.join(os.path.dirname(__file__), "csv_files")
+    output_filepath = os.path.join(os.path.dirname(__file__), "test_data/csv_files")
 
     # Extract the filenames of the txt files where the gene id lists are stored
     gene_ids_filelist = os.listdir(gene_ids_folderpath)
@@ -377,7 +377,7 @@ def test_check_extracted_components():
         )
         ground_truth_dna_filepath = os.path.join(
             os.path.dirname(__file__),
-            f"ground_truth_components/true_{species_name}_dna.csv",
+            f"test_data/ground_truth_components/true_{species_name}_dna.csv",
         )
 
         try:
