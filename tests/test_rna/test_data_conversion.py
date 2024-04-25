@@ -100,6 +100,19 @@ def test_process_expression_matrix_skips_gitignore(mock_to_csv, mock_read_csv, m
     mock_to_csv.assert_called_once()
     assert "/fake/path_to_files/.gitignore" not in mock_read_csv.call_args_list[0][0]
 
+@patch("os.listdir")
+@patch("os.path.join")
+@patch("pandas.read_csv")
+@patch("pandas.DataFrame.to_csv")
+def test_skip_gitignore_in_processing(mock_to_csv, mock_read_csv, mock_join, mock_listdir):
+    mock_listdir.return_value = ["species1.csv", ".gitignore"]
+    mock_join.side_effect = lambda *args: "/".join(args)
+    file_path = "/fake/path_to_files"
+    output_file_path = "/fake/output_path"
+    process_expression_matrix(file_path, output_file_path)
+    calls = [call("/fake/path_to_files/species1.csv")]
+    mock_read_csv.assert_has_calls(calls, any_order=True)
+    assert mock_read_csv.call_count == 1, "Unexpected number of files processed."
 
 def test_convert_quant_output_to_csv():
     sf_data = "gene\tcount\nGene1\t100\nGene2\t200"

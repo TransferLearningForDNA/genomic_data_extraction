@@ -57,7 +57,22 @@ def test_query_sra_successful(mock_sra_search):
     result = query_sra("Homo sapiens", 9606)
     pd.testing.assert_frame_equal(result, expected_df)
 
-
+@patch('os.makedirs')
+@patch('os.path.exists', return_value=False)
+@patch('pandas.read_csv')
+@patch('subprocess.run')
+def test_download_sra_data_unexpected_exception(mock_run, mock_read_csv, mock_exists, mock_makedirs):
+    mock_read_csv.return_value = pd.DataFrame({
+        "species": ["Homo sapiens"],
+        "srx_id": ["SRX123456"],
+        "srr_id": ["SRR123456"],
+    })
+    mock_run.side_effect = Exception("Unexpected error")
+    with patch('builtins.print') as mock_print:
+        download_sra_data("dummy.csv", "dummy_dir", 1)
+    mock_print.assert_any_call("An unexpectederror occurred: Unexpected error", flush=True)
+    mock_run.assert_called_once()
+    
 def test_query_sra_no_data_found(mock_sra_search):
     mock_sra_search.return_value.get_df.return_value = pd.DataFrame()
 
