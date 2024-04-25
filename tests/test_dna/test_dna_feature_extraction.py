@@ -157,10 +157,10 @@ def test_compute_gc_content_wobble_positions_empty_case():
 def test_extract_dna_features_standard():
 
     input_folder_path = os.path.join(
-        os.path.dirname(__file__), "feature_extraction_csv_files"
+        os.path.dirname(__file__), "test_data/feature_extraction_csv_files"
     )
     ground_truth_folder_path = os.path.join(
-        os.path.dirname(__file__), "feature_extraction_ground_truth"
+        os.path.dirname(__file__), "test_data/feature_extraction_ground_truth"
     )
 
     # Extract features from input csv files in input folder path
@@ -222,7 +222,7 @@ def test_extract_dna_features_standard():
 def test_extract_dna_features_unexpected_input():
 
     input_folder_path = os.path.join(
-        os.path.dirname(__file__), "feature_extraction_bad_input"
+        os.path.dirname(__file__), "test_data/feature_extraction_bad_input"
     )
 
     # Extract features from input csv files in input folder path
