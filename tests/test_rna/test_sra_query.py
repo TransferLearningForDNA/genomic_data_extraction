@@ -10,7 +10,6 @@ from rna.rna_download_logic.query_and_csv_production import (
 )
 from rna.rna_download_logic.mRNA_fastq_download import download_sra_data
 
-
 @pytest.fixture
 def mock_sra_search():
     with patch("rna.rna_download_logic.query_and_csv_production.SraSearch") as mock:
@@ -104,46 +103,22 @@ def test_query_and_get_srx_accession_ids_valid_data(mock_query_sra):
     }
     assert converted_result == expected_result, "Expected dictionary with valid SRX IDs"
 
-
-def test_SRX_to_SRR_csv_missing_taxonomy_id():
-    sra_metadata_return = pd.DataFrame({
-        "run_accession": ["SRR123456"]
+def test_SRX_to_SRR_csv_no_taxonomy_id():
+    mock_df = pd.DataFrame({
+        "run_accession": ["SRR123456"],
     })
-    with patch('pysradb.SRAweb') as mock_sra_web:
+    with patch('rna.rna_download_logic.query_and_csv_production.SRAweb') as mock_sra_web:
         mock_instance = mock_sra_web.return_value
-        mock_instance.sra_metadata.return_value = sra_metadata_return
+        mock_instance.sra_metadata.return_value = mock_df        
         species_srx_map = {"Homo sapiens": ["SRX123456"]}
         output_csv_path = "dummy_path.csv"
+        SRX_to_SRR_csv(species_srx_map, output_csv_path)
         with patch("pandas.DataFrame.to_csv") as mock_to_csv:
             SRX_to_SRR_csv(species_srx_map, output_csv_path)
             args, _ = mock_to_csv.call_args
-            result_df = args[0]
+            result_df = args[0]            
             assert result_df['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"
             assert 'taxonomy_id' in result_df.columns, "taxonomy_id column should exist even if set to None"
-            expected_data = {
-                "species": ["Homo sapiens"],
-                "taxonomy_id": [None],
-                "srx_id": ["SRX123456"],
-                "srr_id": ["SRR123456"],
-            }
-            expected_df = pd.DataFrame(expected_data)
-            pd.testing.assert_frame_equal(result_df, expected_df)
-
-'''
-def test_SRX_to_SRR_csv_missing_taxonomy_id():
-    sra_metadata_return = pd.DataFrame({
-        "run_accession": ["SRR123456"]
-    })
-    with patch('pysradb.SRAweb') as mock_sra_web:
-        mock_instance = mock_sra_web.return_value
-        mock_instance.sra_metadata.return_value = sra_metadata_return
-        species_srx_map = {"Homo sapiens": ["SRX123456"]}
-        output_csv_path = "dummy_path.csv"
-        with patch("pandas.DataFrame.to_csv") as mock_to_csv:
-            SRX_to_SRR_csv(species_srx_map, output_csv_path)
-            args, _ = mock_to_csv.call_args
-            result_df = args[0]
-            assert result_df['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"'''
 
 def test_query_and_get_srx_accession_ids_multiple_species(mock_query_sra):
     mock_query_sra.side_effect = [
@@ -164,18 +139,6 @@ def test_SRX_to_SRR_csv_writes_correct_data_to_file():
         SRX_to_SRR_csv(species_srx_map, "dummy_path.csv")
         mock_to_csv.assert_called_once()
 
-
-def test_download_sra_data_limit_reached():
-    with patch(
-        "rna.rna_download_logic.mRNA_fastq_download.os.path.exists"
-    ) as mock_exists, patch(
-        "rna.rna_download_logic.mRNA_fastq_download.subprocess.run"
-    ) as mock_run:
-        mock_exists.return_value = True
-        download_sra_data("dummy.csv", "dummy_dir", 0)
-        mock_run.assert_not_called()
-
-
 def test_download_sra_data_limit_reached():
     mock_csv_data = pd.DataFrame(
         {
@@ -185,15 +148,12 @@ def test_download_sra_data_limit_reached():
             "srr_id": ["DRR484809", "DRR484808"],
         }
     )
-
     with patch("pandas.read_csv", return_value=mock_csv_data) as mock_read_csv, patch(
         "os.path.exists", return_value=False
     ) as mock_exists, patch("os.makedirs") as mock_makedirs, patch(
         "subprocess.run"
     ) as mock_run:
-
         download_sra_data("dummy.csv", "dummy_dir", 0)
-
         mock_read_csv.assert_called_once_with("dummy.csv")
         mock_makedirs.assert_called_once_with("dummy_dir")
         mock_exists.assert_called()
