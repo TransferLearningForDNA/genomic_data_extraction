@@ -125,7 +125,7 @@ def test_SRX_to_SRR_csv_handles_missing_taxonomy_id():
             expected_df = pd.DataFrame(expected_data)
             pd.testing.assert_frame_equal(output_df, expected_df)
 
-def test_SRX_to_SRR_csv_with_missing_taxonomy_id():
+'''def test_SRX_to_SRR_csv_with_missing_taxonomy_id():
     sra_metadata_return = pd.DataFrame({
         "run_accession": ["SRR123456"],
     })
@@ -138,7 +138,22 @@ def test_SRX_to_SRR_csv_with_missing_taxonomy_id():
             SRX_to_SRR_csv(species_srx_map, output_csv_path)
             args, kwargs = mock_to_csv.call_args
             result_df = args[0]
-            assert all(result_df['taxonomy_id'].isnull()), "taxonomy_id should be None for all rows"
+            assert all(result_df['taxonomy_id'].isnull()), "taxonomy_id should be None for all rows"'''
+
+def test_SRX_to_SRR_csv_missing_taxonomy_id():
+    sra_metadata_return = pd.DataFrame({
+        "run_accession": ["SRR123456"]
+    })
+    with patch('pysradb.SRAweb') as mock_sra_web:
+        mock_instance = mock_sra_web.return_value
+        mock_instance.sra_metadata.return_value = sra_metadata_return
+        species_srx_map = {"Homo sapiens": ["SRX123456"]}
+        output_csv_path = "dummy_path.csv"
+        with patch("pandas.DataFrame.to_csv") as mock_to_csv:
+            SRX_to_SRR_csv(species_srx_map, output_csv_path)
+            args, _ = mock_to_csv.call_args
+            result_df = args[0]
+            assert result_df['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"
 
 def test_query_and_get_srx_accession_ids_multiple_species(mock_query_sra):
     mock_query_sra.side_effect = [
