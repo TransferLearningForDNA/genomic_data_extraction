@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, mock_open, call
 import csv
 import pandas as pd
-import os
+
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import (
     convert_all_species_files,
     convert_quant_output_to_csv,
@@ -30,9 +30,9 @@ def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_p
     mock_listdir.return_value = ["species1"]
     mock_isdir.side_effect = lambda x: x.endswith("species1")
     convert_all_species_files("/fake/dir")
-    mock_print.assert_called_with(
-        "The directory /fake/dir/species1/sf_files does not exist."
-    )
+    expected_path = os.path.join("/fake", "dir", "species1", "sf_files")
+    expected_message = f"The directory {expected_path} does not exist."
+    mock_print.assert_called_with(expected_message)
 
 
 @patch(
