@@ -105,6 +105,26 @@ def test_query_and_get_srx_accession_ids_valid_data(mock_query_sra):
     assert converted_result == expected_result, "Expected dictionary with valid SRX IDs"
 
 
+def test_SRX_to_SRR_csv_handles_missing_taxonomy_id():
+    with patch('pysradb.SRAweb') as mock_db:
+        mock_instance = mock_db.return_value
+        mock_instance.sra_metadata.return_value = pd.DataFrame({
+            "run_accession": ["SRR123456"],
+        })
+        species_srx_map = {"Homo sapiens": ["SRX123456"]}
+        with patch("pandas.DataFrame.to_csv") as mock_to_csv:
+            SRX_to_SRR_csv(species_srx_map, "dummy_path.csv")
+            args, kwargs = mock_to_csv.call_args
+            output_df = args[0]
+            expected_data = {
+                "species": ["Homo sapiens"],
+                "taxonomy_id": [None],
+                "srx_id": ["SRX123456"],               
+                "srr_id": ["SRR123456"],
+            }
+            expected_df = pd.DataFrame(expected_data)
+            pd.testing.assert_frame_equal(output_df, expected_df)
+
 def test_query_and_get_srx_accession_ids_multiple_species(mock_query_sra):
     mock_query_sra.side_effect = [
         pd.DataFrame({"experiment_accession": ["SRX123456"]}),
