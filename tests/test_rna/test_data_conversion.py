@@ -381,8 +381,11 @@ def test_process_expression_matrix_no_data():
         mock_to_csv.assert_not_called()
 
 
-def test_process_expression_matrix_with_data():
-    species_files = ["species1.csv", "species2.csv"]
+@patch("os.listdir")
+@patch("os.path.isdir")
+@patch("pandas.DataFrame.to_csv")
+def test_process_expression_matrix_with_data(mock_to_csv, mock_isdir, mock_listdir):
+    species_files = ["species1.csv", "species2.csv", ".gitignore"]
     mock_expression_data = pd.DataFrame(
         {
             "Name": ["Gene1", "Gene2", "Gene3"],
@@ -392,7 +395,6 @@ def test_process_expression_matrix_with_data():
     )
     expected_filtered_data = mock_expression_data.loc[[0, 1]]
     median_expression_data = pd.DataFrame({"MedianTPM": [125, 225]})
-
     with patch("os.listdir", return_value=species_files) as mock_listdir, patch(
         "os.path.join", side_effect=lambda *args: "/".join(args)
     ), patch(
@@ -407,13 +409,18 @@ def test_process_expression_matrix_with_data():
         return_value=median_expression_data,
     ):
         process_expression_matrix("file_path", "output_file_path")
-
-        assert mock_read_csv.call_count == len(species_files)
-        assert mock_to_csv.call_count == len(species_files)
+        mock_read_csv.assert_any_call(
+            "file_path/species1.csv"
+        )
+        mock_read_csv.assert_any_call(
+            "file_path/species2.csv"
+        )
+        assert ".gitignore" not in [call.args[0] for call in mock_read_csv.call_args_list]
+        assert mock_read_csv.call_count == 2  
+        assert mock_to_csv.call_count == 2
         mock_to_csv.assert_called_with(
             "output_file_path/rna_expression_species2.csv", index=False
         )
-
 
 def test_list_files():
     with patch("os.walk") as mock_walk:
