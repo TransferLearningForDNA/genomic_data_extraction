@@ -152,13 +152,19 @@ def test_create_expression_matrix_skips_non_directory(mock_to_csv, mock_isdir, m
 @patch("pandas.DataFrame.to_csv")
 def test_create_expression_matrix_empty_directory(mock_to_csv, mock_isdir, mock_listdir):
     mock_isdir.return_value = True
-    mock_listdir.return_value = []
     raw_data_path = "/fake/raw_data"
     processed_data_path = "/fake/processed_data"
+    def listdir_side_effect(path):
+        if path == raw_data_path:
+            return ["species1"]  
+        elif "species1" in path:
+            return []  
+        return []
+    mock_listdir.side_effect = listdir_side_effect
     create_expression_matrix(raw_data_path, processed_data_path)
-    mock_isdir.assert_called_with(os.path.join(raw_data_path, mock_listdir.return_value[0], "csv_files"))
-    mock_listdir.assert_called()
-    mock_to_csv.assert_not_called()
+    species_csv_path = os.path.join(raw_data_path, "species1", "csv_files")
+    mock_listdir.assert_any_call(species_csv_path)  
+    mock_to_csv.assert_not_called() 
 
 @patch("os.listdir")
 @patch("os.path.isdir")
