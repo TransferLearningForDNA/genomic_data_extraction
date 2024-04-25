@@ -62,6 +62,15 @@ def test_convert_all_species_files_no_sf_files_directory(mock_listdir, mock_isdi
     expected_path = os.path.join(folder_path, "species1", "sf_files")
     mock_print.assert_called_with(f"The directory {expected_path} does not exist.")
 
+@patch("builtins.print")
+@patch("os.path.isdir", return_value=True)
+@patch("os.listdir")
+def test_convert_all_species_files_empty_sf_files_directory(mock_listdir, mock_isdir, mock_print):
+    mock_listdir.side_effect = lambda p: ["species1"] if p == "/fake/dir" else []
+    folder_path = "/fake/dir"
+    convert_all_species_files(folder_path)
+    expected_path = os.path.join(folder_path, "species1", "sf_files")
+    mock_print.assert_called_with(f"The directory {expected_path} is empty.")
 
 def test_convert_quant_output_to_csv():
     sf_data = "gene\tcount\nGene1\t100\nGene2\t200"
