@@ -105,7 +105,7 @@ def test_query_and_get_srx_accession_ids_valid_data(mock_query_sra):
     assert converted_result == expected_result, "Expected dictionary with valid SRX IDs"
 
 
-def test_SRX_to_SRR_csv_handles_missing_taxonomy_id():
+def test_SRX_to_SRR_csv_missing_taxonomy_id():
     sra_metadata_return = pd.DataFrame({
         "run_accession": ["SRR123456"]
     })
@@ -118,14 +118,17 @@ def test_SRX_to_SRR_csv_handles_missing_taxonomy_id():
             SRX_to_SRR_csv(species_srx_map, output_csv_path)
             args, _ = mock_to_csv.call_args
             result_df = args[0]
+            assert result_df['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"
+            assert 'taxonomy_id' in result_df.columns, "taxonomy_id column should exist even if set to None"
             expected_data = {
                 "species": ["Homo sapiens"],
-                "taxonomy_id": [None],  
-                "srx_id": ["SRX123456"],               
+                "taxonomy_id": [None],
+                "srx_id": ["SRX123456"],
                 "srr_id": ["SRR123456"],
             }
             expected_df = pd.DataFrame(expected_data)
             pd.testing.assert_frame_equal(result_df, expected_df)
+
 
 
 '''def test_SRX_to_SRR_csv_with_missing_taxonomy_id():
