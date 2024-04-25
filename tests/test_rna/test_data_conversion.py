@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, mock_open, call
 import csv
 import pandas as pd
+import os
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import (
     convert_all_species_files,
     convert_quant_output_to_csv,
