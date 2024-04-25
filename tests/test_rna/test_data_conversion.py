@@ -86,6 +86,27 @@ def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_
                       call(f"Data saved to {os.path.join(output_dir, 'file2.csv')}")]
     mock_print.assert_has_calls(expected_calls, any_order=True)
 
+@patch("os.listdir")
+@patch("os.path.join")
+@patch("pandas.read_csv")
+@patch("pandas.DataFrame.to_csv")
+def test_process_expression_matrix_skips_gitignore(mock_to_csv, mock_read_csv, mock_join, mock_listdir):
+    # Setup mock responses
+    mock_listdir.return_value = ["species1.csv", ".gitignore"]
+    mock_join.side_effect = lambda *args: "/".join(args)
+
+    # Path setup
+    file_path = "/fake/path_to_files"
+    output_file_path = "/fake/output_path"
+
+    # Execute the function
+    process_expression_matrix(file_path, output_file_path)
+
+    # Assertions
+    mock_read_csv.assert_called_once_with("/fake/path_to_files/species1.csv")
+    mock_to_csv.assert_called_once()
+    assert "/fake/path_to_files/.gitignore" not in mock_read_csv.call_args_list[0][0]
+
 def test_convert_quant_output_to_csv():
     sf_data = "gene\tcount\nGene1\t100\nGene2\t200"
     mock_csv_data = [row.split("\t") for row in sf_data.split("\n")[1:]]
