@@ -35,24 +35,20 @@ def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_p
     mock_print.assert_called_with(expected_message)
 
 
-@patch(
-    "rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv"
-)
+@patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv")
 @patch("os.path.isdir")
 @patch("os.listdir")
-def test_convert_all_species_files_successful_conversion(
-    mock_listdir, mock_isdir, mock_convert
-):
+def test_convert_all_species_files_successful_conversion(mock_listdir, mock_isdir, mock_convert):
     mock_listdir.side_effect = [
         ["species1"],
-        ["file1.sf", "file2.sf"],
-    ]  # species1 exists, and has sf files
+        ["file1.sf", "file2.sf"],  # species1 exists, and has sf files
+    ]
     mock_isdir.side_effect = lambda x: "sf_files" in x or "species1" in x
 
     convert_all_species_files("/fake/dir")
-    mock_convert.assert_called_once_with(
-        "/fake/dir/species1/sf_files", "/fake/dir/species1/csv_files"
-    )
+    input_dir = os.path.join("/fake", "dir", "species1", "sf_files")
+    output_dir = os.path.join("/fake", "dir", "species1", "csv_files")
+    mock_convert.assert_called_once_with(input_dir, output_dir)
 
 
 def test_convert_quant_output_to_csv():
