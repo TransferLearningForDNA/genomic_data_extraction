@@ -72,6 +72,20 @@ def test_convert_all_species_files_empty_sf_files_directory(mock_listdir, mock_i
     expected_path = os.path.join(folder_path, "species1", "sf_files")
     mock_print.assert_called_with(f"The directory {expected_path} is empty.")
 
+@patch("builtins.print")
+@patch("os.path.isdir", return_value=True)
+@patch("os.listdir")
+def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_print):
+    mock_listdir.side_effect = lambda p: ["species1"] if p == "/fake/dir" else ["file1.sf", "file2.sf"]
+    folder_path = "/fake/dir"
+    convert_all_species_files(folder_path)
+    input_dir = os.path.join(folder_path, "species1", "sf_files")
+    output_dir = os.path.join(folder_path, "species1", "csv_files")
+    expected_calls = [call(f"\nConverting quant files for species: species1"),
+                      call(f"Data saved to {os.path.join(output_dir, 'file1.csv')}"),
+                      call(f"Data saved to {os.path.join(output_dir, 'file2.csv')}")]
+    mock_print.assert_has_calls(expected_calls, any_order=True)
+
 def test_convert_quant_output_to_csv():
     sf_data = "gene\tcount\nGene1\t100\nGene2\t200"
     mock_csv_data = [row.split("\t") for row in sf_data.split("\n")[1:]]
