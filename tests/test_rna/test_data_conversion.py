@@ -24,6 +24,7 @@ from rna.data_conversion_helper_functions.create_samplesheet_csv import (
 from rna.rna_extraction import create_directories_for_species
 from rna.data_conversion_helper_functions.convert_quantsf_to_csv import convert_all_species_files
 from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
+from rna.data_conversion_helper_functions.process_expression_matrix import process_expression_matrix
 
 @patch("builtins.print")
 @patch("os.path.isdir")
