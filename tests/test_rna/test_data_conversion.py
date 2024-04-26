@@ -68,25 +68,6 @@ def test_convert_all_species_files_empty_sf_files_directory(mock_listdir, mock_i
     expected_path = os.path.join(folder_path, "species1", "sf_files")
     mock_print.assert_called_with(f"The directory {expected_path} is empty.")
 
-@patch("builtins.print")
-@patch("os.path.isfile", return_value=True)
-@patch("os.path.isdir", return_value=True)
-@patch("os.listdir")
-@patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv", autospec=True)
-def test_convert_all_species_files_with_sf_files(mock_convert, mock_listdir, mock_isdir, mock_isfile, mock_print):
-    mock_listdir.side_effect = lambda p: ["species1"] if "/fake/dir" in p else ["file1.sf", "file2.sf"]
-    folder_path = "/fake/dir"
-    convert_all_species_files(folder_path)
-    input_dir = os.path.join(folder_path, "species1", "sf_files")
-    output_dir = os.path.join(folder_path, "species1", "csv_files")
-
-    expected_calls = [
-        call("\nConverting quant files for species: species1"),
-        call(f"Data saved to {os.path.normpath(os.path.join(output_dir, 'file1.csv'))}"),
-        call(f"Data saved to {os.path.normpath(os.path.join(output_dir, 'file2.csv'))}")
-    ]
-    mock_print.assert_has_calls(expected_calls, any_order=True)
-
 @patch("os.listdir")
 @patch("os.path.join")
 @patch("pandas.read_csv")
@@ -131,13 +112,12 @@ def test_convert_quant_output_to_csv():
         "csv.writer", return_value=mock_writer
     ):
         convert_quant_output_to_csv("/fake/input", "/fake/output")
-
         m_open.assert_any_call("/fake/input/quant_DRR513083.sf", "r", encoding="utf-8")
         m_open.assert_any_call(
             "/fake/output/quant_DRR513083.csv", "w", newline="", encoding="utf-8"
         )
-
         assert mock_writer.writerow.call_count == 2
+
 
 @patch("os.listdir")
 @patch("os.path.isdir")

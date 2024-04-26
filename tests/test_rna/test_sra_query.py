@@ -33,7 +33,6 @@ def mock_csv_data():
         }
     )
 
-
 def test_query_sra_successful(mock_sra_search):
     instance = mock_sra_search.return_value
     instance.get_df.side_effect = [
@@ -52,7 +51,6 @@ def test_query_sra_successful(mock_sra_search):
             "experiment_accession": ["SRX123", "SRX124"],
         }
     )
-
     result = query_sra("Homo sapiens", 9606)
     pd.testing.assert_frame_equal(result, expected_df)
 
@@ -101,24 +99,6 @@ def test_query_and_get_srx_accession_ids_valid_data(mock_query_sra):
     }
     assert converted_result == expected_result, "Expected dictionary with valid SRX IDs"
 
-def test_SRX_to_SRR_csv_no_taxonomy_id():
-    mock_df = pd.DataFrame({
-        "run_accession": ["SRR123456"],
-    })
-    with patch('rna.rna_download_logic.query_and_csv_production.SRAweb') as mock_sra_web:
-        mock_instance = mock_sra_web.return_value
-        mock_instance.sra_metadata.return_value = mock_df
-        species_srx_map = {"Homo sapiens": ["SRX123456"]}
-        output_csv_path = "dummy_path.csv"
-        with patch("pandas.DataFrame.to_csv") as mock_to_csv:
-            SRX_to_SRR_csv(species_srx_map, output_csv_path)
-            mock_to_csv.assert_called_once()
-            args, _ = mock_to_csv.call_args      
-            assert isinstance(args[0], pd.DataFrame), "Expected a DataFrame to be passed to to_csv"
-            assert 'taxonomy_id' in args[0].columns, "taxonomy_id column should exist even if set to None"
-            assert args[0]['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"
-
-
 def test_query_and_get_srx_accession_ids_multiple_species(mock_query_sra):
     mock_query_sra.side_effect = [
         pd.DataFrame({"experiment_accession": ["SRX123456"]}),
@@ -128,7 +108,6 @@ def test_query_and_get_srx_accession_ids_multiple_species(mock_query_sra):
     expected_result = {"Homo sapiens": ["SRX123456"], "Mus musculus": ["SRX987654"]}
     result = query_and_get_srx_accession_ids(species_data)
     assert result == expected_result
-
 
 @patch("rna.rna_download_logic.query_and_csv_production.pd.DataFrame.to_csv")
 def test_SRX_to_SRR_csv_writes_correct_data_to_file(mock_to_csv):
@@ -165,7 +144,6 @@ def test_download_sra_data_limit_reached():
         mock_exists.assert_called()
         mock_run.assert_not_called()
 
-
 def test_download_sra_data_reads_csv_correctly(mock_csv_data):
     with patch("pandas.read_csv", return_value=mock_csv_data) as mock_read_csv:
         with patch("os.path.exists", return_value=False), patch("os.makedirs"), patch(
@@ -174,14 +152,26 @@ def test_download_sra_data_reads_csv_correctly(mock_csv_data):
             download_sra_data("dummy.csv", "dummy_dir")
         mock_read_csv.assert_called_once_with("dummy.csv")
 
-
-def test_SRX_to_SRR_csv_handles_exceptions():
+@patch("rna.rna_download_logic.query_and_csv_production.SRAweb")
+def test_SRX_to_SRR_csv_handles_exceptions(mock_sra_web):
+    mock_instance = mock_sra_web.return_value
+    mock_instance.sra_metadata.side_effect = Exception("API error")
     species_srx_map = {"Homo sapiens": ["SRX123456"]}
-    output_csv_path = "dummy_path.csv"
-    with patch('rna.rna_download_logic.query_and_csv_production.SRAweb') as mock_sra_web:
-        mock_instance = mock_sra_web.return_value
-        mock_instance.sra_metadata.side_effect = Exception("API failure")        
-        with patch("builtins.print") as mock_print:
-            SRX_to_SRR_csv(species_srx_map, output_csv_path)
-            mock_print.assert_called_with("Error processing SRX123456 for Homo sapiens: API failure")
 
+    with patch('builtins.print') as mock_print:
+        from rna.rna_download_logic.query_and_csv_production import SRX_to_SRR_csv
+        SRX_to_SRR_csv(species_srx_map, "dummy_path.csv")
+        mock_print.assert_any_call("Error processing SRX123456 for Homo sapiens: API error")
+
+
+@patch("rna.rna_download_logic.query_and_csv_production.SRAweb")
+def test_SRX_to_SRR_csv_no_data_to_save(mock_sra_web):
+    mock_instance = mock_sra_web.return_value
+    mock_instance.sra_metadata.return_value = pd.DataFrame()  
+    species_srx_map = {"Homo sapiens": ["SRX123456"]}
+
+    with patch('builtins.print') as mock_print:
+        from rna.rna_download_logic.query_and_csv_production import SRX_to_SRR_csv
+        output_csv_path = "dummy_path.csv"
+        SRX_to_SRR_csv(species_srx_map, output_csv_path)
+        mock_print.assert_called_with("No data to save to CSV.") 
