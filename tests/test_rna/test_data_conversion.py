@@ -40,7 +40,7 @@ def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_p
 def test_convert_all_species_files_successful_conversion(mock_listdir, mock_isdir, mock_convert):
     mock_listdir.side_effect = [
         ["species1"],
-        ["file1.sf", "file2.sf"],  # species1 exists, and has sf files
+        ["file1.sf", "file2.sf"],
     ]
     mock_isdir.side_effect = lambda x: "sf_files" in x or "species1" in x
 
