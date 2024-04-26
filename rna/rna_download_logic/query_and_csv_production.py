@@ -159,6 +159,7 @@ def SRX_to_SRR_csv(species_srx_map: Dict[str, List[str]], output_file: str) -> N
     df_output.to_csv(output_file, index=False)
     print(f"Data saved to {output_file}")
 
+
 # Specify our species of interest here
 if __name__ == "__main__":  # pragma: no cover, query and save SRX to SRR CSV
     species_tax_id = {

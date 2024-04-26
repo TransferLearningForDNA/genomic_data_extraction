@@ -84,7 +84,7 @@ def test_convert_all_species_files_with_sf_files(mock_convert, mock_listdir, moc
         call("\nConverting quant files for species: species1"),
         call(f"Data saved to {os.path.normpath(os.path.join(output_dir, 'file1.csv'))}"),
         call(f"Data saved to {os.path.normpath(os.path.join(output_dir, 'file2.csv'))}")
-    ]    
+    ]
     mock_print.assert_has_calls(expected_calls, any_order=True)
 
 @patch("os.listdir")
@@ -186,7 +186,7 @@ def test_create_expression_matrix_non_directory_skipped(mock_isdir, mock_listdir
     mock_isdir.assert_has_calls(expected_calls)
     mock_print.assert_not_called()  
     assert mock_isdir.call_count > 2 
-    
+
 def test_create_expression_matrix_no_files():
     with patch("os.listdir", return_value=[]) as mock_listdir, patch(
         "os.path.isdir", return_value=True

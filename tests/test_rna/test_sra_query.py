@@ -6,7 +6,7 @@ import numpy as np
 from rna.rna_download_logic.query_and_csv_production import (
     query_sra,
     query_and_get_srx_accession_ids,
-    SRX_to_SRR_csv,
+    SRX_to_SRR_csv
 )
 from rna.rna_download_logic.mRNA_fastq_download import download_sra_data
 
@@ -78,13 +78,11 @@ def test_query_sra_no_data_found(mock_sra_search):
     result = query_sra("Unknown Species", 9999)
     assert result is None
 
-
 def test_query_sra_exception_handling(mock_sra_search):
     mock_sra_search.return_value.search.side_effect = Exception("API failure")
 
     result = query_sra("Homo sapiens", 9606)
     assert result is None
-
 
 def test_query_and_get_srx_accession_ids_no_data(mock_sra_search):
     mock_query_sra.return_value = None
@@ -103,25 +101,22 @@ def test_query_and_get_srx_accession_ids_valid_data(mock_query_sra):
     }
     assert converted_result == expected_result, "Expected dictionary with valid SRX IDs"
 
-
 def test_SRX_to_SRR_csv_no_taxonomy_id():
     mock_df = pd.DataFrame({
         "run_accession": ["SRR123456"],
     })
-
     with patch('rna.rna_download_logic.query_and_csv_production.SRAweb') as mock_sra_web:
         mock_instance = mock_sra_web.return_value
         mock_instance.sra_metadata.return_value = mock_df
         species_srx_map = {"Homo sapiens": ["SRX123456"]}
         output_csv_path = "dummy_path.csv"
-        
         with patch("pandas.DataFrame.to_csv") as mock_to_csv:
             SRX_to_SRR_csv(species_srx_map, output_csv_path)
             mock_to_csv.assert_called_once()
-            args, _ = mock_to_csv.call_args
-            result_df = args[0]
-            assert 'taxonomy_id' in result_df.columns, "taxonomy_id column should exist even if set to None"
-            assert result_df['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"
+            args, _ = mock_to_csv.call_args      
+            assert isinstance(args[0], pd.DataFrame), "Expected a DataFrame to be passed to to_csv"
+            assert 'taxonomy_id' in args[0].columns, "taxonomy_id column should exist even if set to None"
+            assert args[0]['taxonomy_id'].isnull().all(), "taxonomy_id should be None for all rows"
 
 
 def test_query_and_get_srx_accession_ids_multiple_species(mock_query_sra):
