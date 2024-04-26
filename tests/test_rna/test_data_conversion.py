@@ -28,12 +28,12 @@ from rna.rna_extraction import create_directories_for_species
 @patch("os.listdir")
 def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_print):
     mock_listdir.return_value = ["species1"]
-    mock_isdir.side_effect = lambda x: False if "sf_files" in x else True
+    mock_isdir.side_effect = lambda x: x != os.path.join("/fake/dir", "species1", "sf_files")
     convert_all_species_files("/fake/dir")
     expected_path = os.path.join("/fake", "dir", "species1", "sf_files")
     expected_message = f"The directory {expected_path} does not exist."
     mock_print.assert_called_with(expected_message)
-
+'''
 @patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv")
 @patch("os.path.isdir")
 @patch("os.listdir")
@@ -43,20 +43,44 @@ def test_convert_all_species_files_successful_conversion(mock_listdir, mock_isdi
         ["file1.sf", "file2.sf"],
     ]
     mock_isdir.side_effect = lambda x: "sf_files" in x or "species1" in x
+    convert_all_species_files("/fake/dir")
+    input_dir = os.path.join("/fake", "dir", "species1", "sf_files")
+    output_dir = os.path.join("/fake", "dir", "species1", "csv_files")
+    mock_convert.assert_called_once_with(input_dir, output_dir)'''
 
+@patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv")
+@patch("os.path.isdir")
+@patch("os.listdir")
+def test_convert_all_species_files_successful_conversion(mock_listdir, mock_isdir, mock_convert):
+    mock_listdir.side_effect = [["species1"], ["file1.sf", "file2.sf"]]
+    mock_isdir.side_effect = lambda x: "sf_files" in x or "species1" in x
     convert_all_species_files("/fake/dir")
     input_dir = os.path.join("/fake", "dir", "species1", "sf_files")
     output_dir = os.path.join("/fake", "dir", "species1", "csv_files")
     mock_convert.assert_called_once_with(input_dir, output_dir)
 
-@patch("builtins.print")
+
+'''@patch("builtins.print")
 @patch("os.path.isdir", return_value=False)
 @patch("os.listdir", return_value=["species1", ".gitignore"])
 def test_convert_all_species_files_no_sf_files_directory(mock_listdir, mock_isdir, mock_print):
     folder_path = "/fake/dir"
     convert_all_species_files(folder_path)
     expected_path = os.path.join(folder_path, "species1", "sf_files")
+    mock_print.assert_called_with(f"The directory {expected_path} does not exist.")'''
+
+@patch("builtins.print")
+@patch("os.path.isdir")
+@patch("os.listdir")
+def test_convert_all_species_files_no_sf_files_directory(mock_listdir, mock_isdir, mock_print):
+    folder_path = "/fake/dir"
+    mock_listdir.return_value = ["species1", ".gitignore"]
+    mock_isdir.side_effect = lambda x: not x.endswith("sf_files")
+    convert_all_species_files(folder_path)
+    expected_path = os.path.join(folder_path, "species1", "sf_files")
     mock_print.assert_called_with(f"The directory {expected_path} does not exist.")
+
+
 
 @patch("builtins.print")
 @patch("os.path.isdir", return_value=True)
@@ -69,9 +93,10 @@ def test_convert_all_species_files_empty_sf_files_directory(mock_listdir, mock_i
     mock_print.assert_called_with(f"The directory {expected_path} is empty.")
 
 @patch("builtins.print")
+@patch("os.path.isfile", return_value=True)  # Mock isfile to simulate file presence
 @patch("os.path.isdir", return_value=True)
 @patch("os.listdir")
-def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_print):
+def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_isfile, mock_print):
     mock_listdir.side_effect = lambda p: ["species1"] if p == "/fake/dir" else ["file1.sf", "file2.sf"]
     folder_path = "/fake/dir"
     convert_all_species_files(folder_path)
@@ -85,6 +110,7 @@ def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_
     mock_print.assert_has_calls(expected_calls, any_order=True)
 
 
+
 @patch("os.listdir")
 @patch("os.path.join")
 @patch("pandas.read_csv")
@@ -94,10 +120,11 @@ def test_process_expression_matrix_skips_gitignore(mock_to_csv, mock_read_csv, m
     mock_join.side_effect = lambda *args: "/".join(args)
     file_path = "/fake/path_to_files"
     output_file_path = "/fake/output_path"
+    mock_read_csv.side_effect = lambda x, **kwargs: pd.DataFrame() if "species1.csv" in x else None
     process_expression_matrix(file_path, output_file_path)
     mock_read_csv.assert_called_once_with("/fake/path_to_files/species1.csv")
     mock_to_csv.assert_called_once()
-    assert "/fake/path_to_files/.gitignore" not in mock_read_csv.call_args_list[0][0]
+
 
 @patch("os.listdir")
 @patch("os.path.join")
@@ -140,11 +167,12 @@ def test_convert_quant_output_to_csv():
 @patch("os.path.isdir")
 @patch("pandas.DataFrame.to_csv")
 def test_create_expression_matrix_skips_non_directory(mock_to_csv, mock_isdir, mock_listdir):
-    mock_isdir.return_value = False
+    mock_isdir.return_value = False 
     mock_listdir.return_value = ["quant_file1.csv", "quant_file2.csv"]
     create_expression_matrix("raw_csv_data_path", "processed_data_path")
     mock_isdir.assert_called_once_with("raw_csv_data_path")
-    mock_to_csv.assert_not_called()  
+    mock_to_csv.assert_not_called()
+
 
 
 @patch("os.listdir")
