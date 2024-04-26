@@ -168,6 +168,25 @@ def test_create_expression_matrix_empty_directory(mock_to_csv, mock_isdir, mock_
     mock_listdir.assert_any_call(species_csv_path)  
     mock_to_csv.assert_not_called() 
 
+@patch("os.path.join", side_effect=lambda *args: "/".join(args))
+@patch("os.listdir")
+@patch("os.path.isdir")
+def test_create_expression_matrix_non_directory_skipped(mock_isdir, mock_listdir, mock_join):
+    mock_listdir.return_value = ["species1", "species2"]
+    mock_isdir.side_effect = lambda x: False if "csv_files" in x else True
+    raw_data_path = "/fake/raw_data"
+    processed_data_path = "/fake/processed_data"
+    with patch("builtins.print") as mock_print:
+        from rna.data_conversion_helper_functions.create_expression_matrix import create_expression_matrix
+        create_expression_matrix(raw_data_path, processed_data_path)
+    expected_calls = [
+        call("/fake/raw_data/species1/csv_files"),
+        call("/fake/raw_data/species2/csv_files")
+    ]
+    mock_isdir.assert_has_calls(expected_calls)
+    mock_print.assert_not_called()  
+    assert mock_isdir.call_count > 2 
+    
 def test_create_expression_matrix_no_files():
     with patch("os.listdir", return_value=[]) as mock_listdir, patch(
         "os.path.isdir", return_value=True
@@ -191,34 +210,21 @@ def test_create_expression_matrix_single_file(mock_read_csv, mock_to_csv, mock_i
         "NumReads": [50, 100],
     }
     mock_read_csv.return_value = pd.DataFrame(mock_csv_content)
-
-    # Setup directory structure
     mock_listdir.side_effect = lambda path: {
         "raw_data_path": [species],
         os.path.join("raw_data_path", species): ["csv_files"],
         os.path.join("raw_data_path", species, "csv_files"): quant_files
     }.get(path, [])
-
     mock_isdir.return_value = True
-
     create_expression_matrix("raw_data_path", "processed_data_path")
-
-    # Checks
     expected_read_csv_calls = [
         call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'TPM']),
         call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'EffectiveLength']),
-        call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'NumReads'])
-    ]
+        call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'NumReads'])    ]
     mock_read_csv.assert_has_calls(expected_read_csv_calls, any_order=True)
-
-    # Ensure to_csv was called to save the processed data
     assert mock_to_csv.call_count == 1, "DataFrame.to_csv should have been called once to save the expression matrix."
 
-
-
-
 def test_get_length_scaled_tpm_matrix():
-    # Create example DataFrames to use as input
     counts_mat = pd.DataFrame(
         {"Sample1": [100, 200, 300], "Sample2": [150, 250, 350]},
         index=["Gene1", "Gene2", "Gene3"],
@@ -228,12 +234,10 @@ def test_get_length_scaled_tpm_matrix():
         {"Sample1": [10, 20, 30], "Sample2": [15, 25, 35]},
         index=["Gene1", "Gene2", "Gene3"],
     )
-
     length_mat = pd.DataFrame(
         {"Sample1": [500, 800, 1200], "Sample2": [550, 850, 1250]},
         index=["Gene1", "Gene2", "Gene3"],
     )
-
     expected_length_scaled_tpm_mat = pd.DataFrame(
         {
             "Sample1": [
@@ -295,26 +299,19 @@ def test_get_length_scaled_tpm_matrix():
         },
         index=["Gene1", "Gene2", "Gene3"],
     )
-
-    # Call the function
     result = get_length_scaled_tpm_matrix(counts_mat, abundance_mat, length_mat)
-
-    # Check the resulting DataFrame
     pd.testing.assert_frame_equal(
         result, expected_length_scaled_tpm_mat, check_dtype=False
     )
 
 
 def test_calculate_rsd():
-    # Create a DataFrame mimicking your actual data structure
     data = {
         "transcript_id": ["gene1", "gene2", "gene3"],
         "DRR513084": [100, 0, 50],
         "DRR513083": [200, 0, 75],
     }
     df = pd.DataFrame(data)
-
-    # Expected DataFrame
     expected_data = {
         "transcript_id": ["gene1", "gene2", "gene3"],
         "DRR513084": [100, 0, 50],
@@ -324,11 +321,8 @@ def test_calculate_rsd():
         "rsd": [(70.710678 / 150), 0, (17.677669 / 62.5)],
     }
     expected_df = pd.DataFrame(expected_data)
-
     result_df = calculate_rsd(df.copy())
-
     pd.testing.assert_frame_equal(result_df, expected_df, atol=0.01)
-
 
 def test_calculate_median_expression():
     data = {
@@ -337,17 +331,13 @@ def test_calculate_median_expression():
         "exp2": [15, 25, 35],
     }
     df = pd.DataFrame(data)
-
     expected_data = {
         "transcript_id": ["gene1", "gene2", "gene3"],
         "median_exp": [12.5, 22.5, 32.5],
     }
     expected_df = pd.DataFrame(expected_data)
-
     result_df = calculate_median_expression(df)
-
     pd.testing.assert_frame_equal(result_df, expected_df)
-
 
 def test_process_expression_matrix_no_data():
     with patch("os.listdir", return_value=[]) as mock_listdir, patch(
@@ -360,7 +350,6 @@ def test_process_expression_matrix_no_data():
         mock_listdir.assert_called_once_with("file_path")
         mock_read_csv.assert_not_called()
         mock_to_csv.assert_not_called()
-
 
 @patch("os.listdir")
 @patch("os.path.isdir")
@@ -406,34 +395,19 @@ def test_process_expression_matrix_with_data(mock_to_csv, mock_isdir, mock_listd
 
 @patch("os.walk")
 def test_list_files(mock_walk):
-    # Setup the mock to simulate os.walk behavior
     mock_walk.return_value = [
         ("/fake/dir", ("subdir",), ("file1.txt", "file2.txt")),
         ("/fake/dir/subdir", (), ("file3.txt",))
     ]
-
-    # Create expected files list with normalized paths to ensure OS compatibility
     expected_files = [
         os.path.normpath(os.path.join("/fake/dir", "file1.txt")),
         os.path.normpath(os.path.join("/fake/dir", "file2.txt")),
         os.path.normpath(os.path.join("/fake/dir", "subdir", "file3.txt")),
     ]
-
-    # Call the function to be tested
     result = list_files("/fake/dir")
-
-    # Normalize all paths in the result for comparison
     normalized_result = [os.path.normpath(path) for path in result]
-
-    # Assert that the normalized result matches the expected normalized files list
     assert normalized_result == expected_files, f"Expected {expected_files}, got {normalized_result}"
-
-    # Verify that os.walk was called correctly
     mock_walk.assert_called_once_with("/fake/dir")
-
-
-
-
 
 def test_create_samplesheet_for_one_species():
     fake_files = [
