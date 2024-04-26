@@ -37,8 +37,8 @@ def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
     """Convert quantification files, Salmon (nf-core rna-seq) output, to csv files.
 
     Args:
-        input_path (str): quant_DRR513083.sf files folder path (tsv: tab-separated values)
-        output_path (str): folder path to store the csv version of the quant files
+        input_path (str): Folder path containing quant_DRR513083.sf files (TSV: tab-separated values).
+        output_path (str): Folder path to store the CSV version of the quant files.
 
     Returns:
         None: This function does not return a value but outputs files to the specified directory.
@@ -47,25 +47,21 @@ def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
     for filename in os.listdir(input_path):
         if filename.endswith(".sf"):
             input_file_path = os.path.join(input_path, filename)
-            output_file_path = os.path.join(
-                output_path, filename.replace(".sf", ".csv")
-            )
+            output_file_path = os.path.join(output_path, filename.replace(".sf", ".csv"))
 
             with open(input_file_path, "r", encoding="utf-8") as input_file, open(
                 output_file_path, "w", newline="", encoding="utf-8"
             ) as output_file:
-                # Create a csv reader object to read from the tsv file (tab-delimited)
                 tsv_reader = csv.reader(input_file, delimiter="\t")
-
-                # Create a csv writer object to write to the csv file (comma-delimited)
                 csv_writer = csv.writer(output_file)
 
-                # Loop through each row in the input file and write it to the output file
                 for row in tsv_reader:
                     csv_writer.writerow(row)
 
+            print(f"Data saved to {output_file_path}")
 
-if __name__ == "__main__": # pragma: no cover, convert quant.sf files to csv
+
+if __name__ == "__main__":  # pragma: no cover, convert quant.sf files to csv
     # Path to input raw quant.sf files folder
     raw_quant_path = "quant_files/raw"
     convert_all_species_files(raw_quant_path)

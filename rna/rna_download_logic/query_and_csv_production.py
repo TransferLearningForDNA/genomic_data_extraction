@@ -1,11 +1,12 @@
 from typing import Dict, List, Optional
 import pandas as pd
-
 from pysradb import SRAweb
 from pysradb.search import SraSearch
 
 
-def query_sra(species: str, taxonomy_id: int, limit: Optional[int] = 10) -> pd.DataFrame | None:
+def query_sra(
+    species: str, taxonomy_id: int, limit: Optional[int] = 10
+) -> pd.DataFrame | None:
     """Query the SRA database for RNA-seq species metadata results given a species name and taxonomy ID.
 
     Args:
@@ -86,7 +87,9 @@ def query_and_get_srx_accession_ids(
     return species_srx_map
 
 
-def view_srx_metadata(species_srx_map: Dict[str, List[str]]) -> Dict[str, pd.DataFrame]: # pragma: no cover, view metadata
+def view_srx_metadata(
+    species_srx_map: Dict[str, List[str]]
+) -> Dict[str, pd.DataFrame]:  # pragma: no cover, view metadata
     """Get metadata for all species and experiment accession numbers.
 
     Args:
@@ -122,41 +125,42 @@ def SRX_to_SRR_csv(species_srx_map: Dict[str, List[str]], output_file: str) -> N
         species_srx_map (Dict[str, List[str]]): A dictionary with species names as keys and lists of SRX (experiment accession) IDs as values.
         output_file (str): The path to the output CSV file where the data will be saved.
     """
-    db = SRAweb()
+    db = SRAweb()  # Assuming SRAweb is correctly imported and initialized
     data_rows = []
 
     for species, srx_ids in species_srx_map.items():
         print(f"Processing {species} with {len(srx_ids)} SRX IDs...")
 
         for srx_id in srx_ids:
-            df = db.sra_metadata([srx_id])
-            srr_ids = df["run_accession"].unique()
+            try:
+                df = db.sra_metadata([srx_id])  # Fetch metadata
+                srr_ids = df["run_accession"].unique()
 
-            if not df.empty and "organism_taxid" in df.columns:
-                taxonomy_id = df.iloc[0]["organism_taxid"]
-            else:
-                taxonomy_id = None  # Use None or an appropriate placeholder if taxonomy ID is not available
+                # Check if organism_taxid is available, otherwise set None
+                taxonomy_id = df.iloc[0]["organism_taxid"] if "organism_taxid" in df.columns and not df["organism_taxid"].isnull().all() else None
 
-            # For each SRX ID, store its corresponding SRR IDs along with the taxonomy ID
-            for srr_id in srr_ids:
-                data_row = {
-                    "species": species,
-                    "taxonomy_id": taxonomy_id,
-                    "srx_id": srx_id,
-                    "srr_id": srr_id,
-                }
-                data_rows.append(data_row)
+                # Append data for each SRR ID linked to the SRX ID
+                for srr_id in srr_ids:
+                    data_row = {
+                        "species": species,
+                        "taxonomy_id": taxonomy_id,
+                        "srx_id": srx_id,
+                        "srr_id": srr_id,
+                    }
+                    data_rows.append(data_row)
+            except Exception as e:
+                print(f"Error processing {srx_id} for {species}: {str(e)}")
+                continue
 
     # Convert the list of dictionaries to a DataFrame
     df_output = pd.DataFrame(data_rows)
 
-    # Save the df to a CSV file
+    # Save the DataFrame to a CSV file
     df_output.to_csv(output_file, index=False)
     print(f"Data saved to {output_file}")
 
-
 # Specify our species of interest here
-if __name__ == "__main__": # pragma: no cover, query and save SRX to SRR CSV
+if __name__ == "__main__":  # pragma: no cover, query and save SRX to SRR CSV
     species_tax_id = {
         "Chlamydomonas reinhardtii": 3055,
         "Galdieria sulphuraria": 130081,

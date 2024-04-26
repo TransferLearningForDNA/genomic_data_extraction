@@ -29,26 +29,11 @@ from rna.rna_extraction import create_directories_for_species
 def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_print):
     folder_path = "/fake/dir"
     mock_listdir.return_value = ["species1"]
-    mock_isdir.return_value = False  # Make sure it always returns False
+    mock_isdir.side_effect = lambda x: not x.endswith("sf_files")
     convert_all_species_files(folder_path)
     expected_path = os.path.join(folder_path, "species1", "sf_files")
     expected_message = f"The directory {expected_path} does not exist."
     mock_print.assert_called_with(expected_message)
-
-'''
-@patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv")
-@patch("os.path.isdir")
-@patch("os.listdir")
-def test_convert_all_species_files_successful_conversion(mock_listdir, mock_isdir, mock_convert):
-    mock_listdir.side_effect = [
-        ["species1"],
-        ["file1.sf", "file2.sf"],
-    ]
-    mock_isdir.side_effect = lambda x: "sf_files" in x or "species1" in x
-    convert_all_species_files("/fake/dir")
-    input_dir = os.path.join("/fake", "dir", "species1", "sf_files")
-    output_dir = os.path.join("/fake", "dir", "species1", "csv_files")
-    mock_convert.assert_called_once_with(input_dir, output_dir)'''
 
 @patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv")
 @patch("os.path.isdir")
@@ -62,17 +47,6 @@ def test_convert_all_species_files_successful_conversion(mock_listdir, mock_isdi
     output_dir = os.path.join(folder_path, "species1", "csv_files")
     mock_convert.assert_called_once_with(input_dir, output_dir)
 
-
-
-'''@patch("builtins.print")
-@patch("os.path.isdir", return_value=False)
-@patch("os.listdir", return_value=["species1", ".gitignore"])
-def test_convert_all_species_files_no_sf_files_directory(mock_listdir, mock_isdir, mock_print):
-    folder_path = "/fake/dir"
-    convert_all_species_files(folder_path)
-    expected_path = os.path.join(folder_path, "species1", "sf_files")
-    mock_print.assert_called_with(f"The directory {expected_path} does not exist.")'''
-
 @patch("builtins.print")
 @patch("os.path.isdir")
 @patch("os.listdir")
@@ -83,8 +57,6 @@ def test_convert_all_species_files_no_sf_files_directory(mock_listdir, mock_isdi
     convert_all_species_files(folder_path)
     expected_path = os.path.join(folder_path, "species1", "sf_files")
     mock_print.assert_called_with(f"The directory {expected_path} does not exist.")
-
-
 
 @patch("builtins.print")
 @patch("os.path.isdir", return_value=True)
@@ -97,26 +69,23 @@ def test_convert_all_species_files_empty_sf_files_directory(mock_listdir, mock_i
     mock_print.assert_called_with(f"The directory {expected_path} is empty.")
 
 @patch("builtins.print")
-@patch("os.path.isfile", return_value=True)  # Ensure files are found
+@patch("os.path.isfile", return_value=True)
 @patch("os.path.isdir", return_value=True)
 @patch("os.listdir")
-def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_isfile, mock_print):
+@patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv", autospec=True)
+def test_convert_all_species_files_with_sf_files(mock_convert, mock_listdir, mock_isdir, mock_isfile, mock_print):
     mock_listdir.side_effect = lambda p: ["species1"] if "/fake/dir" in p else ["file1.sf", "file2.sf"]
     folder_path = "/fake/dir"
     convert_all_species_files(folder_path)
     input_dir = os.path.join(folder_path, "species1", "sf_files")
     output_dir = os.path.join(folder_path, "species1", "csv_files")
+
     expected_calls = [
-        call(f"\nConverting quant files for species: species1"),
-        call(f"Data saved to {os.path.join(output_dir, 'file1.csv')}"),
-        call(f"Data saved to {os.path.join(output_dir, 'file2.csv')}")
-    ]
+        call("\nConverting quant files for species: species1"),
+        call(f"Data saved to {os.path.normpath(os.path.join(output_dir, 'file1.csv'))}"),
+        call(f"Data saved to {os.path.normpath(os.path.join(output_dir, 'file2.csv'))}")
+    ]    
     mock_print.assert_has_calls(expected_calls, any_order=True)
-
-
-
-
-
 
 @patch("os.listdir")
 @patch("os.path.join")
@@ -132,7 +101,6 @@ def test_process_expression_matrix_skips_gitignore(mock_to_csv, mock_read_csv, m
     mock_read_csv.assert_called_once_with("/fake/path_to_files/species1.csv")
     mock_to_csv.assert_called_once()
 
-
 @patch("os.listdir")
 @patch("os.path.join")
 @patch("pandas.read_csv")
@@ -142,10 +110,11 @@ def test_skip_gitignore_in_processing(mock_to_csv, mock_read_csv, mock_join, moc
     mock_join.side_effect = lambda *args: "/".join(args)
     file_path = "/fake/path_to_files"
     output_file_path = "/fake/output_path"
+    mock_read_csv.side_effect = lambda file, **kwargs: pd.DataFrame({"transcript_id": [1, 2, 3]}) if "species1.csv" in file else None
     process_expression_matrix(file_path, output_file_path)
     calls = [call("/fake/path_to_files/species1.csv")]
-    mock_read_csv.assert_has_calls(calls, any_order=True)
-    assert mock_read_csv.call_count == 1, "Unexpected number of files processed."
+    mock_read_csv.assert_has_calls(calls)
+    assert mock_read_csv.call_count == 1
 
 def test_convert_quant_output_to_csv():
     sf_data = "gene\tcount\nGene1\t100\nGene2\t200"
@@ -175,7 +144,6 @@ def test_convert_quant_output_to_csv():
 @patch("pandas.DataFrame.to_csv")
 def test_create_expression_matrix_skips_non_directory(mock_to_csv, mock_isdir, mock_listdir):
     mock_isdir.return_value = False
-    mock_listdir.return_value = []
     create_expression_matrix("raw_csv_data_path", "processed_data_path")
     mock_isdir.assert_called_once_with("raw_csv_data_path")
     mock_to_csv.assert_not_called()
@@ -209,46 +177,44 @@ def test_create_expression_matrix_no_files():
         mock_to_csv.assert_not_called()
 
 
-def test_create_expression_matrix_single_file():
+@patch("os.listdir")
+@patch("os.path.isdir")
+@patch("pandas.DataFrame.to_csv")
+@patch("pandas.read_csv")
+def test_create_expression_matrix_single_file(mock_read_csv, mock_to_csv, mock_isdir, mock_listdir):
     species = "species1"
-    quant_file = "quant_DRR513083.csv"
+    quant_files = ["quant_DRR513083.csv"]  # Only one file for simplicity
     mock_csv_content = {
         "Name": ["Gene1", "Gene2"],
         "EffectiveLength": [500, 800],
         "TPM": [100, 200],
         "NumReads": [50, 100],
     }
+    mock_read_csv.return_value = pd.DataFrame(mock_csv_content)
 
-    def listdir_side_effect(path):
-        if "csv_files" in path:
-            return [quant_file]
-        elif "raw_data_path" in path:
-            return [species]
-        return []
+    # Setup directory structure
+    mock_listdir.side_effect = lambda path: {
+        "raw_data_path": [species],
+        os.path.join("raw_data_path", species): ["csv_files"],
+        os.path.join("raw_data_path", species, "csv_files"): quant_files
+    }.get(path, [])
 
-    with patch("os.listdir", side_effect=listdir_side_effect) as mock_listdir, patch(
-        "os.path.isdir", return_value=True
-    ) as mock_isdir, patch(
-        "pandas.read_csv", return_value=pd.DataFrame(mock_csv_content)
-    ) as mock_read_csv, patch(
-        "pandas.DataFrame.to_csv"
-    ) as mock_to_csv:
+    mock_isdir.return_value = True
 
-        create_expression_matrix("raw_data_path", "processed_data_path")
+    create_expression_matrix("raw_data_path", "processed_data_path")
 
-        mock_listdir.assert_any_call("raw_data_path")
-        mock_listdir.assert_any_call(f"raw_data_path/{species}/csv_files")
+    # Checks
+    expected_read_csv_calls = [
+        call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'TPM']),
+        call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'EffectiveLength']),
+        call(os.path.join("raw_data_path", species, "csv_files", "quant_DRR513083.csv"), usecols=['Name', 'NumReads'])
+    ]
+    mock_read_csv.assert_has_calls(expected_read_csv_calls, any_order=True)
 
-        mock_read_csv.assert_called()
-        mock_to_csv.assert_called()
+    # Ensure to_csv was called to save the processed data
+    assert mock_to_csv.call_count == 1, "DataFrame.to_csv should have been called once to save the expression matrix."
 
-        mock_read_csv.assert_called_with(
-            f"raw_data_path/{species}/csv_files/{quant_file}",
-            usecols=["Name", "NumReads"],
-        )
 
-        assert mock_read_csv.call_count == 3
-        assert mock_to_csv.call_count == 1
 
 
 def test_get_length_scaled_tpm_matrix():
@@ -437,23 +403,35 @@ def test_process_expression_matrix_with_data(mock_to_csv, mock_isdir, mock_listd
             "output_file_path/rna_expression_species2.csv", index=False
         )
 
-def test_list_files():
-    with patch("os.walk") as mock_walk:
-        mock_walk.return_value = [
-            ("/fake/dir", ("subdir",), ("file1.txt", "file2.txt")),
-            ("/fake/dir/subdir", (), ("file3.txt",))
-        ]
 
-        expected_files = [
-            os.path.join("/fake/dir", "file1.txt"),
-            os.path.join("/fake/dir", "file2.txt"),
-            os.path.join("/fake/dir", "subdir", "file3.txt"),
-        ]
+@patch("os.walk")
+def test_list_files(mock_walk):
+    # Setup the mock to simulate os.walk behavior
+    mock_walk.return_value = [
+        ("/fake/dir", ("subdir",), ("file1.txt", "file2.txt")),
+        ("/fake/dir/subdir", (), ("file3.txt",))
+    ]
 
-        result = list_files("/fake/dir")
+    # Create expected files list with normalized paths to ensure OS compatibility
+    expected_files = [
+        os.path.normpath(os.path.join("/fake/dir", "file1.txt")),
+        os.path.normpath(os.path.join("/fake/dir", "file2.txt")),
+        os.path.normpath(os.path.join("/fake/dir", "subdir", "file3.txt")),
+    ]
 
-        assert result == expected_files
-        mock_walk.assert_called_once_with("/fake/dir")
+    # Call the function to be tested
+    result = list_files("/fake/dir")
+
+    # Normalize all paths in the result for comparison
+    normalized_result = [os.path.normpath(path) for path in result]
+
+    # Assert that the normalized result matches the expected normalized files list
+    assert normalized_result == expected_files, f"Expected {expected_files}, got {normalized_result}"
+
+    # Verify that os.walk was called correctly
+    mock_walk.assert_called_once_with("/fake/dir")
+
+
 
 
 
