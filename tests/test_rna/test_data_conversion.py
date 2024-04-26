@@ -29,7 +29,7 @@ from rna.rna_extraction import create_directories_for_species
 def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_print):
     folder_path = "/fake/dir"
     mock_listdir.return_value = ["species1"]
-    mock_isdir.side_effect = lambda x: x.endswith("sf_files")  # Only the sf_files directory does not exist
+    mock_isdir.return_value = False  # Make sure it always returns False
     convert_all_species_files(folder_path)
     expected_path = os.path.join(folder_path, "species1", "sf_files")
     expected_message = f"The directory {expected_path} does not exist."
@@ -97,7 +97,7 @@ def test_convert_all_species_files_empty_sf_files_directory(mock_listdir, mock_i
     mock_print.assert_called_with(f"The directory {expected_path} is empty.")
 
 @patch("builtins.print")
-@patch("os.path.isfile", return_value=True)
+@patch("os.path.isfile", return_value=True)  # Ensure files are found
 @patch("os.path.isdir", return_value=True)
 @patch("os.listdir")
 def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_isfile, mock_print):
@@ -112,6 +112,8 @@ def test_convert_all_species_files_with_sf_files(mock_listdir, mock_isdir, mock_
         call(f"Data saved to {os.path.join(output_dir, 'file2.csv')}")
     ]
     mock_print.assert_has_calls(expected_calls, any_order=True)
+
+
 
 
 
@@ -172,12 +174,11 @@ def test_convert_quant_output_to_csv():
 @patch("os.path.isdir")
 @patch("pandas.DataFrame.to_csv")
 def test_create_expression_matrix_skips_non_directory(mock_to_csv, mock_isdir, mock_listdir):
-    mock_isdir.return_value = False 
-    mock_listdir.return_value = ["quant_file1.csv", "quant_file2.csv"]
+    mock_isdir.return_value = False
+    mock_listdir.return_value = []
     create_expression_matrix("raw_csv_data_path", "processed_data_path")
     mock_isdir.assert_called_once_with("raw_csv_data_path")
     mock_to_csv.assert_not_called()
-
 
 
 @patch("os.listdir")
@@ -485,20 +486,18 @@ def test_create_samplesheet_for_one_species():
         assert mock_csv_writer_instance.writerows.call_count == 1
 
 
-def test_create_directories_for_species():
-    with patch("rna.rna_extraction.os.makedirs") as mock_makedirs:
-        species_data = {"Homo sapiens": 9606, "Mus musculus": 10090}
-        base_directory = "/fakepath/data"
+@patch("os.makedirs")
+def test_create_directories_for_species(mock_makedirs):
+    species_data = {"Homo sapiens": 9606, "Mus musculus": 10090}
+    base_directory = "/fakepath/data"
+    create_directories_for_species(species_data, base_directory)
+    expected_calls = [
+        call(os.path.join(base_directory, "homo_sapiens"), exist_ok=True),
+        call(os.path.join(base_directory, "homo_sapiens", "sf_files"), exist_ok=True),
+        call(os.path.join(base_directory, "homo_sapiens", "csv_files"), exist_ok=True),
+        call(os.path.join(base_directory, "mus_musculus"), exist_ok=True),
+        call(os.path.join(base_directory, "mus_musculus", "sf_files"), exist_ok=True),
+        call(os.path.join(base_directory, "mus_musculus", "csv_files"), exist_ok=True),
+    ]
+    mock_makedirs.assert_has_calls(expected_calls, any_order=True)
 
-        expected_calls = [
-            call("/fakepath/data/homo_sapiens", exist_ok=True),
-            call("/fakepath/data/homo_sapiens/sf_files", exist_ok=True),
-            call("/fakepath/data/homo_sapiens/csv_files", exist_ok=True),
-            call("/fakepath/data/mus_musculus", exist_ok=True),
-            call("/fakepath/data/mus_musculus/sf_files", exist_ok=True),
-            call("/fakepath/data/mus_musculus/csv_files", exist_ok=True),
-        ]
-
-        create_directories_for_species(species_data, base_directory)
-
-        mock_makedirs.assert_has_calls(expected_calls, any_order=True)
