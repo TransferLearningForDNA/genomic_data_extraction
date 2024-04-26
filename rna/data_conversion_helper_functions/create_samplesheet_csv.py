@@ -17,13 +17,12 @@ def list_files(directory: str) -> List[str]:
     """
     file_paths = []
 
-    # go through all files and subdirectories in the specified directory
     for root, _, files in os.walk(directory):
         for file_name in files:
-            # get the full path of each file
+            # Get the full path of each file using os.path.join to handle path separators
             file_path = os.path.join(root, file_name)
 
-            # store the file path
+            # Store the file path
             file_paths.append(file_path)
 
     return file_paths
@@ -109,7 +108,9 @@ def create_samplesheet_for_one_species(
         writer.writerows(data)
 
 
-if __name__ == "__main__": # pragma: no cover, create samplesheet csv files for each species
+if (
+    __name__ == "__main__"
+):  # pragma: no cover, create samplesheet csv files for each species
     local_dir_path_to_save_samplesheets = (
         "/local/path/to/save/csv/samplesheet/for/each/species"
     )
