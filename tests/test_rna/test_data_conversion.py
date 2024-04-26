@@ -28,12 +28,11 @@ from rna.rna_extraction import create_directories_for_species
 @patch("os.listdir")
 def test_convert_all_species_files_no_directory(mock_listdir, mock_isdir, mock_print):
     mock_listdir.return_value = ["species1"]
-    mock_isdir.side_effect = lambda x: x.endswith("species1")
+    mock_isdir.side_effect = lambda x: False if "sf_files" in x else True
     convert_all_species_files("/fake/dir")
     expected_path = os.path.join("/fake", "dir", "species1", "sf_files")
     expected_message = f"The directory {expected_path} does not exist."
     mock_print.assert_called_with(expected_message)
-
 
 @patch("rna.data_conversion_helper_functions.convert_quantsf_to_csv.convert_quant_output_to_csv")
 @patch("os.path.isdir")
