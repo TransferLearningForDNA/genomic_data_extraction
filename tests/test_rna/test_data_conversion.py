@@ -408,19 +408,20 @@ def test_list_files():
     with patch("os.walk") as mock_walk:
         mock_walk.return_value = [
             ("/fake/dir", ("subdir",), ("file1.txt", "file2.txt")),
-            ("/fake/dir/subdir", (), ("file3.txt",)),
+            ("/fake/dir/subdir", (), ("file3.txt",))
         ]
 
         expected_files = [
-            "/fake/dir/file1.txt",
-            "/fake/dir/file2.txt",
-            "/fake/dir/subdir/file3.txt",
+            os.path.join("/fake/dir", "file1.txt"),
+            os.path.join("/fake/dir", "file2.txt"),
+            os.path.join("/fake/dir", "subdir", "file3.txt"),
         ]
 
         result = list_files("/fake/dir")
 
         assert result == expected_files
         mock_walk.assert_called_once_with("/fake/dir")
+
 
 
 def test_create_samplesheet_for_one_species():
