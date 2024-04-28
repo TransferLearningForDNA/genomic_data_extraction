@@ -47,7 +47,9 @@ def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
     for filename in os.listdir(input_path):
         if filename.endswith(".sf"):
             input_file_path = os.path.join(input_path, filename)
-            output_file_path = os.path.join(output_path, filename.replace(".sf", ".csv"))
+            output_file_path = os.path.join(
+                output_path, filename.replace(".sf", ".csv")
+            )
 
             with open(input_file_path, "r", encoding="utf-8") as input_file, open(
                 output_file_path, "w", newline="", encoding="utf-8"

@@ -240,6 +240,6 @@ def compute_gc_content_wobble_positions(cds: str) -> Dict[str, float]:
 
 
 # Usage example
-if __name__ == "__main__": # pragma: no cover, extracting dna features
+if __name__ == "__main__":  # pragma: no cover, extracting dna features
     path_to_folder = "csv_files"
     extract_dna_features(path_to_folder)
