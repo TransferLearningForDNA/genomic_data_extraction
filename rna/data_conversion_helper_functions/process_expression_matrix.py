@@ -63,7 +63,7 @@ def process_expression_matrix(file_path: str, output_file_path: str) -> None:
     """
     # Iterate over species
     for species in os.listdir(file_path):
-        if species == '.gitignore':
+        if species == '.gitignore' or species == "sample_homo_sapiens.csv":
             continue
         expression_matrix_path = os.path.join(file_path, species)
 

@@ -2,3 +2,4 @@
 *
 # But not this file!
 !.gitignore
+!.sample_rna_expression_homo_sapiens.csv

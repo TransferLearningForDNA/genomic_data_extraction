@@ -21,7 +21,7 @@ def extract_dna_features(folder_path: str) -> None:
     """
     # Iterate over files in the directory
     for filename in os.listdir(folder_path):
-        if filename.endswith(".csv"):
+        if filename.endswith(".csv") and filename != "sample_data_homo_sapiens.csv":
             file_path = os.path.join(folder_path, filename)
 
             # Create a temporary file to write the modified data
