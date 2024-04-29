@@ -5,3 +5,19 @@ __pycache__/
 site/
 .coverage
 .pytest_cache
+
+# Ignore everything in dna/csv_files/ except sample file
+dna/csv_files/*
+!dna/csv_files/sample_data_homo_sapiens.csv
+
+# Ignore everything in rna/quant_files/processed except sample file
+rna/quant_files/processed/*
+!rna/quant_files/processed/sample_homo_sapiens.csv
+
+# Ignore everything in rna/median_expression_files except sample file
+rna/median_expression_files/*
+!rna/median_expression_files/sample_rna_expression_homo_sapiens.csv
+
+# Ignore everything merged_csv_files except sample file
+merged_csv_files/*
+!merged_csv_files/sample_merged_homo_sapiens_data.csv
