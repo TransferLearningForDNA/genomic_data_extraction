@@ -34,7 +34,7 @@ def query_dna_sequences_from_ensembl(output_folder: str) -> None:
     ensembl_api.get_data_as_csv(file_paths, output_folder)
 
 
-def extract_dna_data() -> None: # pragma: no cover, extracting dna data
+def extract_dna_data() -> None:  # pragma: no cover, extracting dna data
     """Extract and process DNA genomic data.
 
     Query DNA sequences from the Ensembl database, compute necessary gene components

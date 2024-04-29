@@ -40,6 +40,7 @@ def get_length_scaled_tpm_matrix(
 import os
 import pandas as pd
 
+
 def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> None:
     """Create the expression matrices for all species.
 
@@ -64,9 +65,15 @@ def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> No
         counts_mat = pd.DataFrame()
         for quant_file in os.listdir(raw_csv_data_path):
             file_path = os.path.join(raw_csv_data_path, quant_file)
-            abundance_df = pd.read_csv(file_path, usecols=["Name", "TPM"]).set_index("Name")
-            length_df = pd.read_csv(file_path, usecols=["Name", "EffectiveLength"]).set_index("Name")
-            counts_df = pd.read_csv(file_path, usecols=["Name", "NumReads"]).set_index("Name")
+            abundance_df = pd.read_csv(file_path, usecols=["Name", "TPM"]).set_index(
+                "Name"
+            )
+            length_df = pd.read_csv(
+                file_path, usecols=["Name", "EffectiveLength"]
+            ).set_index("Name")
+            counts_df = pd.read_csv(file_path, usecols=["Name", "NumReads"]).set_index(
+                "Name"
+            )
             run_id = quant_file.split("_")[1][:-4]
             abundance_df.rename(columns={"TPM": run_id}, inplace=True)
             length_df.rename(columns={"EffectiveLength": run_id}, inplace=True)
@@ -78,11 +85,12 @@ def create_expression_matrix(raw_data_path: str, processed_data_path: str) -> No
             length_mat = pd.concat([length_mat, length_df], axis=1, sort=False)
             counts_mat = pd.concat([counts_mat, counts_df], axis=1, sort=False)
 
-        length_scaled_tpm_mat = get_length_scaled_tpm_matrix(counts_mat, abundance_mat, length_mat)
+        length_scaled_tpm_mat = get_length_scaled_tpm_matrix(
+            counts_mat, abundance_mat, length_mat
+        )
         expression_matrix_path = os.path.join(processed_data_path, f"{species}.csv")
         length_scaled_tpm_mat.to_csv(expression_matrix_path)
         print(f"\nExpression matrix for {species} created successfully.")
-
 
 
 if __name__ == "__main__":  # pragma: no cover, create expression matrix

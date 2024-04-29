@@ -63,7 +63,7 @@ def process_expression_matrix(file_path: str, output_file_path: str) -> None:
     """
     # Iterate over species
     for species in os.listdir(file_path):
-        if species == '.gitignore':
+        if species == ".gitignore" or species == "sample_homo_sapiens.csv":
             continue
         expression_matrix_path = os.path.join(file_path, species)
 
@@ -90,7 +90,7 @@ def process_expression_matrix(file_path: str, output_file_path: str) -> None:
         median_expression_df.to_csv(median_expression_path, index=False)
 
 
-if __name__ == "__main__": # pragma: no cover, process expression matrix
+if __name__ == "__main__":  # pragma: no cover, process expression matrix
     folder = "quant_files/processed"
     output_folder = "median_expression_files"
     process_expression_matrix(folder, output_folder)

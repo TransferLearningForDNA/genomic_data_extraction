@@ -21,7 +21,7 @@ def extract_dna_features(folder_path: str) -> None:
     """
     # Iterate over files in the directory
     for filename in os.listdir(folder_path):
-        if filename.endswith(".csv"):
+        if filename.endswith(".csv") and filename != "sample_data_homo_sapiens.csv":
             file_path = os.path.join(folder_path, filename)
 
             # Create a temporary file to write the modified data
@@ -240,6 +240,6 @@ def compute_gc_content_wobble_positions(cds: str) -> Dict[str, float]:
 
 
 # Usage example
-if __name__ == "__main__": # pragma: no cover, extracting dna features
+if __name__ == "__main__":  # pragma: no cover, extracting dna features
     path_to_folder = "csv_files"
     extract_dna_features(path_to_folder)

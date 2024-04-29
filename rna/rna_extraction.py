@@ -34,7 +34,9 @@ def process_rna_expression_data() -> None:
     process_expression_matrix(processed_data_path, median_expression_path)
 
 
-def create_directories_for_species(species_data: Dict[str, int], base_directory: str) -> None:
+def create_directories_for_species(
+    species_data: Dict[str, int], base_directory: str
+) -> None:
     """Creates directories for storing quantification files.
 
     Args:
@@ -50,8 +52,8 @@ def create_directories_for_species(species_data: Dict[str, int], base_directory:
         os.makedirs(species_directory, exist_ok=True)
 
         # Create subdirectories for sf_files (nf-core/rnaseq output) and csv_files (converted files)
-        os.makedirs(os.path.join(species_directory, 'sf_files'), exist_ok=True)
-        os.makedirs(os.path.join(species_directory, 'csv_files'), exist_ok=True)
+        os.makedirs(os.path.join(species_directory, "sf_files"), exist_ok=True)
+        os.makedirs(os.path.join(species_directory, "csv_files"), exist_ok=True)
 
         print(f"Created directories for {species_name} at {species_directory}.")
 
@@ -70,13 +72,15 @@ def download_rna_data(
     """
 
     # First, create necessary directories for each species for later processing
-    create_directories_for_species(species_data, 'quant_files/raw')
+    create_directories_for_species(species_data, "quant_files/raw")
 
     print(f"Downloading RNA data to {output_directory}. \nSpecies: {species_data}")
 
     # Obtain experiment accession numbers for each species
     # Query NCBI SRA Database to obtain species metadata
-    species_srx_map = query_and_get_srx_accession_ids(species_data, limit=file_number_limit)
+    species_srx_map = query_and_get_srx_accession_ids(
+        species_data, limit=file_number_limit
+    )
 
     # Storing only the needed data - SRX and SRR IDs - in a csv
     csv_file_path = "rna/output_srx_srr.csv"
