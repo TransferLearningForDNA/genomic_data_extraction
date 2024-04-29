@@ -60,10 +60,8 @@ def convert_quant_output_to_csv(input_path: str, output_path: str) -> None:
                 for row in tsv_reader:
                     csv_writer.writerow(row)
 
-            print(f"Data saved to {output_file_path}")
 
-
-if __name__ == "__main__":  # pragma: no cover, convert quant.sf files to csv
+if __name__ == "__main__":
     # Path to input raw quant.sf files folder
     raw_quant_path = "quant_files/raw"
     convert_all_species_files(raw_quant_path)
