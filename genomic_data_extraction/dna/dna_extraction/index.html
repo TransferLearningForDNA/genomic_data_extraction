@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "dna_extraction";
-        var mkdocs_page_input_path = "genomic_data_extraction/dna/dna_extraction.md";
+        var mkdocs_page_input_path = "genomic_data_extraction\\dna\\dna_extraction.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -135,7 +135,7 @@
 
 
 <h2 id="dna.dna_extraction.extract_dna_data" class="doc doc-heading">
-          <code class="highlight language-python">extract_dna_data()</code>
+          <code class="highlight language-python"><span class="n">extract_dna_data</span><span class="p">()</span></code>
 
 </h2>
 
@@ -171,25 +171,43 @@ and calculate codon frequency, GC content, and sequence length.</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna/dna_extraction.py</code></summary>
-            <pre class="highlight"><code class="language-python">def extract_dna_data() -&gt; None: # pragma: no cover, extracting dna data
-    """Extract and process DNA genomic data.
+            <summary>Source code in <code>dna\dna_extraction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">extract_dna_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover, extracting dna data</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract and process DNA genomic data.</span>
 
-    Query DNA sequences from the Ensembl database, compute necessary gene components
-    and calculate codon frequency, GC content, and sequence length.
+<span class="sd">    Query DNA sequences from the Ensembl database, compute necessary gene components</span>
+<span class="sd">    and calculate codon frequency, GC content, and sequence length.</span>
 
-    Returns:
-        None: This function does not return a value but outputs or modifies files in the specified directories.
-    """
-    # Extracting genomic data.
-    extracted_dna_storage_folder = "dna/csv_files"
+<span class="sd">    Returns:</span>
+<span class="sd">        None: This function does not return a value but outputs or modifies files in the specified directories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Extracting genomic data.</span>
+    <span class="n">extracted_dna_storage_folder</span> <span class="o">=</span> <span class="s2">&quot;dna/csv_files&quot;</span>
 
-    # Query sequences to gene components from Ensembl
-    query_dna_sequences_from_ensembl(extracted_dna_storage_folder)
+    <span class="c1"># Query sequences to gene components from Ensembl</span>
+    <span class="n">query_dna_sequences_from_ensembl</span><span class="p">(</span><span class="n">extracted_dna_storage_folder</span><span class="p">)</span>
 
-    # Calculate genomic features
-    dna_feature_extraction.extract_dna_features(extracted_dna_storage_folder)
-    print("\nExtraction of DNA features is now complete!\n")</code></pre>
+    <span class="c1"># Calculate genomic features</span>
+    <span class="n">dna_feature_extraction</span><span class="o">.</span><span class="n">extract_dna_features</span><span class="p">(</span><span class="n">extracted_dna_storage_folder</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Extraction of DNA features is now complete!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 
@@ -201,7 +219,7 @@ and calculate codon frequency, GC content, and sequence length.</p>
 
 
 <h2 id="dna.dna_extraction.query_dna_sequences_from_ensembl" class="doc doc-heading">
-          <code class="highlight language-python">query_dna_sequences_from_ensembl(output_folder)</code>
+          <code class="highlight language-python"><span class="n">query_dna_sequences_from_ensembl</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span></code>
 
 </h2>
 
@@ -263,36 +281,65 @@ DNA sequences using Ensembl REST API, saving them as CSV files in a specified di
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>dna/dna_extraction.py</code></summary>
-            <pre class="highlight"><code class="language-python">def query_dna_sequences_from_ensembl(output_folder: str) -&gt; None:
-    """Query and download DNA sequences for specified gene lists from the Ensembl database.
+            <summary>Source code in <code>dna\dna_extraction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">query_dna_sequences_from_ensembl</span><span class="p">(</span><span class="n">output_folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query and download DNA sequences for specified gene lists from the Ensembl database.</span>
 
-    Use pre-defined file paths to locate gene lists and download their respective
-    DNA sequences using Ensembl REST API, saving them as CSV files in a specified directory.
+<span class="sd">    Use pre-defined file paths to locate gene lists and download their respective</span>
+<span class="sd">    DNA sequences using Ensembl REST API, saving them as CSV files in a specified directory.</span>
 
-    Args:
-        output_folder (str): Path to the output folder where the extracted DNA
-                            sequences will be stored.
+<span class="sd">    Args:</span>
+<span class="sd">        output_folder (str): Path to the output folder where the extracted DNA</span>
+<span class="sd">                            sequences will be stored.</span>
 
-    Returns:
-        None: This function does not return a value but outputs files to the specified directory.
-    """
-    # Specify the folder containing gene lists
-    folder = "dna/gene_lists/"
+<span class="sd">    Returns:</span>
+<span class="sd">        None: This function does not return a value but outputs files to the specified directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Specify the folder containing gene lists</span>
+    <span class="n">folder</span> <span class="o">=</span> <span class="s2">&quot;dna/gene_lists/&quot;</span>
 
-    # Get the list of file paths for gene lists
-    all_files = os.listdir(folder)
-    file_paths = [f for f in all_files if os.path.isfile(os.path.join(folder, f))]
+    <span class="c1"># Get the list of file paths for gene lists</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+    <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">f</span><span class="p">))]</span>
 
-    # file_paths = ["homo_sapiens_genes_small.txt"]  # Test with a small dataset (example)
+    <span class="c1"># file_paths = [&quot;homo_sapiens_genes_small.txt&quot;]  # Test with a small dataset (example)</span>
 
-    # Prepend the folder path to each file path
-    file_paths = [folder + path for path in file_paths]
+    <span class="c1"># Prepend the folder path to each file path</span>
+    <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">folder</span> <span class="o">+</span> <span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">]</span>
 
-    print(file_paths)
+    <span class="nb">print</span><span class="p">(</span><span class="n">file_paths</span><span class="p">)</span>
 
-    # Call the function to get data from Ensembl API and save it as CSV files
-    ensembl_api.get_data_as_csv(file_paths, output_folder)</code></pre>
+    <span class="c1"># Call the function to get data from Ensembl API and save it as CSV files</span>
+    <span class="n">ensembl_api</span><span class="o">.</span><span class="n">get_data_as_csv</span><span class="p">(</span><span class="n">file_paths</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 

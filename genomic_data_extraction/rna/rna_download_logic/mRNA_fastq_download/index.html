@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "mRNA_fastq_download";
-        var mkdocs_page_input_path = "genomic_data_extraction/rna/rna_download_logic/mRNA_fastq_download.md";
+        var mkdocs_page_input_path = "genomic_data_extraction\\rna\\rna_download_logic\\mRNA_fastq_download.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -136,7 +136,7 @@
 
 
 <h2 id="rna.rna_download_logic.mRNA_fastq_download.download_sra_data" class="doc doc-heading">
-          <code class="highlight language-python">download_sra_data(csv_file_path, output_directory, limit=10)</code>
+          <code class="highlight language-python"><span class="n">download_sra_data</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></code>
 
 </h2>
 
@@ -216,76 +216,145 @@
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>rna/rna_download_logic/mRNA_fastq_download.py</code></summary>
-            <pre class="highlight"><code class="language-python">def download_sra_data(
-    csv_file_path: str, output_directory: str, limit: Optional[int] = 10
-) -&gt; None:
-    """Download SRA data based on SRR IDs listed in a CSV file using the fasterq-dump command from the SRA toolkit.
+            <summary>Source code in <code>rna\rna_download_logic\mRNA_fastq_download.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_sra_data</span><span class="p">(</span>
+    <span class="n">csv_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download SRA data based on SRR IDs listed in a CSV file using the fasterq-dump command from the SRA toolkit.</span>
 
-    Be aware of two critical requirements:
-    1. SRA-toolkit installation: Ensure the correct version is installed in your environment as fasterq-dump may raise errors.
-    2. Download limit parameter: This limit is set to 10 by default due to the large size of files (typically &gt;15GB per run) which can heavily impact memory and disk usage.
+<span class="sd">    Be aware of two critical requirements:</span>
+<span class="sd">    1. SRA-toolkit installation: Ensure the correct version is installed in your environment as fasterq-dump may raise errors.</span>
+<span class="sd">    2. Download limit parameter: This limit is set to 10 by default due to the large size of files (typically &gt;15GB per run) which can heavily impact memory and disk usage.</span>
 
-    Args:
-        csv_file_path (str): The file path to the CSV containing SRR IDs for download.
-        output_directory (str): The directory where downloaded files will be saved.
-        limit (Optional[int]): Maximum number of files to download. Defaults to 10 to avoid excessive bandwidth and storage usage.
+<span class="sd">    Args:</span>
+<span class="sd">        csv_file_path (str): The file path to the CSV containing SRR IDs for download.</span>
+<span class="sd">        output_directory (str): The directory where downloaded files will be saved.</span>
+<span class="sd">        limit (Optional[int]): Maximum number of files to download. Defaults to 10 to avoid excessive bandwidth and storage usage.</span>
 
-    Returns:
-        None: This function does not return a value but outputs files to the specified directory.
-    """
-    # Read the CSV file
-    df = pd.read_csv(csv_file_path)
+<span class="sd">    Returns:</span>
+<span class="sd">        None: This function does not return a value but outputs files to the specified directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Read the CSV file</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">)</span>
 
-    # Ensure the output directory exists
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
+    <span class="c1"># Ensure the output directory exists</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_directory</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
 
-    SRAweb()
-    download_count = 0
+    <span class="n">SRAweb</span><span class="p">()</span>
+    <span class="n">download_count</span> <span class="o">=</span> <span class="mi">0</span>
 
-    for _, row in df.iterrows():
-        if download_count &gt;= limit:
-            print(f"Reached download limit of {limit}.")
-            break
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">download_count</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reached download limit of </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
 
-        srr_id = row["srr_id"]
-        species_name = row["species"]
+        <span class="n">srr_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;srr_id&quot;</span><span class="p">]</span>
+        <span class="n">species_name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">]</span>
 
-        # check that the fasta files have not already been downloaded
-        # for this sample (i.e. SRR ID)
-        output_file = os.path.join(output_directory, f"{srr_id}_1.fastq")
-        compressed_output_file = os.path.join(output_directory, f"{srr_id}_1.fastq.gz")
+        <span class="c1"># check that the fasta files have not already been downloaded</span>
+        <span class="c1"># for this sample (i.e. SRR ID)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">srr_id</span><span class="si">}</span><span class="s2">_1.fastq&quot;</span><span class="p">)</span>
+        <span class="n">compressed_output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">srr_id</span><span class="si">}</span><span class="s2">_1.fastq.gz&quot;</span><span class="p">)</span>
 
-        if (
-            row["species"] == species_name
-            and (not os.path.exists(output_file))
-            and (not os.path.exists(compressed_output_file))
-        ):
-            try:
-                print(
-                    f"Starting download of SRR ID {srr_id} at {datetime.datetime.now()}",
-                    flush=True,
-                )
-                # Download using the fasterq-dump command for each SRR ID (construct as a list)
-                command = ["fasterq-dump", srr_id, "--outdir", output_directory]
-                subprocess.run(command, check=True)
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">row</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">species_name</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_file</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">compressed_output_file</span><span class="p">))</span>
+        <span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Starting download of SRR ID </span><span class="si">{</span><span class="n">srr_id</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># Download using the fasterq-dump command for each SRR ID (construct as a list)</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fasterq-dump&quot;</span><span class="p">,</span> <span class="n">srr_id</span><span class="p">,</span> <span class="s2">&quot;--outdir&quot;</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">]</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                print(
-                    f"SRR ID {srr_id} downloaded to {output_directory} at {datetime.datetime.now()}",
-                    flush=True,
-                )
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;SRR ID </span><span class="si">{</span><span class="n">srr_id</span><span class="si">}</span><span class="s2"> downloaded to </span><span class="si">{</span><span class="n">output_directory</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
 
-                download_count += 1
+                <span class="n">download_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-                # list files in the output directory after each download
-                print(f"Files in {output_directory} after download:")
-                print(os.listdir(output_directory))
+                <span class="c1"># list files in the output directory after each download</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files in </span><span class="si">{</span><span class="n">output_directory</span><span class="si">}</span><span class="s2"> after download:&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">output_directory</span><span class="p">))</span>
 
-            except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
-                print(f"An error occurred while processing {srr_id}: {e}", flush=True)
-            except Exception as e:
-                print(f"An unexpected error occurred: {e}", flush=True)</code></pre>
+            <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while processing </span><span class="si">{</span><span class="n">srr_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An unexpected error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 

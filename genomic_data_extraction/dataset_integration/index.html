@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "dataset_integration";
-        var mkdocs_page_input_path = "genomic_data_extraction/dataset_integration.md";
+        var mkdocs_page_input_path = "genomic_data_extraction\\dataset_integration.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -134,7 +134,7 @@
 
 
 <h2 id="dataset_integration.import_species_data" class="doc doc-heading">
-          <code class="highlight language-python">import_species_data(csv_file_path)</code>
+          <code class="highlight language-python"><span class="n">import_species_data</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">)</span></code>
 
 </h2>
 
@@ -169,19 +169,32 @@
 </table>
           <details class="quote">
             <summary>Source code in <code>dataset_integration.py</code></summary>
-            <pre class="highlight"><code class="language-python">def import_species_data(csv_file_path: str) -&gt; Dict[str, int]:
-    """Create dictionary containing species names and taxonomy IDs.
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">import_species_data</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create dictionary containing species names and taxonomy IDs.</span>
 
-    Args:
-        csv_file_path (str)
+<span class="sd">    Args:</span>
+<span class="sd">        csv_file_path (str)</span>
 
-    Returns:
-        Dict[str, int]: A dictionary with species names as keys and species IDs as values.
-    """
-    df = pd.read_csv(csv_file_path)
-    # Convert DataFrame to a dictionary with 'name' as keys and 'tax_id' as values
-    species_data = pd.Series(df.tax_id.values, index=df.name).to_dict()
-    return species_data</code></pre>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict[str, int]: A dictionary with species names as keys and species IDs as values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file_path</span><span class="p">)</span>
+    <span class="c1"># Convert DataFrame to a dictionary with &#39;name&#39; as keys and &#39;tax_id&#39; as values</span>
+    <span class="n">species_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">tax_id</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">species_data</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 
@@ -193,7 +206,7 @@
 
 
 <h2 id="dataset_integration.merge_datasets" class="doc doc-heading">
-          <code class="highlight language-python">merge_datasets(species_name)</code>
+          <code class="highlight language-python"><span class="n">merge_datasets</span><span class="p">(</span><span class="n">species_name</span><span class="p">)</span></code>
 
 </h2>
 
@@ -238,45 +251,84 @@
 </table>
           <details class="quote">
             <summary>Source code in <code>dataset_integration.py</code></summary>
-            <pre class="highlight"><code class="language-python">def merge_datasets(species_name: str) -&gt; pd.DataFrame | None:
-    """Merge DNA and RNA data by transcript ID.
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">merge_datasets</span><span class="p">(</span><span class="n">species_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge DNA and RNA data by transcript ID.</span>
 
-    Args:
-        species_name (str)
+<span class="sd">    Args:</span>
+<span class="sd">        species_name (str)</span>
 
-    Returns:
-        DataFrame: Merged DNA and RNA data for the all transcripts of the given species.
-                Columns: ensembl_gene_id, transcript_id, promoter, utr5, cds, utr3, terminator sequences
-                64x codon frequencies, cds_length, utr5_length, utr3_length, utr5_gc, cds_gc, utr3_gc,
-                cds_wobble2_gc, cds_wobble3_gc, median_expression
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Merged DNA and RNA data for the all transcripts of the given species.</span>
+<span class="sd">                Columns: ensembl_gene_id, transcript_id, promoter, utr5, cds, utr3, terminator sequences</span>
+<span class="sd">                64x codon frequencies, cds_length, utr5_length, utr3_length, utr5_gc, cds_gc, utr3_gc,</span>
+<span class="sd">                cds_wobble2_gc, cds_wobble3_gc, median_expression</span>
 
-        OR None if one of the DNA or RNA data paths does not exist
-    """
-    # Specify CSV file paths of the DNA and RNA datasets
-    dna_dataset_path = f"dna/csv_files/ensembl_data_{species_name}.csv"
-    rna_dataset_path = f"rna/median_expression_files/rna_expression_{species_name}.csv"  # median expression matrix
+<span class="sd">        OR None if one of the DNA or RNA data paths does not exist</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Specify CSV file paths of the DNA and RNA datasets</span>
+    <span class="n">dna_dataset_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dna/csv_files/ensembl_data_</span><span class="si">{</span><span class="n">species_name</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+    <span class="n">rna_dataset_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rna/median_expression_files/rna_expression_</span><span class="si">{</span><span class="n">species_name</span><span class="si">}</span><span class="s2">.csv&quot;</span>  <span class="c1"># median expression matrix</span>
 
-    # Check if both files exist
-    if not os.path.exists(dna_dataset_path):
-        print(f"Warning: DNA dataset not found at {dna_dataset_path}.")
-        return None
-    if not os.path.exists(rna_dataset_path):
-        print(f"Warning: RNA dataset not found at {rna_dataset_path}.")
-        return None
+    <span class="c1"># Check if both files exist</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dna_dataset_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: DNA dataset not found at </span><span class="si">{</span><span class="n">dna_dataset_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rna_dataset_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: RNA dataset not found at </span><span class="si">{</span><span class="n">rna_dataset_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
-    # Read datasets into pandas DataFrames
-    dna_df = pd.read_csv(dna_dataset_path)
-    rna_df = pd.read_csv(rna_dataset_path)
+    <span class="c1"># Read datasets into pandas DataFrames</span>
+    <span class="n">dna_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dna_dataset_path</span><span class="p">)</span>
+    <span class="n">rna_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">rna_dataset_path</span><span class="p">)</span>
 
-    # Merge datasets based on transcript ID
-    merged_df = pd.merge(dna_df, rna_df, on="transcript_id", how="inner")
+    <span class="c1"># Merge datasets based on transcript ID</span>
+    <span class="n">merged_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">dna_df</span><span class="p">,</span> <span class="n">rna_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;transcript_id&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span>
 
-    # Save merged dataframe to csv
-    merged_df.to_csv(f"merged_csv_files/merged_{species_name}_data.csv", index=False)
+    <span class="c1"># Save merged dataframe to csv</span>
+    <span class="n">merged_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;merged_csv_files/merged_</span><span class="si">{</span><span class="n">species_name</span><span class="si">}</span><span class="s2">_data.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    print(f"Successfully merged DNA and RNA data for species {species_name}!")
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully merged DNA and RNA data for species </span><span class="si">{</span><span class="n">species_name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 
-    return merged_df</code></pre>
+    <span class="k">return</span> <span class="n">merged_df</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 

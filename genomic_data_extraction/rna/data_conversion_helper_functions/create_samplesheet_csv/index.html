@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "create_samplesheet_csv";
-        var mkdocs_page_input_path = "genomic_data_extraction/rna/data_conversion_helper_functions/create_samplesheet_csv.md";
+        var mkdocs_page_input_path = "genomic_data_extraction\\rna\\data_conversion_helper_functions\\create_samplesheet_csv.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -136,7 +136,7 @@
 
 
 <h2 id="rna.data_conversion_helper_functions.create_samplesheet_csv.create_samplesheet_for_one_species" class="doc doc-heading">
-          <code class="highlight language-python">create_samplesheet_for_one_species(species_name, local_dir_path_with_fastq_files_for_one_species, local_dir_path_to_save_samplesheets)</code>
+          <code class="highlight language-python"><span class="n">create_samplesheet_for_one_species</span><span class="p">(</span><span class="n">species_name</span><span class="p">,</span> <span class="n">local_dir_path_with_fastq_files_for_one_species</span><span class="p">,</span> <span class="n">local_dir_path_to_save_samplesheets</span><span class="p">)</span></code>
 
 </h2>
 
@@ -214,85 +214,163 @@ use for saving the samplesheet csv files of all species.</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>rna/data_conversion_helper_functions/create_samplesheet_csv.py</code></summary>
-            <pre class="highlight"><code class="language-python">def create_samplesheet_for_one_species(
-    species_name: str,
-    local_dir_path_with_fastq_files_for_one_species: str,
-    local_dir_path_to_save_samplesheets: str,
-) -&gt; None:
-    """Create a samplesheet csv file for a species (input to the nf-core/rna-seq pipeline).
+            <summary>Source code in <code>rna\data_conversion_helper_functions\create_samplesheet_csv.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_samplesheet_for_one_species</span><span class="p">(</span>
+    <span class="n">species_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">local_dir_path_with_fastq_files_for_one_species</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">local_dir_path_to_save_samplesheets</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a samplesheet csv file for a species (input to the nf-core/rna-seq pipeline).</span>
 
-    Args:
-        species_name (str): name of the species that we are creating the samplesheet
-            csv file for. This will be used in the name of the csv file created.
-        local_dir_path_with_fastq_files_for_one_species (str): path to the local
-            directory containing the fastq files for the species.
-        local_dir_path_to_save_samplesheets (str): path to a local directory to
-            use for saving the samplesheet csv files of all species.
+<span class="sd">    Args:</span>
+<span class="sd">        species_name (str): name of the species that we are creating the samplesheet</span>
+<span class="sd">            csv file for. This will be used in the name of the csv file created.</span>
+<span class="sd">        local_dir_path_with_fastq_files_for_one_species (str): path to the local</span>
+<span class="sd">            directory containing the fastq files for the species.</span>
+<span class="sd">        local_dir_path_to_save_samplesheets (str): path to a local directory to</span>
+<span class="sd">            use for saving the samplesheet csv files of all species.</span>
 
-    Returns:
-        None: This function does not return a value but outputs files to the specified directory.
-    """
-    # Retrieve the list of file paths
-    file_paths = list_files(local_dir_path_with_fastq_files_for_one_species)
+<span class="sd">    Returns:</span>
+<span class="sd">        None: This function does not return a value but outputs files to the specified directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Retrieve the list of file paths</span>
+    <span class="n">file_paths</span> <span class="o">=</span> <span class="n">list_files</span><span class="p">(</span><span class="n">local_dir_path_with_fastq_files_for_one_species</span><span class="p">)</span>
 
-    # iterate over the fastq files to populate the dict containing the fastq filepath(s) of each sample
-    sample_fastq_files_path_dict = {}
-    for sample_fastq_file_path in file_paths:
+    <span class="c1"># iterate over the fastq files to populate the dict containing the fastq filepath(s) of each sample</span>
+    <span class="n">sample_fastq_files_path_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">sample_fastq_file_path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
 
-        sample_filename = os.path.basename(
-            sample_fastq_file_path
-        )  # naming convention = samplename_1.fastq.gz
-        sample_name_key = sample_filename.split("_")[0]
+        <span class="n">sample_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span>
+            <span class="n">sample_fastq_file_path</span>
+        <span class="p">)</span>  <span class="c1"># naming convention = samplename_1.fastq.gz</span>
+        <span class="n">sample_name_key</span> <span class="o">=</span> <span class="n">sample_filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        if sample_name_key != ".DS":  # file in macOS
+        <span class="k">if</span> <span class="n">sample_name_key</span> <span class="o">!=</span> <span class="s2">&quot;.DS&quot;</span><span class="p">:</span>  <span class="c1"># file in macOS</span>
 
-            if sample_name_key in sample_fastq_files_path_dict:
-                sample_fastq_files_path_dict[sample_name_key].append(
-                    sample_fastq_file_path
-                )
-                # sort by fastq file number
-                sample_fastq_files_path_dict[sample_name_key] = sorted(
-                    sample_fastq_files_path_dict[sample_name_key],
-                    key=lambda fastq_filename: fastq_filename[-10],
-                )
-            else:
-                sample_fastq_files_path_dict[sample_name_key] = [sample_fastq_file_path]
+            <span class="k">if</span> <span class="n">sample_name_key</span> <span class="ow">in</span> <span class="n">sample_fastq_files_path_dict</span><span class="p">:</span>
+                <span class="n">sample_fastq_files_path_dict</span><span class="p">[</span><span class="n">sample_name_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">sample_fastq_file_path</span>
+                <span class="p">)</span>
+                <span class="c1"># sort by fastq file number</span>
+                <span class="n">sample_fastq_files_path_dict</span><span class="p">[</span><span class="n">sample_name_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="n">sample_fastq_files_path_dict</span><span class="p">[</span><span class="n">sample_name_key</span><span class="p">],</span>
+                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">fastq_filename</span><span class="p">:</span> <span class="n">fastq_filename</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sample_fastq_files_path_dict</span><span class="p">[</span><span class="n">sample_name_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_fastq_file_path</span><span class="p">]</span>
 
-    # populate the data structure that will hold the rows of the csv file
-    strandedness = "auto"  # using default parameter value for now
-    data = []  # list of sublists (where each sublist is a sample/row in the dataset)
-    for sample_name, fastq_files_paths_list in sample_fastq_files_path_dict.items():
+    <span class="c1"># populate the data structure that will hold the rows of the csv file</span>
+    <span class="n">strandedness</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>  <span class="c1"># using default parameter value for now</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of sublists (where each sublist is a sample/row in the dataset)</span>
+    <span class="k">for</span> <span class="n">sample_name</span><span class="p">,</span> <span class="n">fastq_files_paths_list</span> <span class="ow">in</span> <span class="n">sample_fastq_files_path_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
-        if len(fastq_files_paths_list) == 1:
-            fastq_file1_path = fastq_files_paths_list[0]
-            fastq_file2_path = ""
-        else:
-            assert (
-                len(fastq_files_paths_list) == 2
-            )  # max number of fastq files per sample
-            fastq_file1_path = fastq_files_paths_list[0]
-            fastq_file2_path = fastq_files_paths_list[1]
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fastq_files_paths_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">fastq_file1_path</span> <span class="o">=</span> <span class="n">fastq_files_paths_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">fastq_file2_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">fastq_files_paths_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="p">)</span>  <span class="c1"># max number of fastq files per sample</span>
+            <span class="n">fastq_file1_path</span> <span class="o">=</span> <span class="n">fastq_files_paths_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">fastq_file2_path</span> <span class="o">=</span> <span class="n">fastq_files_paths_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        sample_row_data = [
-            sample_name,
-            fastq_file1_path,
-            fastq_file2_path,
-            strandedness,
-        ]
-        data.append(sample_row_data)
+        <span class="n">sample_row_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">sample_name</span><span class="p">,</span>
+            <span class="n">fastq_file1_path</span><span class="p">,</span>
+            <span class="n">fastq_file2_path</span><span class="p">,</span>
+            <span class="n">strandedness</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_row_data</span><span class="p">)</span>
 
-    # create the samplesheet csv file (input to the nextflow nfcore/rnaseq pipeline)
-    # columns of the samplesheet csv file
-    header = ["sample", "fastq_1", "fastq_2", "strandedness"]
-    with open(
-        f"{local_dir_path_to_save_samplesheets}/{species_name}_samplesheet.csv",
-        "w",
-        encoding="utf-8",
-    ) as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(header)
-        writer.writerows(data)</code></pre>
+    <span class="c1"># create the samplesheet csv file (input to the nextflow nfcore/rnaseq pipeline)</span>
+    <span class="c1"># columns of the samplesheet csv file</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="s2">&quot;fastq_1&quot;</span><span class="p">,</span> <span class="s2">&quot;fastq_2&quot;</span><span class="p">,</span> <span class="s2">&quot;strandedness&quot;</span><span class="p">]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">local_dir_path_to_save_samplesheets</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">species_name</span><span class="si">}</span><span class="s2">_samplesheet.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 
@@ -304,7 +382,7 @@ use for saving the samplesheet csv files of all species.</p>
 
 
 <h2 id="rna.data_conversion_helper_functions.create_samplesheet_csv.list_files" class="doc doc-heading">
-          <code class="highlight language-python">list_files(directory)</code>
+          <code class="highlight language-python"><span class="n">list_files</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span></code>
 
 </h2>
 
@@ -363,28 +441,47 @@ use for saving the samplesheet csv files of all species.</p>
   </tbody>
 </table>
           <details class="quote">
-            <summary>Source code in <code>rna/data_conversion_helper_functions/create_samplesheet_csv.py</code></summary>
-            <pre class="highlight"><code class="language-python">def list_files(directory: str) -&gt; List[str]:
-    """Lists all the files in a local directory.
+            <summary>Source code in <code>rna\data_conversion_helper_functions\create_samplesheet_csv.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list_files</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lists all the files in a local directory.</span>
 
-    Args:
-        directory (str): The path to the folder containing files.
+<span class="sd">    Args:</span>
+<span class="sd">        directory (str): The path to the folder containing files.</span>
 
-    Returns:
-        List[str]: A list of file paths.
-    """
-    file_paths = []
+<span class="sd">    Returns:</span>
+<span class="sd">        List[str]: A list of file paths.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[]</span>
 
-    # go through all files and subdirectories in the specified directory
-    for root, _, files in os.walk(directory):
-        for file_name in files:
-            # get the full path of each file
-            file_path = os.path.join(root, file_name)
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="c1"># Get the full path of each file using os.path.join to handle path separators</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
 
-            # store the file path
-            file_paths.append(file_path)
+            <span class="c1"># Store the file path</span>
+            <span class="n">file_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
-    return file_paths</code></pre>
+    <span class="k">return</span> <span class="n">file_paths</span>
+</code></pre></div></td></tr></table></div>
           </details>
   </div>
 
